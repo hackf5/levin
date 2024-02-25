@@ -1,7 +1,8 @@
 {
     "cSpell.words": [
         "glfw",
-        "hadamard"
+        "hadamard",
+        "VKAPI"
     ],
     "files.associations": {
         "array": "cpp",

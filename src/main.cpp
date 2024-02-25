@@ -21,12 +21,37 @@ static std::vector<const char *> getRequiredExtensions()
   return extensions;
 }
 
+static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+    VkDebugUtilsMessageTypeFlagsEXT messageType,
+    const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
+    void *pUserData)
+{
+  std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
+
+  return VK_FALSE;
+}
+
+static VkDebugUtilsMessengerCreateInfoEXT createDebugMessengerCreateInfo()
+{
+  VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
+  createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+  createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+  createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+  createInfo.pfnUserCallback = debugCallback;
+
+  return createInfo;
+}
+
 #ifdef NDEBUG
 const std::vector<const char *> validationLayers = {};
 std::vector<const char *> enabledExtensions = {};
+VkDebugUtilsMessengerCreateInfoEXT *debugCreateInfo = nullptr;
 #else
 const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
 std::vector<const char *> enabledExtensions = getRequiredExtensions();
+VkDebugUtilsMessengerCreateInfoEXT debugCreateInfoValue = createDebugMessengerCreateInfo();
+VkDebugUtilsMessengerCreateInfoEXT *debugCreateInfo = &debugCreateInfoValue;
 #endif
 
 static bool checkValidationLayerSupport()
@@ -57,17 +82,6 @@ static bool checkValidationLayerSupport()
   }
 
   return true;
-}
-
-static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-    VkDebugUtilsMessageTypeFlagsEXT messageType,
-    const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
-    void *pUserData)
-{
-  std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
-
-  return VK_FALSE;
 }
 
 static VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo, const VkAllocationCallbacks *pAllocator, VkDebugUtilsMessengerEXT *pDebugMessenger)
@@ -106,7 +120,8 @@ public:
 private:
   GLFWwindow *_window;
   VkInstance _instance;
-  VkDebugUtilsMessengerEXT debugMessenger;
+  VkDebugUtilsMessengerEXT _debugMessenger;
+  VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 
   void initWindow()
   {
@@ -122,6 +137,7 @@ private:
   {
     createInstance();
     setupDebugMessenger();
+    pickPhysicalDevice();
   }
 
   void mainLoop()
@@ -135,7 +151,7 @@ private:
   void cleanup()
   {
     if (!validationLayers.empty())
-      DestroyDebugUtilsMessengerEXT(_instance, debugMessenger, nullptr);
+      DestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);
 
     vkDestroyInstance(_instance, nullptr);
     glfwDestroyWindow(_window);
@@ -170,6 +186,7 @@ private:
     createInfo.ppEnabledLayerNames = validationLayers.data();
     createInfo.enabledExtensionCount = static_cast<uint32_t>(enabledExtensions.size());
     createInfo.ppEnabledExtensionNames = enabledExtensions.data();
+    createInfo.pNext = debugCreateInfo;
 
     if (vkCreateInstance(&createInfo, nullptr, &_instance) != VK_SUCCESS)
     {
@@ -182,21 +199,51 @@ private:
     if (validationLayers.empty())
       return;
 
-    VkDebugUtilsMessengerCreateInfoEXT createInfo{};
-    createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-    createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-                                 VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-                                 VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-    createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-                             VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-                             VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-    createInfo.pfnUserCallback = debugCallback;
-    createInfo.pUserData = nullptr; // Optional
+    auto createInfo = createDebugMessengerCreateInfo();
 
-    if (CreateDebugUtilsMessengerEXT(_instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS)
+    if (CreateDebugUtilsMessengerEXT(_instance, &createInfo, nullptr, &_debugMessenger) != VK_SUCCESS)
     {
       throw std::runtime_error("failed to set up debug messenger!");
     }
+  }
+
+  void pickPhysicalDevice()
+  {
+    uint32_t deviceCount = 0;
+    vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
+
+    if (deviceCount == 0)
+    {
+      throw std::runtime_error("failed to find GPUs with Vulkan support!");
+    }
+
+    std::vector<VkPhysicalDevice> devices(deviceCount);
+    vkEnumeratePhysicalDevices(_instance, &deviceCount, devices.data());
+
+    for (const auto &device : devices)
+    {
+      if (isDeviceSuitable(device))
+      {
+        physicalDevice = device;
+        break;
+      }
+    }
+
+    if (physicalDevice == VK_NULL_HANDLE)
+    {
+      throw std::runtime_error("failed to find a suitable GPU!");
+    }
+  }
+
+  bool isDeviceSuitable(VkPhysicalDevice device)
+  {
+    VkPhysicalDeviceProperties deviceProperties;
+    VkPhysicalDeviceFeatures deviceFeatures;
+    vkGetPhysicalDeviceProperties(device, &deviceProperties);
+    vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+
+    return deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU &&
+           deviceFeatures.geometryShader;
   }
 };
 
