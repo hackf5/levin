@@ -32,7 +32,6 @@ find_package(GLUT REQUIRED)
 find_package(GLEW REQUIRED)
 
 # MAIN PROJECT
-
 set(SOURCES
     src/main.cpp
 )
