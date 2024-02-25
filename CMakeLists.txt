@@ -39,6 +39,8 @@ set(SOURCES
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
+target_include_directories(${PROJECT_NAME} PRIVATE src)
+
 target_link_libraries(
     ${PROJECT_NAME} 
     PRIVATE 
@@ -50,9 +52,8 @@ target_link_libraries(
 
 # TEST PROJECT
 set(TEST_PROJECT_NAME ${PROJECT_NAME}_test)
-set(
-    TEST_SOURCES
-    test/test.cpp
+file(GLOB TEST_SOURCES    
+    "test/*.cpp"
 )
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -60,6 +61,8 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 enable_testing()
 
 add_executable(${TEST_PROJECT_NAME} ${TEST_SOURCES})
+
+target_include_directories(${TEST_PROJECT_NAME} PRIVATE src)
 
 target_link_libraries(
     ${TEST_PROJECT_NAME}
