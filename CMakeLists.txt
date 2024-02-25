@@ -28,8 +28,10 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 find_package(OpenGL REQUIRED)
-find_package(GLUT REQUIRED)
-find_package(GLEW REQUIRED)
+find_package(glm REQUIRED)
+find_package(GTest REQUIRED)
+find_package(glfw3 REQUIRED)
+find_package(Vulkan REQUIRED)
 
 # MAIN PROJECT
 set(SOURCES
@@ -44,9 +46,9 @@ target_link_libraries(
     ${PROJECT_NAME} 
     PRIVATE 
     OpenGL::GL 
-    OpenGL::GLU 
-    GLUT::GLUT
     glm::glm
+    glfw
+    vulkan
     ${CMAKE_DL_LIBS})
 
 # TEST PROJECT

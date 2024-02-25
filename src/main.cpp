@@ -1,84 +1,35 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <GL/glew.h>
-#include <GL/freeglut.h>
-#define WINDOW_TITLE_PREFIX "Chapter 1"
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
 
-int
-  CurrentWidth = 800,
-  CurrentHeight = 600,
-  WindowHandle = 0;
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
 
-void Initialize(int, char*[]);
-void InitWindow(int, char*[]);
-void ResizeFunction(int, int);
-void RenderFunction(void);
+#include <iostream>
 
-int main(int argc, char* argv[])
-{
-  Initialize(argc, argv);
+int main() {
+    glfwInit();
 
-  glutMainLoop();
-  
-  exit(EXIT_SUCCESS);
-}
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    GLFWwindow* window = glfwCreateWindow(800, 600, "Vulkan window", nullptr, nullptr);
 
-void Initialize(int argc, char* argv[])
-{
-  InitWindow(argc, argv);
-  
-  fprintf(
-    stdout,
-    "INFO: OpenGL Version: %s\n",
-    glGetString(GL_VERSION)
-  );
+    uint32_t extensionCount = 0;
+    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 
-  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-}
+    std::cout << extensionCount << " extensions supported\n";
 
-void InitWindow(int argc, char* argv[])
-{
-  glutInit(&argc, argv);
-  
-  glutInitContextVersion(4, 0);
-  glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
-  glutInitContextProfile(GLUT_CORE_PROFILE);
+    glm::mat4 matrix;
+    glm::vec4 vec;
+    auto test = matrix * vec;
 
-  glutSetOption(
-    GLUT_ACTION_ON_WINDOW_CLOSE,
-    GLUT_ACTION_GLUTMAINLOOP_RETURNS
-  );
-  
-  glutInitWindowSize(CurrentWidth, CurrentHeight);
+    while(!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
+    }
 
-  glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+    glfwDestroyWindow(window);
 
-  WindowHandle = glutCreateWindow(WINDOW_TITLE_PREFIX);
+    glfwTerminate();
 
-  if(WindowHandle < 1) {
-    fprintf(
-      stderr,
-      "ERROR: Could not create a new rendering window.\n"
-    );
-    exit(EXIT_FAILURE);
-  }
-
-  glutReshapeFunc(ResizeFunction);
-  glutDisplayFunc(RenderFunction);
-}
-
-void ResizeFunction(int Width, int Height)
-{
-  CurrentWidth = Width;
-  CurrentHeight = Height;
-  glViewport(0, 0, CurrentWidth, CurrentHeight);
-}
-
-void RenderFunction(void)
-{
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  glutSwapBuffers();
-  glutPostRedisplay();
+    return 0;
 }
