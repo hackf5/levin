@@ -33,6 +33,10 @@ find_package(GTest REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(Vulkan REQUIRED)
 
+set(
+    CMAKE_RUNTIME_OUTPUT_DIRECTORY
+    "bin")
+    
 # MAIN PROJECT
 set(SOURCES
     src/main.cpp

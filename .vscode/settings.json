@@ -2,5 +2,11 @@
     "cSpell.words": [
         "glfw",
         "hadamard"
-    ]
+    ],
+    "files.associations": {
+        "array": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "span": "cpp"
+    }
 }

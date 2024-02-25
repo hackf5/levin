@@ -4,10 +4,10 @@
             "name": "Levin",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/levin",
+            "program": "${workspaceFolder}/build/bin/levin",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/build",
+            "cwd": "${workspaceFolder}/build/bin",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -23,7 +23,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "Build All",
+            "preLaunchTask": "Build Debug",
         },
         {
             "name": "Test Levin",

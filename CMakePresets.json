@@ -1,0 +1,31 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "default",
+            "binaryDir": "${sourceDir}/build",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "FIRST_CACHE_VARIABLE": {
+                  "type": "BOOL",
+                  "value": "OFF"
+                },
+                "SECOND_CACHE_VARIABLE": "ON"
+              }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "debug",
+            "configurePreset": "default",
+            "configuration": "Debug",
+            "targets": "all"
+        },
+        {
+            "name": "release",
+            "configurePreset": "default",
+            "configuration": "Release",
+            "targets": "levin"
+        }
+    ]
+}

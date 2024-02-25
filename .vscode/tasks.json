@@ -2,15 +2,24 @@
     "tasks": [
         {
             "type": "cmake",
-            "label": "Build All",
+            "label": "Build Debug",
             "command": "build",
-            "targets": [
-                "ALL_BUILD"
-            ],
+            "preset": "debug",
             "problemMatcher": [],
             "group": {
                 "kind": "build",
                 "isDefault": true
+            },
+        },
+        {
+            "type": "cmake",
+            "label": "Build Release",
+            "command": "build",
+            "preset": "release",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
             },
         }
     ],
