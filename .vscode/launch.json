@@ -24,6 +24,15 @@
                 }
             ],
             "preLaunchTask": "Build All",
+        },
+        {
+            "name": "Test Levin",
+            "type": "cppdbg",
+            "request": "launch",
+            // Resolved by CMake Tools:
+            "cwd": "${cmake.testWorkingDirectory}",
+            "program": "${cmake.testProgram}",
+            "args": [ "${cmake.testArgs}"],
         }
     ],
     "version": "2.0.0"
