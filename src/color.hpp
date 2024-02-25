@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ostream>
+#include <glm/glm.hpp>
 #include <glm/vec3.hpp>
 
 namespace levin
@@ -26,11 +27,20 @@ namespace levin
         float g() const { return _rgb.y; }
 
         float b() const { return _rgb.z; }
-    };
 
-    bool operator==(const Color &c1, const Color &c2)
+        glm::vec3 rgb() const { return _rgb; }
+    };
+    
+    Color operator+(const Color& c1, const Color& c2)
     {
-        return c1.r() == c2.r() && c1.g() == c2.g() && c1.b() == c2.b();
+        glm::vec3 sum = glm::clamp(c1.rgb() + c2.rgb(), 0.0f, 1.0f);
+        return Color(sum);
+    }
+
+    Color operator-(const Color& c1, const Color& c2)
+    {
+        glm::vec3 diff = glm::clamp(c1.rgb() - c2.rgb(), 0.0f, 1.0f);
+        return Color(diff);
     }
 
     std::ostream &operator<<(std::ostream &os, const Color &c)
