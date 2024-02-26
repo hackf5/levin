@@ -36,7 +36,7 @@ find_package(Vulkan REQUIRED)
 set(
     CMAKE_RUNTIME_OUTPUT_DIRECTORY
     "bin")
-    
+
 # MAIN PROJECT
 set(SOURCES
     src/main.cpp
@@ -47,17 +47,17 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE src)
 
 target_link_libraries(
-    ${PROJECT_NAME} 
-    PRIVATE 
-    OpenGL::GL 
+    ${PROJECT_NAME}
+    PRIVATE
+    OpenGL::GL
+    Vulkan::Vulkan
     glm::glm
     glfw
-    ${Vulkan_LIBRARIES}
     ${CMAKE_DL_LIBS})
 
 # TEST PROJECT
 set(TEST_PROJECT_NAME ${PROJECT_NAME}_test)
-file(GLOB TEST_SOURCES    
+file(GLOB TEST_SOURCES
     "test/*.cpp"
 )
 

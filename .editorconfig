@@ -8,6 +8,9 @@ insert_final_newline = false
 indent_size = 4
 indent_style = space
 
+[*.json]
+indent_size = 2
+
 [*.{c++,cc,cpp,cxx,h,h++,hh,hpp,hxx,inl,ipp,tlh,tli}]
 cpp_indent_preprocessor = leftmost_column
 cpp_indent_braces = false

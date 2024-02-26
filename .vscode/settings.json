@@ -1,15 +1,27 @@
 {
-    "cSpell.words": [
-        "glfw",
-        "hadamard",
-        "VKAPI"
-    ],
-    "files.associations": {
-        "array": "cpp",
-        "string": "cpp",
-        "string_view": "cpp",
-        "span": "cpp",
-        "optional": "cpp"
+  "editor.rulers": [
+    {
+      "column": 100,
+      "color": "#363636"
     },
-    "C_Cpp.default.compilerPath": "C:\\msys64\\ucrt64\\bin\\g++.exe"
+    {
+      "column": 120,
+      "color": "#7e0000"
+    }
+  ],
+  "cSpell.words": [
+    "glfw",
+    "hadamard",
+    "VKAPI"
+  ],
+  "files.associations": {
+    "array": "cpp",
+    "string": "cpp",
+    "string_view": "cpp",
+    "span": "cpp",
+    "optional": "cpp",
+    "vector": "cpp",
+    "stdexcept": "cpp"
+  },
+  "C_Cpp.default.compilerPath": "C:\\msys64\\ucrt64\\bin\\g++.exe"
 }
