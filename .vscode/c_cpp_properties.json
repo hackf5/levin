@@ -6,7 +6,6 @@
                 "${workspaceFolder}/**"
             ],
             "defines": [],
-            "compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
             "cStandard": "c23",
             "cppStandard": "gnu++23",
             "intelliSenseMode": "windows-gcc-x64"
