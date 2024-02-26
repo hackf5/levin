@@ -52,7 +52,7 @@ target_link_libraries(
     OpenGL::GL 
     glm::glm
     glfw
-    vulkan
+    ${Vulkan_LIBRARIES}
     ${CMAKE_DL_LIBS})
 
 # TEST PROJECT
