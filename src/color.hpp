@@ -11,16 +11,16 @@ namespace levin
         glm::vec3 _rgb;
 
     public:
-        Color(float r, float g, float b) : _rgb(r, g, b)
+        Color(float r, float g, float b): _rgb(r, g, b)
         {
             assert(r >= 0 && r <= 1);
             assert(g >= 0 && g <= 1);
             assert(b >= 0 && b <= 1);
         }
 
-        Color(glm::vec3 rgb) : Color(rgb.x, rgb.y, rgb.z) {}
+        Color(glm::vec3 rgb): Color(rgb.x, rgb.y, rgb.z) {}
 
-        Color() : Color(0, 0, 0) {}
+        Color(): Color(0, 0, 0) {}
 
         float r() const { return _rgb.x; }
 
@@ -30,14 +30,14 @@ namespace levin
 
         glm::vec3 rgb() const { return _rgb; }
     };
-    
-    Color operator+(const Color& c1, const Color& c2)
+
+    Color operator+(const Color &c1, const Color &c2)
     {
         glm::vec3 sum = glm::clamp(c1.rgb() + c2.rgb(), 0.0f, 1.0f);
         return Color(sum);
     }
 
-    Color operator-(const Color& c1, const Color& c2)
+    Color operator-(const Color &c1, const Color &c2)
     {
         glm::vec3 diff = glm::clamp(c1.rgb() - c2.rgb(), 0.0f, 1.0f);
         return Color(diff);
