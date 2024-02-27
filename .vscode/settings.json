@@ -10,8 +10,14 @@
     }
   ],
   "cSpell.words": [
+    "Framebuffer",
     "glfw",
     "hadamard",
+    "Multisample",
+    "subpass",
+    "Subpasses",
+    "subresource",
+    "SWAPCHAIN",
     "VKAPI"
   ],
   "files.associations": {
@@ -21,7 +27,9 @@
     "span": "cpp",
     "optional": "cpp",
     "vector": "cpp",
-    "stdexcept": "cpp"
+    "stdexcept": "cpp",
+    "algorithm": "cpp",
+    "ostream": "cpp"
   },
-  "C_Cpp.default.compilerPath": "C:\\msys64\\ucrt64\\bin\\g++.exe"
+  "C_Cpp.default.compilerPath": "C:\\msys64\\ucrt64\\bin\\g++.exe",
 }
