@@ -1,24 +1,29 @@
 {
-    "version": 8,
-    "configurePresets": [
-        {
-            "name": "default",
-            "binaryDir": "${sourceDir}/build",
-            "generator": "Ninja"
-        }
-    ],
-    "buildPresets": [
-        {
-            "name": "debug",
-            "configurePreset": "default",
-            "configuration": "Debug",
-            "targets": "all"
-        },
-        {
-            "name": "release",
-            "configurePreset": "default",
-            "configuration": "Release",
-            "targets": "levin"
-        }
-    ]
+  "version": 8,
+  "configurePresets": [
+    {
+      "name": "debug",
+      "binaryDir": "${sourceDir}/build/debug",
+      "generator": "Ninja"
+    },
+    {
+      "name": "release",
+      "binaryDir": "${sourceDir}/build/release",
+      "generator": "Ninja"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "debug",
+      "targets": "all",
+      "configuration": "Debug"
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
+      "targets": "levin",
+      "configuration": "Release"
+    }
+  ]
 }

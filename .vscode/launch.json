@@ -1,13 +1,13 @@
 {
     "configurations": [
         {
-            "name": "Levin",
+            "name": "Levin Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/bin/levin",
+            "program": "${workspaceFolder}/build/debug/bin/levin",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/build/bin",
+            "cwd": "${workspaceFolder}/build/debug/bin",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",

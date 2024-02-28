@@ -1,27 +1,54 @@
 {
-    "tasks": [
-        {
-            "type": "cmake",
-            "label": "Build Debug",
-            "command": "build",
-            "preset": "debug",
-            "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-        },
-        {
-            "type": "cmake",
-            "label": "Build Release",
-            "command": "build",
-            "preset": "release",
-            "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-        }
-    ],
-    "version": "2.0.0"
+  "tasks": [
+    {
+      "type": "cmake",
+      "label": "Configure Debug",
+      "command": "configure",
+      "preset": "debug",
+      "problemMatcher": [],
+    },
+    {
+      "type": "cmake",
+      "label": "Configure Release",
+      "command": "configure",
+      "preset": "release",
+      "problemMatcher": [],
+    },
+    {
+      "type": "cmake",
+      "label": "Build Debug",
+      "command": "build",
+      "preset": "debug",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOn": "Configure Debug"
+    },
+    {
+      "type": "cmake",
+      "label": "Build Release",
+      "command": "build",
+      "preset": "release",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "dependsOn": "Configure Release",
+    },
+    {
+      "type": "shell",
+      "label": "Run Levin",
+      "command": "${workspaceFolder}/build/release/bin/levin",
+      "args": [],
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder}/build/release/bin",
+      },
+      "dependsOn": "Build Release"
+    }
+  ],
+  "version": "2.0.0"
 }

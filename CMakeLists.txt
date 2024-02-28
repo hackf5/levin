@@ -5,11 +5,6 @@ project(${PROJECT_NAME} LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 
-# Set build type to debug by default.
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug)
-endif()
-
 include(FetchContent)
 
 FetchContent_Declare(
