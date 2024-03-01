@@ -187,28 +187,26 @@ private:
     VkPipelineLayout pipelineLayout;
     VkPipeline graphicsPipeline;
 
-    VkCommandPool transferCommandPool;
-    VkCommandBuffer transferCommandBuffer;
-    VkSemaphore transferSemaphore;
-    VkFence transferFence;
-
     VkCommandPool graphicsCommandPool;
     std::vector<GraphicsCommandBufferInfo> graphicsCommandBufferInfos;
 
-    VkBuffer stagingBuffer;
-    VkDeviceMemory stagingBufferMemory;
-    void *stagingBufferData;
-
     VkBuffer vertexBuffer;
     VkDeviceMemory vertexBufferMemory;
+    VkBuffer indexBuffer;
+    VkDeviceMemory indexBufferMemory;
 
     uint32_t currentFrame = 0;
     bool framebufferResized = false;
 
-    std::vector<Vertex> vertices = {
-        {{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
-        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+    const std::vector<Vertex> vertices = {
+        {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+        {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+        {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+        {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+    };
+
+    const std::vector<uint16_t> indices = {
+        0, 1, 2, 2, 3, 0
     };
 
     void initWindow()
@@ -221,30 +219,12 @@ private:
         window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
-        glfwSetKeyCallback(window, key_callback);
     }
 
     static void framebufferResizeCallback(GLFWwindow *window, int width, int height)
     {
         auto app = reinterpret_cast<HelloTriangleApplication *>(glfwGetWindowUserPointer(window));
         app->framebufferResized = true;
-    }
-
-    static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
-    {
-        // use glfwGetKey(window,key) instead in mainLoop
-        auto app = reinterpret_cast<HelloTriangleApplication *>(glfwGetWindowUserPointer(window));
-        if (key == GLFW_KEY_UP && action == GLFW_PRESS)
-        {
-            // translate vectors up by 0.001
-            for (auto &vertex : app->vertices)
-            {
-                vertex.pos.y -= 0.1f;
-            }
-
-            size_t bufferSize = sizeof(app->vertices[0]) * app->vertices.size();
-            memcpy(app->stagingBufferData, app->vertices.data(), bufferSize);
-        }
     }
 
     void initVulkan()
@@ -262,7 +242,8 @@ private:
         createRenderPass();
         createGraphicsPipeline();
         createFrameBuffers();
-        createStagingAndVertexBuffers();
+        createVertexBuffer();
+        createIndexBuffer();
     }
 
     void mainLoop()
@@ -280,9 +261,6 @@ private:
     {
         cleanupSwapChain();
 
-        vkDestroyBuffer(device, stagingBuffer, nullptr);
-        vkFreeMemory(device, stagingBufferMemory, nullptr);
-
         vkDestroyBuffer(device, vertexBuffer, nullptr);
         vkFreeMemory(device, vertexBufferMemory, nullptr);
 
@@ -290,9 +268,6 @@ private:
         vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 
         vkDestroyRenderPass(device, renderPass, nullptr);
-
-        vkDestroySemaphore(device, transferSemaphore, nullptr);
-        vkDestroyFence(device, transferFence, nullptr);
 
         for (auto item : graphicsCommandBufferInfos)
         {
@@ -302,7 +277,6 @@ private:
         }
 
         vkDestroyCommandPool(device, graphicsCommandPool, nullptr);
-        vkDestroyCommandPool(device, transferCommandPool, nullptr);
 
         vkDestroyDevice(device, nullptr);
 
@@ -813,10 +787,12 @@ private:
         }
     }
 
-    void createStagingAndVertexBuffers()
+    void createVertexBuffer()
     {
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
         createBuffer(
             bufferSize,
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -824,8 +800,10 @@ private:
             stagingBuffer,
             stagingBufferMemory);
 
-        vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &stagingBufferData);
-        memcpy(stagingBufferData, vertices.data(), (size_t)bufferSize);
+        void *data;
+        vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, vertices.data(), (size_t)bufferSize);
+        vkUnmapMemory(device, stagingBufferMemory);
 
         createBuffer(
             bufferSize,
@@ -833,6 +811,42 @@ private:
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             vertexBuffer,
             vertexBufferMemory);
+
+        copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
+
+        vkDestroyBuffer(device, stagingBuffer, nullptr);
+        vkFreeMemory(device, stagingBufferMemory, nullptr);
+    }
+
+    void createIndexBuffer()
+    {
+        VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createBuffer(
+            bufferSize,
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+            stagingBuffer,
+            stagingBufferMemory);
+
+        void *data;
+        vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, indices.data(), (size_t)bufferSize);
+        vkUnmapMemory(device, stagingBufferMemory);
+
+        createBuffer(
+            bufferSize,
+            VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            indexBuffer,
+            indexBufferMemory);
+
+        copyBuffer(stagingBuffer, indexBuffer, bufferSize);
+
+        vkDestroyBuffer(device, stagingBuffer, nullptr);
+        vkFreeMemory(device, stagingBufferMemory, nullptr);
     }
 
     void createBuffer(
@@ -869,6 +883,40 @@ private:
         vkBindBufferMemory(device, buffer, bufferMemory, 0);
     }
 
+    void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
+    {
+        VkCommandBufferAllocateInfo allocInfo {};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandPool = graphicsCommandPool;
+        allocInfo.commandBufferCount = 1;
+
+        VkCommandBuffer commandBuffer;
+        vkAllocateCommandBuffers(device, &allocInfo, &commandBuffer);
+
+        VkCommandBufferBeginInfo beginInfo {};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+        vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+        VkBufferCopy copyRegion {};
+        copyRegion.size = size;
+        vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+
+        vkEndCommandBuffer(commandBuffer);
+
+        VkSubmitInfo submitInfo {};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &commandBuffer;
+
+        vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+        vkQueueWaitIdle(graphicsQueue);
+
+        vkFreeCommandBuffers(device, graphicsCommandPool, 1, &commandBuffer);
+    }
+
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
     {
         VkPhysicalDeviceMemoryProperties memProperties;
@@ -887,16 +935,6 @@ private:
 
     void createCommandPools()
     {
-        VkCommandPoolCreateInfo transferPoolInfo {};
-        transferPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-        transferPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-        transferPoolInfo.queueFamilyIndex = queueFamilies.transferFamily.value();
-
-        if (vkCreateCommandPool(device, &transferPoolInfo, nullptr, &transferCommandPool) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create transfer command pool!");
-        }
-
         VkCommandPoolCreateInfo graphicsPoolInfo {};
         graphicsPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         graphicsPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
@@ -910,17 +948,6 @@ private:
 
     void createCommandBuffers()
     {
-        VkCommandBufferAllocateInfo transferAllocInto {};
-        transferAllocInto.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        transferAllocInto.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        transferAllocInto.commandPool = transferCommandPool;
-        transferAllocInto.commandBufferCount = 1;
-
-        if (vkAllocateCommandBuffers(device, &transferAllocInto, &transferCommandBuffer) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to allocate command buffers!");
-        }
-
         graphicsCommandBufferInfos.resize(MAX_FRAMES_IN_FLIGHT);
 
         VkCommandBufferAllocateInfo graphicsAllocInfo {};
@@ -950,16 +977,6 @@ private:
         fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
         fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-        if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &transferSemaphore) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create transfer semaphore!");
-        }
-
-        if (vkCreateFence(device, &fenceInfo, nullptr, &transferFence) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create transfer fence!");
-        }
-
         for (auto &item : graphicsCommandBufferInfos)
         {
             if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &item.imageAvailableSemaphore) != VK_SUCCESS
@@ -987,108 +1004,36 @@ private:
         return shaderModule;
     }
 
-    void recordCopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
-    {
-        VkCommandBufferBeginInfo beginInfo {};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        beginInfo.flags = 0;
-
-        if (vkBeginCommandBuffer(transferCommandBuffer, &beginInfo) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to begin recording transfer command buffer!");
-        }
-
-        VkBufferCopy copyRegion {};
-        copyRegion.srcOffset = 0;
-        copyRegion.dstOffset = 0;
-        copyRegion.size = size;
-        vkCmdCopyBuffer(transferCommandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
-
-        VkMemoryBarrier memoryBarrier = {};
-        memoryBarrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
-        memoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-        memoryBarrier.dstAccessMask = 0;
-
-        // this says that the copy must happen before the vertex buffer is read from
-        vkCmdPipelineBarrier(
-            transferCommandBuffer,
-            VK_PIPELINE_STAGE_TRANSFER_BIT,
-            VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
-            0,
-            1,
-            &memoryBarrier,
-            0,
-            nullptr,
-            0,
-            nullptr);
-
-        if (vkEndCommandBuffer(transferCommandBuffer) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to record transfer command buffer!");
-        }
-
-        VkSubmitInfo submitInfo {};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &transferCommandBuffer;
-        submitInfo.signalSemaphoreCount = 1;
-        submitInfo.pSignalSemaphores = &transferSemaphore;
-
-        if (vkQueueSubmit(transferQueue, 1, &submitInfo, transferFence) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to submit transfer command buffer!");
-        }
-    }
-
     void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
     {
         VkCommandBufferBeginInfo beginInfo {};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        beginInfo.flags = 0;
-        beginInfo.pInheritanceInfo = VK_NULL_HANDLE;
 
         if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to begin recording command buffer!");
         }
 
-        VkMemoryBarrier memoryBarrier = {};
-        memoryBarrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
-        memoryBarrier.srcAccessMask = 0;
-        memoryBarrier.dstAccessMask = VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
+        VkRenderPassBeginInfo renderPassInfo {};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassInfo.renderPass = renderPass;
+        renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
+        renderPassInfo.renderArea.offset = { 0, 0 };
+        renderPassInfo.renderArea.extent = swapChainExtent;
 
-        // this says that the vertex buffer must be available before the vertex buffer is read from
-        vkCmdPipelineBarrier(
-            commandBuffer,
-            VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-            VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,
-            0,
-            1,
-            &memoryBarrier,
-            0,
-            nullptr,
-            0,
-            nullptr);
+        VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
+        renderPassInfo.clearValueCount = 1;
+        renderPassInfo.pClearValues = &clearColor;
 
-        VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
-        VkRenderPassBeginInfo renderPassBeginInfo {};
-        renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassBeginInfo.renderPass = renderPass;
-        renderPassBeginInfo.framebuffer = swapChainFramebuffers[imageIndex];
-        renderPassBeginInfo.renderArea.offset = { 0, 0 };
-        renderPassBeginInfo.renderArea.extent = swapChainExtent;
-        renderPassBeginInfo.clearValueCount = 1;
-        renderPassBeginInfo.pClearValues = &clearColor;
-
-        vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
         VkViewport viewport {};
         viewport.x = 0.0f;
         viewport.y = 0.0f;
-        viewport.width = static_cast<float>(swapChainExtent.width);
-        viewport.height = static_cast<float>(swapChainExtent.height);
+        viewport.width = (float)swapChainExtent.width;
+        viewport.height = (float)swapChainExtent.height;
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
         vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
@@ -1102,7 +1047,9 @@ private:
         VkDeviceSize offsets[] = { 0 };
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-        vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
+        vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+
+        vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
         vkCmdEndRenderPass(commandBuffer);
 
@@ -1320,7 +1267,7 @@ private:
     {
         auto pGraphicsCommandBufferInfo = &graphicsCommandBufferInfos[currentFrame];
 
-        std::vector<VkFence> fences = { pGraphicsCommandBufferInfo->fence, transferFence };
+        std::vector<VkFence> fences = { pGraphicsCommandBufferInfo->fence };
         vkWaitForFences(device, (uint32_t)fences.size(), fences.data(), VK_TRUE, UINT64_MAX);
 
         uint32_t imageIndex;
@@ -1344,9 +1291,6 @@ private:
 
         vkResetFences(device, (uint32_t)fences.size(), fences.data());
 
-        vkResetCommandBuffer(transferCommandBuffer, 0);
-        recordCopyBuffer(stagingBuffer, vertexBuffer, sizeof(vertices[0]) * vertices.size());
-
         vkResetCommandBuffer(pGraphicsCommandBufferInfo->commandBuffer, 0);
         recordCommandBuffer(pGraphicsCommandBufferInfo->commandBuffer, imageIndex);
 
@@ -1356,13 +1300,12 @@ private:
         submitInfo.pCommandBuffers = &pGraphicsCommandBufferInfo->commandBuffer;
 
         VkSemaphore waitSemaphores[] = {
-            transferSemaphore,
             pGraphicsCommandBufferInfo->imageAvailableSemaphore
         };
         VkPipelineStageFlags waitStages[] = {
             VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
         };
-        submitInfo.waitSemaphoreCount = 2;
+        submitInfo.waitSemaphoreCount = static_cast<uint32_t>(std::size(waitSemaphores));
         submitInfo.pWaitSemaphores = waitSemaphores;
         submitInfo.pWaitDstStageMask = waitStages;
 
