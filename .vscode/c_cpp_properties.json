@@ -3,7 +3,8 @@
         {
             "name": "Windows",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${VULKAN_SDK}/include"
             ],
             "defines": [],
             "cStandard": "c23",
