@@ -1,8 +1,8 @@
-#include <iostream>
-
-#include "glfw_window.h"
-#include "vulkan_engine_components.h"
+#include "window_components.h"
+#include "device_components.h"
 #include "vulkan_engine.h"
+
+#include "spdlog/spdlog.h"
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -12,20 +12,27 @@ const bool enableValidationLayers = true;
 
 int main()
 {
-    std::cout << "Starting Levin" << std::endl;
+    spdlog::info("Starting Levin");
+
+#ifdef NDEBUG
+    spdlog::set_level(spdlog::level::trace);
+#else
+    spdlog::set_level(spdlog::level::debug);
+#endif
 
     try
     {
-        levin::GLFWWindow window(800, 600, "Levin Engine");
-        levin::VulkanEngineComponents engineComponents(window, enableValidationLayers);
+        levin::WindowComponents windowComponents(800, 600, "Levin Engine");
+        levin::DeviceComponents deviceComponents(windowComponents, enableValidationLayers);
+        levin::VulkanEngine engine(windowComponents, deviceComponents);
     }
     catch (const std::exception &e)
     {
-        std::cout << "Fatal: " << e.what() << std::endl;
+        spdlog::error("Fatal: {}", e.what());
         return EXIT_FAILURE;
     }
 
-    std::cout << "Stopping Levin" << std::endl;
+    spdlog::info("Stopping Levin");
 
     return EXIT_SUCCESS;
 }

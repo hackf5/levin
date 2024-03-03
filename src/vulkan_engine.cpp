@@ -1,11 +1,16 @@
 #include "vulkan_engine.h"
 
-#include <iostream>
+#include "spdlog/spdlog.h"
 
 using namespace levin;
 
-VulkanEngine::VulkanEngine(VulkanEngineComponents &components)
-    : m_components(&components)
+VulkanEngine::VulkanEngine(
+    WindowComponents &window_components,
+    DeviceComponents &device_components):
+    m_window_components(&window_components),
+    m_device_components(&device_components)
 {
-    std::cout << "Starting Vulkan Engine" << std::endl;
+    spdlog::info("Vulkan Engine is starting");
+
+    m_swapchain = std::make_unique<SwapchainComponents>(device_components);
 }

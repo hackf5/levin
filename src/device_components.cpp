@@ -1,36 +1,33 @@
-#include "vulkan_engine_components.h"
+#include "device_components.h"
 
-#include <iostream>
+#include "spdlog/spdlog.h"
 
 using namespace levin;
 
-VulkanEngineComponents::VulkanEngineComponents(
-    GLFWWindow &window,
+DeviceComponents::DeviceComponents(
+    WindowComponents &window_components,
     bool enable_validation_layers)
-    : VulkanEngineComponents()
+    : DeviceComponents()
 {
-    std::cout << "Creating Vulkan Engine Components" << std::endl;
+    spdlog::info("Initializing Vulkan Engine Components");
 
-    init_device(window, enable_validation_layers);
+    init_device(window_components, enable_validation_layers);
 
-    throw std::runtime_error("Failed to create Vulkan Engine Components");
-
-    init_swapchain();
+    init_queues();
 }
 
-VulkanEngineComponents::~VulkanEngineComponents()
+DeviceComponents::~DeviceComponents()
 {
-    std::cout << "Destroying Vulkan Engine Components" << std::endl;
+    spdlog::info("Destroying Vulkan Engine Components");
 
-    vkb::destroy_swapchain(swapchain);
     vkb::destroy_device(device);
     vkb::destroy_surface(instance.instance, surface);
     vkb::destroy_instance(instance);
 }
 
-void VulkanEngineComponents::init_device(GLFWWindow &window, bool enable_validation_layers)
+void DeviceComponents::init_device(WindowComponents &window_components, bool enable_validation_layers)
 {
-    std::cout << "Initializing Vulkan Device" << std::endl;
+    spdlog::info("Initializing Device");
 
     vkb::InstanceBuilder builder;
     auto inst_ret = builder.set_app_name("Levin")
@@ -43,7 +40,7 @@ void VulkanEngineComponents::init_device(GLFWWindow &window, bool enable_validat
     }
     instance = inst_ret.value();
 
-    window.create_window_surface(instance.instance, &surface);
+    window_components.create_window_surface(instance.instance, &surface);
 
     vkb::PhysicalDeviceSelector selector { instance };
     auto phys_ret = selector.set_surface(surface)
@@ -62,29 +59,33 @@ void VulkanEngineComponents::init_device(GLFWWindow &window, bool enable_validat
         throw std::runtime_error("Failed to create Vulkan Device: " + dev_ret.error().message());
     }
     device = dev_ret.value();
+}
+
+void DeviceComponents::init_queues()
+{
+    spdlog::info("Initializing Queues");
 
     auto graphics_queue_ret = device.get_queue(vkb::QueueType::graphics);
     if (!graphics_queue_ret)
     {
-        throw std::runtime_error("Failed to get Vulkan Graphics Queue: " + graphics_queue_ret.error().message());
+        throw std::runtime_error("Failed to get graphics queue: " + graphics_queue_ret.error().message());
     }
+
     graphics_queue = graphics_queue_ret.value();
-}
 
-void VulkanEngineComponents::init_swapchain()
-{
-    std::cout << "Initializing Vulkan Swapchain" << std::endl;
-
-    vkb::SwapchainBuilder swapchain_builder { device };
-    auto swapchain_ret = swapchain_builder
-        .set_old_swapchain(swapchain)
-        .build();
-
-    if (!swapchain_ret)
+    auto present_queue_ret = device.get_queue(vkb::QueueType::present);
+    if (!present_queue_ret)
     {
-        throw std::runtime_error("Failed to create Vulkan Swapchain: " + swapchain_ret.error().message());
+        throw std::runtime_error("Failed to get present queue: " + present_queue_ret.error().message());
     }
 
-    vkb::destroy_swapchain(swapchain);
-    swapchain = swapchain_ret.value();
+    present_queue = present_queue_ret.value();
+
+    auto transfer_queue_ret = device.get_queue(vkb::QueueType::transfer);
+    if (!transfer_queue_ret)
+    {
+        throw std::runtime_error("Failed to get transfer queue: " + transfer_queue_ret.error().message());
+    }
+
+    transfer_queue = transfer_queue_ret.value();
 }
