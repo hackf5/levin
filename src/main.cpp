@@ -1,8 +1,12 @@
+#include <memory>
+
 #include "window_components.h"
 #include "device_components.h"
 #include "vulkan_engine.h"
 
 #include "spdlog/spdlog.h"
+
+using namespace levin;
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -22,9 +26,9 @@ int main()
 
     try
     {
-        levin::WindowComponents windowComponents(800, 600, "Levin Engine");
-        levin::DeviceComponents deviceComponents(windowComponents, enableValidationLayers);
-        levin::VulkanEngine engine(windowComponents, deviceComponents);
+        auto window = std::make_shared<WindowComponents>(800, 600, "Levin");
+        auto device = std::make_shared<DeviceComponents>(window, enableValidationLayers);
+        VulkanEngine engine(window, device);
     }
     catch (const std::exception &e)
     {

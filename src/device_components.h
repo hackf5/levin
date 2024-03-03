@@ -20,15 +20,14 @@ namespace levin
         VkQueue transfer_queue;
 
         DeviceComponents(
-            WindowComponents &window_components,
+            const std::shared_ptr<WindowComponents>& window_components,
             bool enable_validation_layers);
         ~DeviceComponents();
 
     private:
-        DeviceComponents() {}
+        std::shared_ptr<WindowComponents> m_window_components;
 
-        void init_device(WindowComponents &window_components, bool enable_validation_layers);
-
+        void init_device(bool enable_validation_layers);
         void init_queues();
     };
 }

@@ -13,7 +13,6 @@ namespace levin
     {
     private:
         std::vector<std::function<void()>> m_destruction_queue;
-
         vkb::Device m_device;
 
     public:
@@ -21,11 +20,8 @@ namespace levin
         ~SwapchainFactory();
 
         vkb::Swapchain create_swapchain();
-
         VkFramebuffer create_framebuffer(const VkFramebufferCreateInfo &create_info);
-
         VkRenderPass create_render_pass(const VkRenderPassCreateInfo &create_info);
-
         void register_image_view_destruction(const VkImageView &image_view);
     };
 }

@@ -6,15 +6,15 @@
 
 using namespace levin;
 
-SwapchainComponents::SwapchainComponents(DeviceComponents &components):
-    factory(SwapchainFactory(components.device))
+SwapchainComponents::SwapchainComponents(const std::shared_ptr<DeviceComponents> &device_components):
+    factory(SwapchainFactory(device_components.get()->device))
 {
     spdlog::info("Initializing Swapchain Components");
 
     swapchain = factory.create_swapchain();
 
-    init_render_pass(components);
-    init_framebuffers(components);
+    init_render_pass();
+    init_framebuffers();
 }
 
 SwapchainComponents::~SwapchainComponents()
@@ -22,7 +22,7 @@ SwapchainComponents::~SwapchainComponents()
     spdlog::info("Destroying Swapchain Components");
 }
 
-void SwapchainComponents::init_render_pass(DeviceComponents &components)
+void SwapchainComponents::init_render_pass()
 {
     spdlog::info("Initializing Render Pass");
 
@@ -65,7 +65,7 @@ void SwapchainComponents::init_render_pass(DeviceComponents &components)
     render_pass = factory.create_render_pass(render_pass_info);
 }
 
-void SwapchainComponents::init_framebuffers(DeviceComponents &components)
+void SwapchainComponents::init_framebuffers()
 {
     spdlog::info("Initializing Framebuffers");
 

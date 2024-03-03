@@ -11,14 +11,14 @@ namespace levin
     class VulkanEngine
     {
     private:
-        std::unique_ptr<SwapchainComponents> m_swapchain;
+        std::shared_ptr<WindowComponents> m_window_components;
+        std::shared_ptr<DeviceComponents> m_device_components;
 
-        WindowComponents *const m_window_components;
-        DeviceComponents *const m_device_components;
+        std::unique_ptr<SwapchainComponents> m_swapchain;
 
     public:
         VulkanEngine(
-            WindowComponents &window_components,
-            DeviceComponents &device_components);
+            const std::shared_ptr<WindowComponents>& window_components,
+            const std::shared_ptr<DeviceComponents> &device_components);
     };
 }

@@ -5,15 +5,22 @@
 using namespace levin;
 
 DeviceComponents::DeviceComponents(
-    WindowComponents &window_components,
+    const std::shared_ptr<WindowComponents> &window_components,
     bool enable_validation_layers)
-    : DeviceComponents()
+    : m_window_components(window_components)
 {
     spdlog::info("Initializing Vulkan Engine Components");
 
-    init_device(window_components, enable_validation_layers);
-
-    init_queues();
+    try
+    {
+        init_device(enable_validation_layers);
+        init_queues();
+    }
+    catch (const std::exception &e)
+    {
+        this->~DeviceComponents();
+        throw;
+    }
 }
 
 DeviceComponents::~DeviceComponents()
@@ -25,10 +32,11 @@ DeviceComponents::~DeviceComponents()
     vkb::destroy_instance(instance);
 }
 
-void DeviceComponents::init_device(WindowComponents &window_components, bool enable_validation_layers)
+void DeviceComponents::init_device(bool enable_validation_layers)
 {
     spdlog::info("Initializing Device");
 
+    spdlog::info("Creating Vulkan Instance");
     vkb::InstanceBuilder builder;
     auto inst_ret = builder.set_app_name("Levin")
         .request_validation_layers(enable_validation_layers)
@@ -40,8 +48,9 @@ void DeviceComponents::init_device(WindowComponents &window_components, bool ena
     }
     instance = inst_ret.value();
 
-    window_components.create_window_surface(instance.instance, &surface);
+    surface = m_window_components->create_window_surface(instance.instance);
 
+    spdlog::info("Selecting Vulkan Physical Device");
     vkb::PhysicalDeviceSelector selector { instance };
     auto phys_ret = selector.set_surface(surface)
         .set_minimum_version(1, 3)
@@ -52,6 +61,7 @@ void DeviceComponents::init_device(WindowComponents &window_components, bool ena
         throw std::runtime_error("Failed to select Vulkan Physical Device: " + phys_ret.error().message());
     }
 
+    spdlog::info("Creating Vulkan Device");
     vkb::DeviceBuilder device_builder { phys_ret.value() };
     auto dev_ret = device_builder.build();
     if (!dev_ret)

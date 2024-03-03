@@ -13,16 +13,16 @@ namespace levin
 
         vkb::Swapchain swapchain;
         VkRenderPass render_pass;
+
         std::vector<VkImage> swapchain_images;
         std::vector<VkImageView> swapchain_image_views;
         std::vector<VkFramebuffer> framebuffers;
 
-        SwapchainComponents(DeviceComponents &components);
+        SwapchainComponents(const std::shared_ptr<DeviceComponents> &device_components);
         ~SwapchainComponents();
 
     private:
-        void init_render_pass(DeviceComponents &components);
-
-        void init_framebuffers(DeviceComponents &components);
+        void init_render_pass();
+        void init_framebuffers();
     };
 }

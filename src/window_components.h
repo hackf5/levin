@@ -5,7 +5,6 @@
 
 #include <functional>
 #include <string>
-#include <vector>
 
 namespace levin
 {
@@ -28,7 +27,7 @@ namespace levin
         WindowComponents(int width, int height, const std::string &title);
         ~WindowComponents();
 
-        void create_window_surface(VkInstance instance, VkSurfaceKHR *surface);
+        VkSurfaceKHR create_window_surface(VkInstance instance);
 
         void register_framebuffer_resize_callback(framebuffer_resize_callback_t callback);
     };

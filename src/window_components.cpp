@@ -11,13 +11,21 @@ WindowComponents::WindowComponents(int width, int height, const std::string &tit
 {
     spdlog::info("Creating Window Components");
 
-    if (glfwInit() != GLFW_TRUE)
+    try
     {
-        throw std::runtime_error("Failed to initialize GLFW");
-    }
+        if (glfwInit() != GLFW_TRUE)
+        {
+            throw std::runtime_error("Failed to initialize GLFW");
+        }
 
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    m_window = glfwCreateWindow(m_width, m_height, title.c_str(), nullptr, nullptr);
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        m_window = glfwCreateWindow(m_width, m_height, title.c_str(), nullptr, nullptr);
+    }
+    catch (const std::exception &e)
+    {
+        this->~WindowComponents();
+        throw;
+    }
 }
 
 WindowComponents::~WindowComponents()
@@ -37,12 +45,17 @@ void WindowComponents::framebuffer_resize_callback(GLFWwindow *window, int width
     }
 }
 
-void WindowComponents::create_window_surface(VkInstance instance, VkSurfaceKHR *surface)
+VkSurfaceKHR WindowComponents::create_window_surface(VkInstance instance)
 {
-    if (glfwCreateWindowSurface(instance, m_window, nullptr, surface) != VK_SUCCESS)
+    spdlog::info("Creating Window Surface");
+
+    VkSurfaceKHR surface;
+    if (glfwCreateWindowSurface(instance, m_window, nullptr, &surface) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to create window surface");
     }
+
+    return surface;
 }
 
 void WindowComponents::register_framebuffer_resize_callback(framebuffer_resize_callback_t callback)

@@ -9,12 +9,12 @@ using namespace levin;
 SwapchainFactory::SwapchainFactory(vkb::Device device)
     : m_device(device)
 {
-    spdlog::info("Creating Vulkan Factory");
+    spdlog::info("Creating Swapchain Factory");
 }
 
 SwapchainFactory::~SwapchainFactory()
 {
-    spdlog::info("Destroying Vulkan Factory");
+    spdlog::info("Destroying Swapchain Factory");
 
     std::reverse(m_destruction_queue.begin(), m_destruction_queue.end());
     for (auto &destroy : m_destruction_queue)
