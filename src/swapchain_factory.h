@@ -1,27 +1,36 @@
 #pragma once
 
 #include <vector>
-#include <functional>
-
-#include <vulkan/vulkan.h>
 
 #include "VkBootstrap.h"
 
+#include "vulkan_factory.h"
+
 namespace levin
 {
-    class SwapchainFactory
+    struct SwapchainConfig
+    {
+        uint32_t image_count;
+        VkFormat image_format;
+        VkImageUsageFlags image_usage;
+        VkColorSpaceKHR color_space;
+        VkPresentModeKHR present_mode;
+        VkExtent2D extent;
+    };
+
+    class SwapchainFactory: public VulkanFactory
     {
     private:
-        std::vector<std::function<void()>> m_destruction_queue;
-        vkb::Device m_device;
+        static SwapchainConfig config;
+        static vkb::Swapchain create_swapchain(vkb::Device &device);
 
     public:
-        SwapchainFactory(vkb::Device device);
-        ~SwapchainFactory();
+        SwapchainFactory(vkb::Device &device);
 
         vkb::Swapchain create_swapchain();
+        std::vector<VkImageView> create_image_views(vkb::Swapchain &swapchain);
         VkFramebuffer create_framebuffer(const VkFramebufferCreateInfo &create_info);
-        VkRenderPass create_render_pass(const VkRenderPassCreateInfo &create_info);
-        void register_image_view_destruction(const VkImageView &image_view);
+
+        static const SwapchainConfig& get_config(vkb::Device *device = nullptr);
     };
 }

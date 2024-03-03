@@ -1,5 +1,7 @@
 #include "device_components.h"
 
+#include "swapchain_factory.h"
+
 #include "spdlog/spdlog.h"
 
 using namespace levin;
@@ -27,9 +29,9 @@ DeviceComponents::~DeviceComponents()
 {
     spdlog::info("Destroying Vulkan Engine Components");
 
-    vkb::destroy_device(device);
-    vkb::destroy_surface(instance.instance, surface);
-    vkb::destroy_instance(instance);
+    vkb::destroy_device(m_device);
+    vkb::destroy_surface(m_instance.instance, m_surface);
+    vkb::destroy_instance(m_instance);
 }
 
 void DeviceComponents::init_device(bool enable_validation_layers)
@@ -46,13 +48,13 @@ void DeviceComponents::init_device(bool enable_validation_layers)
     {
         throw std::runtime_error("Failed to create Vulkan Instance: " + inst_ret.error().message());
     }
-    instance = inst_ret.value();
+    m_instance = inst_ret.value();
 
-    surface = m_window_components->create_window_surface(instance.instance);
+    m_surface = m_window_components->create_window_surface(m_instance.instance);
 
     spdlog::info("Selecting Vulkan Physical Device");
-    vkb::PhysicalDeviceSelector selector { instance };
-    auto phys_ret = selector.set_surface(surface)
+    vkb::PhysicalDeviceSelector selector { m_instance };
+    auto phys_ret = selector.set_surface(m_surface)
         .set_minimum_version(1, 3)
         .require_dedicated_transfer_queue()
         .select();
@@ -68,34 +70,36 @@ void DeviceComponents::init_device(bool enable_validation_layers)
     {
         throw std::runtime_error("Failed to create Vulkan Device: " + dev_ret.error().message());
     }
-    device = dev_ret.value();
+    m_device = dev_ret.value();
+
+    SwapchainFactory::get_config(&m_device);
 }
 
 void DeviceComponents::init_queues()
 {
     spdlog::info("Initializing Queues");
 
-    auto graphics_queue_ret = device.get_queue(vkb::QueueType::graphics);
+    auto graphics_queue_ret = m_device.get_queue(vkb::QueueType::graphics);
     if (!graphics_queue_ret)
     {
         throw std::runtime_error("Failed to get graphics queue: " + graphics_queue_ret.error().message());
     }
 
-    graphics_queue = graphics_queue_ret.value();
+    m_graphics_queue = graphics_queue_ret.value();
 
-    auto present_queue_ret = device.get_queue(vkb::QueueType::present);
+    auto present_queue_ret = m_device.get_queue(vkb::QueueType::present);
     if (!present_queue_ret)
     {
         throw std::runtime_error("Failed to get present queue: " + present_queue_ret.error().message());
     }
 
-    present_queue = present_queue_ret.value();
+    m_present_queue = present_queue_ret.value();
 
-    auto transfer_queue_ret = device.get_queue(vkb::QueueType::transfer);
+    auto transfer_queue_ret = m_device.get_queue(vkb::QueueType::transfer);
     if (!transfer_queue_ret)
     {
         throw std::runtime_error("Failed to get transfer queue: " + transfer_queue_ret.error().message());
     }
 
-    transfer_queue = transfer_queue_ret.value();
+    m_transfer_queue = transfer_queue_ret.value();
 }

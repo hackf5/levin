@@ -21,6 +21,7 @@
     "subresource",
     "SWAPCHAIN",
     "Swapchains",
+    "Viewports",
     "VKAPI"
   ],
   "files.associations": {

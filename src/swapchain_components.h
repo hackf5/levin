@@ -7,22 +7,31 @@
 
 namespace levin
 {
-    struct SwapchainComponents
+    class SwapchainComponents
     {
-        SwapchainFactory factory;
-
-        vkb::Swapchain swapchain;
-        VkRenderPass render_pass;
-
-        std::vector<VkImage> swapchain_images;
-        std::vector<VkImageView> swapchain_image_views;
-        std::vector<VkFramebuffer> framebuffers;
-
-        SwapchainComponents(const std::shared_ptr<DeviceComponents> &device_components);
-        ~SwapchainComponents();
-
     private:
-        void init_render_pass();
-        void init_framebuffers();
+        SwapchainFactory m_factory;
+
+        vkb::Swapchain m_swapchain;
+        std::vector<VkImage> m_swapchain_images;
+        std::vector<VkImageView> m_swapchain_image_views;
+        std::vector<VkFramebuffer> m_framebuffers;
+
+        static std::vector<VkFramebuffer> create_framebuffers(
+            SwapchainFactory &factory,
+            const vkb::Swapchain &swapchain,
+            const std::vector<VkImage> &swapchain_images,
+            const std::vector<VkImageView> &swapchain_image_views,
+            VkRenderPass render_pass);
+
+    public:
+        SwapchainComponents(
+            const std::shared_ptr<DeviceComponents> &device_components,
+            VkRenderPass render_pass);
+
+        VkExtent2D get_extent() const
+        {
+            return m_swapchain.extent;
+        }
     };
 }
