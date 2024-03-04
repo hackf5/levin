@@ -30,5 +30,11 @@ namespace levin
         VkSurfaceKHR create_window_surface(VkInstance instance);
 
         void register_framebuffer_resize_callback(framebuffer_resize_callback_t callback);
+
+        bool should_close() { return glfwWindowShouldClose(m_window); }
+
+        void poll_events() { glfwPollEvents(); }
+
+        void wait_resize();
     };
 }

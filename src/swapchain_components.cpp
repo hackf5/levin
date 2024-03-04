@@ -40,7 +40,8 @@ std::vector<VkFramebuffer> SwapchainComponents::create_framebuffers(
         framebuffer_info.height = swapchain.extent.height;
         framebuffer_info.layers = 1;
 
-        factory.create_framebuffer(framebuffer_info);
+        auto framebuffer = factory.create_framebuffer(framebuffer_info);
+        framebuffers[i] = framebuffer;
     }
 
     return framebuffers;

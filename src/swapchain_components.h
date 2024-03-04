@@ -29,9 +29,19 @@ namespace levin
             const std::shared_ptr<DeviceComponents> &device_components,
             VkRenderPass render_pass);
 
+        VkSwapchainKHR get_swapchain() const
+        {
+            return m_swapchain.swapchain;
+        }
+
         VkExtent2D get_extent() const
         {
             return m_swapchain.extent;
+        }
+
+        VkFramebuffer get_framebuffer(uint32_t index) const
+        {
+            return m_framebuffers[index];
         }
     };
 }

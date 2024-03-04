@@ -31,5 +31,11 @@ namespace levin
         ~DeviceComponents();
 
         vkb::Device& get_device() { return m_device; }
+
+        VkQueue get_graphics_queue() { return m_graphics_queue; }
+
+        VkQueue get_present_queue() { return m_present_queue; }
+
+        void wait_idle() { vkDeviceWaitIdle(m_device.device); }
     };
 }

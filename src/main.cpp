@@ -29,6 +29,8 @@ int main()
         auto window = std::make_shared<WindowComponents>(800, 600, "Levin");
         auto device = std::make_shared<DeviceComponents>(window, enableValidationLayers);
         VulkanEngine engine(window, device);
+
+        engine.run();
     }
     catch (const std::exception &e)
     {

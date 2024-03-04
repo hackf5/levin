@@ -36,6 +36,15 @@ void GraphicsPipelineComponents::init_pipeline(
     VkShaderModule frag_module,
     VkRenderPass render_pass)
 {
+    VkPipelineLayoutCreateInfo pipeline_layout_info = {};
+    pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    pipeline_layout_info.setLayoutCount = 0;
+    pipeline_layout_info.pSetLayouts = nullptr;
+    pipeline_layout_info.pushConstantRangeCount = 0;
+    pipeline_layout_info.pPushConstantRanges = nullptr;
+
+    m_pipeline_layout = m_factory.create_pipeline_layout(pipeline_layout_info);
+
     VkPipelineShaderStageCreateInfo vert_stage_info = {};
     vert_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     vert_stage_info.stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -113,15 +122,6 @@ void GraphicsPipelineComponents::init_pipeline(
     color_blending.blendConstants[1] = 0.0f;
     color_blending.blendConstants[2] = 0.0f;
     color_blending.blendConstants[3] = 0.0f;
-
-    VkPipelineLayoutCreateInfo pipeline_layout_info = {};
-    pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipeline_layout_info.setLayoutCount = 0;
-    pipeline_layout_info.pSetLayouts = nullptr;
-    pipeline_layout_info.pushConstantRangeCount = 0;
-    pipeline_layout_info.pPushConstantRanges = nullptr;
-
-    m_pipeline_layout = m_factory.create_pipeline_layout(pipeline_layout_info);
 
     std::vector<VkDynamicState> dynamic_states = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
 

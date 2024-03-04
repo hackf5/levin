@@ -25,5 +25,10 @@ namespace levin
         GraphicsPipelineComponents(
             const std::shared_ptr<DeviceComponents> &device_components,
             VkRenderPass render_pass);
+
+        VkPipeline get_pipeline() const
+        {
+            return m_pipeline;
+        }
     };
 }

@@ -23,6 +23,11 @@ vkb::Swapchain SwapchainFactory::create_swapchain(vkb::Device &device)
 
     auto swapchain = swapchain_ret.value();
 
+    if (swapchain.image_count < 3)
+    {
+        throw std::runtime_error("Swapchain image count must be at least 3");
+    }
+
     config.image_format = swapchain.image_format;
     config.color_space = swapchain.color_space;
     config.image_count = swapchain.image_count;
