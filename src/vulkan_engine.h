@@ -8,6 +8,7 @@
 #include "swapchain_components.h"
 #include "graphics_pipeline_components.h"
 #include "graphics_commands.h"
+#include "buffer_components.h"
 
 namespace levin
 {
@@ -21,6 +22,8 @@ namespace levin
         std::unique_ptr<SwapchainComponents> m_swapchain;
         GraphicsPipelineComponents m_graphics_pipeline;
         GraphicsCommands m_graphics_commands;
+
+        BufferComponents m_buffer_components;
 
         uint32_t m_current_frame = 0;
 

@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include <vma/vk_mem_alloc.h>
+
 #include "VkBootstrap.h"
 
 #include "window_components.h"
@@ -16,6 +18,8 @@ namespace levin
         vkb::Instance m_instance;
         vkb::Device m_device;
 
+        VmaAllocator m_allocator;
+
         VkQueue m_graphics_queue;
         VkQueue m_present_queue;
         VkQueue m_transfer_queue;
@@ -23,6 +27,7 @@ namespace levin
         std::shared_ptr<WindowComponents> m_window_components;
 
         void init_device(bool enable_validation_layers);
+        void init_allocator();
         void init_queues();
     public:
         DeviceComponents(
@@ -36,6 +41,10 @@ namespace levin
 
         VkQueue get_present_queue() { return m_present_queue; }
 
+        VkQueue get_transfer_queue() { return m_transfer_queue; }
+
         void wait_idle() { vkDeviceWaitIdle(m_device.device); }
+
+        VmaAllocator get_allocator() { return m_allocator; }
     };
 }

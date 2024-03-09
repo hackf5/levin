@@ -12,7 +12,8 @@ VulkanEngine::VulkanEngine(
     m_render_pass(RenderPassComponents(device_components)),
     m_swapchain(std::make_unique<SwapchainComponents>(device_components, m_render_pass.get_render_pass())),
     m_graphics_pipeline(GraphicsPipelineComponents(device_components, m_render_pass.get_render_pass())),
-    m_graphics_commands(GraphicsCommands(device_components))
+    m_graphics_commands(GraphicsCommands(device_components)),
+    m_buffer_components(BufferComponents(device_components))
 {
     spdlog::info("Vulkan Engine is starting");
 }
@@ -20,6 +21,14 @@ VulkanEngine::VulkanEngine(
 void VulkanEngine::run()
 {
     spdlog::info("Vulkan Engine is running");
+
+    const std::vector<Vertex> vertices = {
+        {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+    };
+
+    m_buffer_components.load_vertex_buffer(vertices);
 
     while (!m_window_components->should_close())
     {
@@ -57,7 +66,10 @@ void VulkanEngine::record_command_buffer()
 
     vkCmdBeginRenderPass(command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
 
-    vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphics_pipeline.get_pipeline());
+    vkCmdBindPipeline(
+        command_buffer,
+        VK_PIPELINE_BIND_POINT_GRAPHICS,
+        m_graphics_pipeline.get_pipeline());
 
     VkViewport viewport {};
     viewport.x = 0.0f;
@@ -73,6 +85,9 @@ void VulkanEngine::record_command_buffer()
     scissor.extent = extent;
     vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 
+    VkBuffer vertex_buffers[] = { m_buffer_components.get_vertex_buffer() };
+    VkDeviceSize offsets[] = { 0 };
+    vkCmdBindVertexBuffers(command_buffer, 0, 1, vertex_buffers, offsets);
     vkCmdDraw(command_buffer, 3, 1, 0, 0);
 
     vkCmdEndRenderPass(command_buffer);

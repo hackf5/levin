@@ -15,6 +15,7 @@
     "glfw",
     "hadamard",
     "Multisample",
+    "SFLOAT",
     "spdlog",
     "subpass",
     "Subpasses",

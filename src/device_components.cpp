@@ -1,3 +1,6 @@
+#define VMA_IMPLEMENTATION
+#include <vma/vk_mem_alloc.h>
+
 #include "device_components.h"
 
 #include "swapchain_factory.h"
@@ -17,6 +20,7 @@ DeviceComponents::DeviceComponents(
     {
         init_device(enable_validation_layers);
         init_queues();
+        init_allocator();
     }
     catch (const std::exception &e)
     {
@@ -29,6 +33,7 @@ DeviceComponents::~DeviceComponents()
 {
     spdlog::info("Destroying Vulkan Engine Components");
 
+    vmaDestroyAllocator(m_allocator);
     vkb::destroy_device(m_device);
     vkb::destroy_surface(m_instance.instance, m_surface);
     vkb::destroy_instance(m_instance);
@@ -73,6 +78,18 @@ void DeviceComponents::init_device(bool enable_validation_layers)
     m_device = dev_ret.value();
 
     SwapchainFactory::get_config(&m_device);
+}
+
+void DeviceComponents::init_allocator()
+{
+    spdlog::info("Initializing Allocator");
+
+    VmaAllocatorCreateInfo allocator_info = {};
+    allocator_info.physicalDevice = m_device.physical_device;
+    allocator_info.device = m_device.device;
+    allocator_info.instance = m_instance.instance;
+
+    vmaCreateAllocator(&allocator_info, &m_allocator);
 }
 
 void DeviceComponents::init_queues()
