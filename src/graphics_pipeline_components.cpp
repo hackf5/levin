@@ -198,7 +198,7 @@ VkPipelineRasterizationStateCreateInfo GraphicsPipelineComponents::create_raster
     result.polygonMode = VK_POLYGON_MODE_FILL;
     result.lineWidth = 1.0f;
     result.cullMode = VK_CULL_MODE_BACK_BIT;
-    result.frontFace = VK_FRONT_FACE_CLOCKWISE;
+    result.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     result.depthBiasEnable = VK_FALSE;
 
     return result;
