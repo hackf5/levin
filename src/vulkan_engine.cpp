@@ -1,5 +1,8 @@
 #include "vulkan_engine.h"
 
+#include "uniform_buffer_object.h"
+#include "vertex.h"
+
 #include "spdlog/spdlog.h"
 
 using namespace levin;
@@ -20,21 +23,36 @@ VulkanEngine::VulkanEngine(
     const std::shared_ptr<DeviceComponents> &device_components):
     m_window_components(window_components),
     m_device_components(device_components),
+    m_transfer_queue(std::make_shared<BufferTransferQueue>(device_components)),
     m_render_pass(RenderPassComponents(device_components)),
     m_swapchain(std::make_unique<SwapchainComponents>(device_components, m_render_pass.get_render_pass())),
     m_graphics_pipeline(GraphicsPipelineComponents(device_components, m_render_pass.get_render_pass())),
-    m_graphics_commands(GraphicsCommands(device_components)),
-    m_buffer_components(BufferComponents(device_components))
+    m_graphics_commands(GraphicsCommands(device_components))
 {
-    spdlog::info("Vulkan Engine is starting");
+    m_vertex_buffer = std::make_unique<BufferGPU>(
+        device_components,
+        m_transfer_queue,
+        sizeof(vertices[0]) * vertices.size(),
+        VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+
+    m_index_buffer = std::make_unique<BufferGPU>(
+        device_components,
+        m_transfer_queue,
+        sizeof(indices[0]) * indices.size(),
+        VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+
+    m_uniform_buffer = std::make_unique<BufferCPUtoGPU>(
+        device_components,
+        sizeof(UniformBufferObject),
+        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 }
 
 void VulkanEngine::run()
 {
     spdlog::info("Vulkan Engine is running");
 
-    m_buffer_components.load_vertex_buffer(vertices);
-    m_buffer_components.load_index_buffer(indices);
+    load_vertexes();
+    load_indexes();
 
     while (!m_window_components->should_close())
     {
@@ -118,13 +136,33 @@ void VulkanEngine::record_command_buffer()
     scissor.extent = extent;
     vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 
-    VkBuffer vertex_buffers[] = { m_buffer_components.get_vertex_buffer() };
+    VkBuffer vertex_buffers[] = { *m_vertex_buffer };
     VkDeviceSize offsets[] = { 0 };
     vkCmdBindVertexBuffers(command_buffer, 0, 1, vertex_buffers, offsets);
-    vkCmdBindIndexBuffer(command_buffer, m_buffer_components.get_index_buffer(), 0, Vertex::vk_index_type);
+    vkCmdBindIndexBuffer(command_buffer, *m_index_buffer, 0, Vertex::vk_index_type);
     vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
     vkCmdEndRenderPass(command_buffer);
 
     m_graphics_commands.end_command_buffer(m_current_frame);
+}
+
+void VulkanEngine::load_vertexes()
+{
+    auto staging_buffer = BufferCPUtoGPU(
+        m_device_components,
+        sizeof(vertices[0]) * vertices.size(),
+        VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+    staging_buffer.copy_from((void *)vertices.data(), sizeof(vertices[0]) * vertices.size());
+    m_vertex_buffer->copy_from(staging_buffer);
+}
+
+void VulkanEngine::load_indexes()
+{
+    auto staging_buffer = BufferCPUtoGPU(
+        m_device_components,
+        sizeof(indices[0]) * indices.size(),
+        VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+    staging_buffer.copy_from((void *)indices.data(), sizeof(indices[0]) * indices.size());
+    m_index_buffer->copy_from(staging_buffer);
 }

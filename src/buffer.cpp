@@ -45,17 +45,53 @@ void Buffer::create_buffer()
     }
 }
 
-void Buffer::copy_data(void *data, VkDeviceSize size)
+BufferCPUtoGPU::BufferCPUtoGPU(
+    const std::shared_ptr<DeviceComponents> &device_components,
+    VkDeviceSize size,
+    VkBufferUsageFlags usage):
+    Buffer(
+    device_components,
+    size,
+    usage,
+    VMA_MEMORY_USAGE_AUTO,
+    VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
 {
-    spdlog::info("Copying Data to Buffer");
-
-    void *mapped_data;
-    if (vmaMapMemory(m_allocator, m_allocation, &mapped_data) != VK_SUCCESS)
+    if (vmaMapMemory(m_allocator, m_allocation, &m_mapped_data) != VK_SUCCESS)
     {
-        throw std::runtime_error("Failed to map memory");
+        throw std::runtime_error("Failed to map CPU to GPU buffer memory");
     }
+}
 
-    memcpy(mapped_data, data, size);
-
+BufferCPUtoGPU::~BufferCPUtoGPU()
+{
     vmaUnmapMemory(m_allocator, m_allocation);
+}
+
+void BufferCPUtoGPU::copy_from(void *data, VkDeviceSize size)
+{
+    memcpy(m_mapped_data, data, size);
+}
+
+BufferGPU::BufferGPU(
+    const std::shared_ptr<DeviceComponents> &device_components,
+    const std::shared_ptr<BufferTransferQueue> &transfer_queue,
+    VkDeviceSize size,
+    VkBufferUsageFlags usage):
+    Buffer(
+    device_components,
+    size,
+    usage | VK_BUFFER_USAGE_TRANSFER_DST_BIT),
+    m_transfer_queue(transfer_queue)
+{
+}
+
+void BufferGPU::copy_from(BufferCPUtoGPU &buffer)
+{
+    auto command_buffer = m_transfer_queue->begin();
+
+    VkBufferCopy copy_region = {};
+    copy_region.size = buffer.size();
+    vkCmdCopyBuffer(command_buffer, buffer, m_buffer, 1, &copy_region);
+
+    m_transfer_queue->submit_and_wait();
 }

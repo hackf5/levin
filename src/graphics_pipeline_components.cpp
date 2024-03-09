@@ -86,12 +86,12 @@ void GraphicsPipelineComponents::init_pipeline(
 {
     auto shader_stages = create_shader_stages(vert_module, frag_module);
 
-    auto binding_description = Vertex::get_binding_description();
-    auto attribute_descriptions = Vertex::get_attribute_descriptions();
+    auto vertex_binding_description = Vertex::get_binding_description();
+    auto vertex_attribute_descriptions = Vertex::get_attribute_descriptions();
     auto vertex_input_state = create_vertex_input_state(
-        binding_description,
-        attribute_descriptions.data(),
-        attribute_descriptions.size());
+        vertex_binding_description,
+        vertex_attribute_descriptions.data(),
+        vertex_attribute_descriptions.size());
 
     auto input_assembly_state = create_input_assembly_state();
     auto viewport = create_viewport();
