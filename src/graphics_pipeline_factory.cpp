@@ -109,6 +109,25 @@ VkDescriptorSetLayout GraphicsPipelineFactory::create_descriptor_set_layout(cons
     return descriptor_set_layout;
 }
 
+VkDescriptorPool GraphicsPipelineFactory::create_descriptor_pool(const VkDescriptorPoolCreateInfo &create_info)
+{
+    spdlog::info("Creating Descriptor Pool");
+
+    VkDescriptorPool descriptor_pool;
+    if (vkCreateDescriptorPool(get_device(), &create_info, nullptr, &descriptor_pool) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create descriptor pool");
+    }
+
+    register_destruction([=, this]()
+        {
+            spdlog::info("Destroying Descriptor Pool");
+            vkDestroyDescriptorPool(get_device(), descriptor_pool, nullptr);
+        });
+
+    return descriptor_pool;
+}
+
 void GraphicsPipelineFactory::destroy_shader_module(VkShaderModule shader_module)
 {
     spdlog::info("Destroying Shader Module");

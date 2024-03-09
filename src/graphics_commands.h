@@ -36,8 +36,6 @@ namespace levin
             VkCommandPool command_pool);
 
     public:
-        static const uint32_t frames_in_flight = 2;
-
         GraphicsCommands(const std::shared_ptr<DeviceComponents> &device_components);
 
         GraphicsResult acquire_next_image(uint32_t frame, VkSwapchainKHR swapchain, uint32_t &image_index);

@@ -24,14 +24,15 @@ const VkPipelineColorBlendAttachmentState color_blend_attachment =
 
 GraphicsPipelineComponents::GraphicsPipelineComponents(
     const std::shared_ptr<DeviceComponents> &device_components,
-    VkRenderPass render_pass)
-    : m_factory(GraphicsPipelineFactory(device_components.get()->get_device()))
+    const std::shared_ptr<DescriptorComponents> &descriptor_components,
+    VkRenderPass render_pass):
+    m_descriptor_components(descriptor_components),
+    m_factory(GraphicsPipelineFactory(device_components.get()->get_device()))
 {
     spdlog::info("Initializing Graphics Pipeline Components");
 
     try
     {
-        init_descriptor_set_layout();
         init_pipeline_layout();
 
         auto vert_module = m_factory.create_shader_module("vert");
@@ -50,29 +51,13 @@ GraphicsPipelineComponents::GraphicsPipelineComponents(
     }
 }
 
-void GraphicsPipelineComponents::init_descriptor_set_layout()
-{
-    VkDescriptorSetLayoutBinding ubo_layout_binding = {};
-    ubo_layout_binding.binding = 0;
-    ubo_layout_binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    ubo_layout_binding.descriptorCount = 1;
-    ubo_layout_binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-    ubo_layout_binding.pImmutableSamplers = nullptr;
-
-    VkDescriptorSetLayoutCreateInfo layout_info = {};
-    layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    layout_info.bindingCount = 1;
-    layout_info.pBindings = &ubo_layout_binding;
-
-    m_descriptor_set_layout = m_factory.create_descriptor_set_layout(layout_info);
-}
-
 void GraphicsPipelineComponents::init_pipeline_layout()
 {
+    auto layout = m_descriptor_components->layout();
     VkPipelineLayoutCreateInfo pipeline_layout_info = {};
     pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipeline_layout_info.setLayoutCount = 1;
-    pipeline_layout_info.pSetLayouts = &m_descriptor_set_layout;
+    pipeline_layout_info.pSetLayouts = &layout;
     pipeline_layout_info.pushConstantRangeCount = 0;
     pipeline_layout_info.pPushConstantRanges = nullptr;
 

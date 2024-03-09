@@ -35,6 +35,8 @@ namespace levin
             bool enable_validation_layers);
         ~DeviceComponents();
 
+        static const uint32_t frames_in_flight = 2;
+
         vkb::Device& get_device() { return m_device; }
 
         VkQueue get_graphics_queue() { return m_graphics_queue; }

@@ -1,3 +1,5 @@
+#define GLM_FORCE_RADIANS
+
 #include <memory>
 
 #include "window_components.h"

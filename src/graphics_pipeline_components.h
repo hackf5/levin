@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "device_components.h"
+#include "descriptor_components.h"
 #include "swapchain_components.h"
 #include "graphics_pipeline_factory.h"
 
@@ -12,18 +13,17 @@ namespace levin
     class GraphicsPipelineComponents
     {
     private:
+        const std::shared_ptr<DescriptorComponents> m_descriptor_components;
+
         GraphicsPipelineFactory m_factory;
 
         VkPipelineLayout m_pipeline_layout;
-        VkDescriptorSetLayout m_descriptor_set_layout;
         VkPipeline m_pipeline;
 
         void init_pipeline(
             VkShaderModule vert_module,
             VkShaderModule frag_module,
             VkRenderPass render_pass);
-
-        void init_descriptor_set_layout();
 
         void init_pipeline_layout();
 
@@ -55,11 +55,17 @@ namespace levin
     public:
         GraphicsPipelineComponents(
             const std::shared_ptr<DeviceComponents> &device_components,
+            const std::shared_ptr<DescriptorComponents> &descriptor_components,
             VkRenderPass render_pass);
 
         VkPipeline get_pipeline() const
         {
             return m_pipeline;
+        }
+
+        VkPipelineLayout get_pipeline_layout() const
+        {
+            return m_pipeline_layout;
         }
     };
 }

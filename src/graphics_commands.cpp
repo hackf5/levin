@@ -11,9 +11,9 @@ GraphicsCommands::GraphicsCommands(const std::shared_ptr<DeviceComponents> &devi
     m_command_factory(device_components->get_device()),
     m_command_pool(create_command_pool(m_command_factory)),
     m_command_buffers(create_command_buffers(m_command_factory, m_command_pool)),
-    m_image_available(m_command_factory.create_semaphores(frames_in_flight)),
-    m_render_finished(m_command_factory.create_semaphores(frames_in_flight)),
-    m_in_flight_fences(m_command_factory.create_fences(frames_in_flight))
+    m_image_available(m_command_factory.create_semaphores(DeviceComponents::frames_in_flight)),
+    m_render_finished(m_command_factory.create_semaphores(DeviceComponents::frames_in_flight)),
+    m_in_flight_fences(m_command_factory.create_fences(DeviceComponents::frames_in_flight))
 {
 }
 
@@ -37,7 +37,7 @@ std::vector<VkCommandBuffer> GraphicsCommands::create_command_buffers(
     allocate_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocate_info.commandPool = command_pool;
     allocate_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocate_info.commandBufferCount = frames_in_flight;
+    allocate_info.commandBufferCount = DeviceComponents::frames_in_flight;
 
     return command_factory.create_command_buffers(allocate_info);
 }
