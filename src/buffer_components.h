@@ -27,6 +27,11 @@ namespace levin
             CommandFactory &command_factory,
             VkCommandPool command_pool);
 
+        void load_buffer(
+            void *data,
+            Buffer &buffer,
+            VkDeviceSize size);
+
     public:
         BufferComponents(const std::shared_ptr<DeviceComponents> &device_components);
 
@@ -34,5 +39,6 @@ namespace levin
         Buffer &get_index_buffer() { return m_index_buffer; }
 
         void load_vertex_buffer(const std::vector<Vertex> &vertices);
+        void load_index_buffer(const std::vector<Vertex::index_t> &indices);
     };
 }

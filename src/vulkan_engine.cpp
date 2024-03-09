@@ -4,6 +4,17 @@
 
 using namespace levin;
 
+const std::vector<Vertex> vertices = {
+    {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+    {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+    {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+    {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+};
+
+const std::vector<uint16_t> indices = {
+    0, 1, 2, 2, 3, 0
+};
+
 VulkanEngine::VulkanEngine(
     const std::shared_ptr<WindowComponents> &window_components,
     const std::shared_ptr<DeviceComponents> &device_components):
@@ -22,13 +33,8 @@ void VulkanEngine::run()
 {
     spdlog::info("Vulkan Engine is running");
 
-    const std::vector<Vertex> vertices = {
-        {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
-    };
-
     m_buffer_components.load_vertex_buffer(vertices);
+    m_buffer_components.load_index_buffer(indices);
 
     while (!m_window_components->should_close())
     {
@@ -88,7 +94,8 @@ void VulkanEngine::record_command_buffer()
     VkBuffer vertex_buffers[] = { m_buffer_components.get_vertex_buffer() };
     VkDeviceSize offsets[] = { 0 };
     vkCmdBindVertexBuffers(command_buffer, 0, 1, vertex_buffers, offsets);
-    vkCmdDraw(command_buffer, 3, 1, 0, 0);
+    vkCmdBindIndexBuffer(command_buffer, m_buffer_components.get_index_buffer(), 0, Vertex::vk_index_type);
+    vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
     vkCmdEndRenderPass(command_buffer);
 
