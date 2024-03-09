@@ -18,6 +18,8 @@ namespace levin
 
         VkPipelineLayout create_pipeline_layout(const VkPipelineLayoutCreateInfo &create_info);
 
+        VkDescriptorSetLayout create_descriptor_set_layout(const VkDescriptorSetLayoutCreateInfo &create_info);
+
         VkPipeline create_pipeline(const VkGraphicsPipelineCreateInfo &create_info);
 
         void destroy_shader_module(VkShaderModule shader_module);

@@ -95,7 +95,8 @@
     "typeinfo": "cpp",
     "variant": "cpp",
     "expected": "cpp",
-    "codecvt": "cpp"
+    "codecvt": "cpp",
+    "shared_mutex": "cpp"
   },
   "C_Cpp.default.compilerPath": "C:\\msys64\\ucrt64\\bin\\g++.exe",
 }

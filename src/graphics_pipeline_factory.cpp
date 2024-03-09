@@ -90,6 +90,25 @@ VkPipeline GraphicsPipelineFactory::create_pipeline(const VkGraphicsPipelineCrea
     return pipeline;
 }
 
+VkDescriptorSetLayout GraphicsPipelineFactory::create_descriptor_set_layout(const VkDescriptorSetLayoutCreateInfo &create_info)
+{
+    spdlog::info("Creating Descriptor Set Layout");
+
+    VkDescriptorSetLayout descriptor_set_layout;
+    if (vkCreateDescriptorSetLayout(get_device(), &create_info, nullptr, &descriptor_set_layout) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create descriptor set layout");
+    }
+
+    register_destruction([=, this]()
+        {
+            spdlog::info("Destroying Descriptor Set Layout");
+            vkDestroyDescriptorSetLayout(get_device(), descriptor_set_layout, nullptr);
+        });
+
+    return descriptor_set_layout;
+}
+
 void GraphicsPipelineFactory::destroy_shader_module(VkShaderModule shader_module)
 {
     spdlog::info("Destroying Shader Module");

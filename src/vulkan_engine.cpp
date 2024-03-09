@@ -45,6 +45,31 @@ void VulkanEngine::run()
     m_device_components->wait_idle();
 }
 
+void VulkanEngine::draw_frame()
+{
+    auto result = m_graphics_commands.acquire_next_image(m_current_frame, m_swapchain->get_swapchain(), m_image_index);
+
+    if (result == GraphicsResult::RecreateSwapchain)
+    {
+        recreate_swapchain();
+        return;
+    }
+
+    m_graphics_commands.reset_command_buffer(m_current_frame);
+
+    record_command_buffer();
+
+    m_graphics_commands.submit_command_buffer(m_current_frame);
+
+    result = m_graphics_commands.present(m_current_frame, m_swapchain->get_swapchain(), m_image_index);
+    if (result == GraphicsResult::RecreateSwapchain)
+    {
+        recreate_swapchain();
+    }
+
+    next_frame();
+}
+
 void VulkanEngine::recreate_swapchain()
 {
     m_window_components->wait_resize();
@@ -55,7 +80,6 @@ void VulkanEngine::recreate_swapchain()
 
 void VulkanEngine::record_command_buffer()
 {
-    m_graphics_commands.reset_command_buffer(m_current_frame);
     auto command_buffer = m_graphics_commands.begin_command_buffer(m_current_frame);
     auto extent = m_swapchain->get_extent();
 
@@ -70,7 +94,10 @@ void VulkanEngine::record_command_buffer()
     render_pass_info.clearValueCount = 1;
     render_pass_info.pClearValues = &clear_color;
 
-    vkCmdBeginRenderPass(command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBeginRenderPass(
+        command_buffer,
+        &render_pass_info,
+        VK_SUBPASS_CONTENTS_INLINE);
 
     vkCmdBindPipeline(
         command_buffer,
@@ -100,27 +127,4 @@ void VulkanEngine::record_command_buffer()
     vkCmdEndRenderPass(command_buffer);
 
     m_graphics_commands.end_command_buffer(m_current_frame);
-}
-
-void VulkanEngine::draw_frame()
-{
-    auto result = m_graphics_commands.acquire_next_image(m_current_frame, m_swapchain->get_swapchain(), m_image_index);
-
-    if (result == GraphicsResult::RecreateSwapchain)
-    {
-        recreate_swapchain();
-        return;
-    }
-
-    record_command_buffer();
-
-    m_graphics_commands.submit_command_buffer(m_current_frame);
-
-    result = m_graphics_commands.present(m_current_frame, m_swapchain->get_swapchain(), m_image_index);
-    if (result == GraphicsResult::RecreateSwapchain)
-    {
-        recreate_swapchain();
-    }
-
-    next_frame();
 }
