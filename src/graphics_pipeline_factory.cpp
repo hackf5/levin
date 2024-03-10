@@ -44,7 +44,7 @@ VkShaderModule GraphicsPipelineFactory::create_shader_module(const std::string &
     create_info.pCode = reinterpret_cast<const uint32_t *>(code.data());
 
     VkShaderModule shader_module;
-    if (vkCreateShaderModule(get_device(), &create_info, nullptr, &shader_module) != VK_SUCCESS)
+    if (vkCreateShaderModule(device(), &create_info, nullptr, &shader_module) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to create shader module");
     }
@@ -57,7 +57,7 @@ VkPipelineLayout GraphicsPipelineFactory::create_pipeline_layout(const VkPipelin
     spdlog::info("Creating Pipeline Layout");
 
     VkPipelineLayout pipeline_layout;
-    if (vkCreatePipelineLayout(get_device(), &create_info, nullptr, &pipeline_layout) != VK_SUCCESS)
+    if (vkCreatePipelineLayout(device(), &create_info, nullptr, &pipeline_layout) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to create pipeline layout");
     }
@@ -65,7 +65,7 @@ VkPipelineLayout GraphicsPipelineFactory::create_pipeline_layout(const VkPipelin
     register_destruction([=, this]()
         {
             spdlog::info("Destroying Pipeline Layout");
-            vkDestroyPipelineLayout(get_device(), pipeline_layout, nullptr);
+            vkDestroyPipelineLayout(device(), pipeline_layout, nullptr);
         });
 
     return pipeline_layout;
@@ -76,7 +76,7 @@ VkPipeline GraphicsPipelineFactory::create_pipeline(const VkGraphicsPipelineCrea
     spdlog::info("Creating Pipeline");
 
     VkPipeline pipeline;
-    if (vkCreateGraphicsPipelines(get_device(), VK_NULL_HANDLE, 1, &create_info, nullptr, &pipeline) != VK_SUCCESS)
+    if (vkCreateGraphicsPipelines(device(), VK_NULL_HANDLE, 1, &create_info, nullptr, &pipeline) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to create pipeline");
     }
@@ -84,7 +84,7 @@ VkPipeline GraphicsPipelineFactory::create_pipeline(const VkGraphicsPipelineCrea
     register_destruction([=, this]()
         {
             spdlog::info("Destroying Graphics Pipeline");
-            vkDestroyPipeline(get_device(), pipeline, nullptr);
+            vkDestroyPipeline(device(), pipeline, nullptr);
         });
 
     return pipeline;
@@ -95,7 +95,7 @@ VkDescriptorSetLayout GraphicsPipelineFactory::create_descriptor_set_layout(cons
     spdlog::info("Creating Descriptor Set Layout");
 
     VkDescriptorSetLayout descriptor_set_layout;
-    if (vkCreateDescriptorSetLayout(get_device(), &create_info, nullptr, &descriptor_set_layout) != VK_SUCCESS)
+    if (vkCreateDescriptorSetLayout(device(), &create_info, nullptr, &descriptor_set_layout) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to create descriptor set layout");
     }
@@ -103,7 +103,7 @@ VkDescriptorSetLayout GraphicsPipelineFactory::create_descriptor_set_layout(cons
     register_destruction([=, this]()
         {
             spdlog::info("Destroying Descriptor Set Layout");
-            vkDestroyDescriptorSetLayout(get_device(), descriptor_set_layout, nullptr);
+            vkDestroyDescriptorSetLayout(device(), descriptor_set_layout, nullptr);
         });
 
     return descriptor_set_layout;
@@ -114,7 +114,7 @@ VkDescriptorPool GraphicsPipelineFactory::create_descriptor_pool(const VkDescrip
     spdlog::info("Creating Descriptor Pool");
 
     VkDescriptorPool descriptor_pool;
-    if (vkCreateDescriptorPool(get_device(), &create_info, nullptr, &descriptor_pool) != VK_SUCCESS)
+    if (vkCreateDescriptorPool(device(), &create_info, nullptr, &descriptor_pool) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to create descriptor pool");
     }
@@ -122,7 +122,7 @@ VkDescriptorPool GraphicsPipelineFactory::create_descriptor_pool(const VkDescrip
     register_destruction([=, this]()
         {
             spdlog::info("Destroying Descriptor Pool");
-            vkDestroyDescriptorPool(get_device(), descriptor_pool, nullptr);
+            vkDestroyDescriptorPool(device(), descriptor_pool, nullptr);
         });
 
     return descriptor_pool;
@@ -132,5 +132,5 @@ void GraphicsPipelineFactory::destroy_shader_module(VkShaderModule shader_module
 {
     spdlog::info("Destroying Shader Module");
 
-    vkDestroyShaderModule(get_device(), shader_module, nullptr);
+    vkDestroyShaderModule(device(), shader_module, nullptr);
 }

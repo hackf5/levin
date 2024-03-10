@@ -39,7 +39,9 @@ namespace levin
 
         static const uint32_t frames_in_flight = 2;
 
-        const vkb::Device& get_device() const { return m_device; }
+        operator const vkb::Device&() const { return m_device; }
+
+        operator VkDevice() const { return m_device.device; }
 
         VkQueue get_graphics_queue() const { return m_graphics_queue; }
 

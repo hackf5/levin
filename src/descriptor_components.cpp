@@ -7,7 +7,7 @@
 using namespace levin;
 
 DescriptorComponents::DescriptorComponents(const DeviceComponents& device)
-    : m_factory(device.get_device())
+    : m_factory(device)
 {
     init_descriptor_set_layout();
     init_descriptor_pool();

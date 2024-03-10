@@ -14,7 +14,7 @@ VkRenderPass RenderPassFactory::create_render_pass(const VkRenderPassCreateInfo 
     spdlog::info("Creating Render Pass");
 
     VkRenderPass render_pass;
-    if (vkCreateRenderPass(get_device(), &create_info, nullptr, &render_pass) != VK_SUCCESS)
+    if (vkCreateRenderPass(device(), &create_info, nullptr, &render_pass) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to create render pass");
     }
@@ -22,7 +22,7 @@ VkRenderPass RenderPassFactory::create_render_pass(const VkRenderPassCreateInfo 
     register_destruction([=, this]()
         {
             spdlog::info("Destroying Render Pass");
-            vkDestroyRenderPass(get_device(), render_pass, nullptr);
+            vkDestroyRenderPass(device(), render_pass, nullptr);
         });
 
     return render_pass;

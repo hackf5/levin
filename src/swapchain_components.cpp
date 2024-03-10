@@ -7,7 +7,7 @@ using namespace levin;
 SwapchainComponents::SwapchainComponents(
     const DeviceComponents &device_components,
     VkRenderPass render_pass):
-    m_factory(SwapchainFactory(device_components.get_device())),
+    m_factory(SwapchainFactory(device_components)),
     m_swapchain(m_factory.create_swapchain()),
     m_swapchain_images(m_swapchain.get_images().value()),
     m_swapchain_image_views(m_factory.create_image_views(m_swapchain)),

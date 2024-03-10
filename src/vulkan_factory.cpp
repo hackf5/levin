@@ -27,7 +27,7 @@ void VulkanFactory::register_destruction(destruction_callback_t destroy)
     m_destruction_queue.push_back(destroy);
 }
 
-const vkb::Device &VulkanFactory::get_device() const
+const vkb::Device &VulkanFactory::device() const
 {
     return m_device;
 }

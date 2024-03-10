@@ -27,7 +27,7 @@ GraphicsPipelineComponents::GraphicsPipelineComponents(
     const DescriptorComponents &descriptor_components,
     VkRenderPass render_pass):
     m_descriptor_components(&descriptor_components),
-    m_factory(device_components.get_device())
+    m_factory(device_components)
 {
     spdlog::info("Initializing Graphics Pipeline Components");
 

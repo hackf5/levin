@@ -48,27 +48,29 @@ namespace levin
 
         WindowComponents &window() { return *m_window; }
 
-        DeviceComponents &device() { return *m_device; }
+        const DeviceComponents &device() const { return *m_device; }
 
-        BufferTransferQueue &transfer_queue() { return *m_transfer_queue; }
+        const BufferTransferQueue &transfer_queue() const { return *m_transfer_queue; }
 
-        DescriptorComponents &descriptor_components() { return *m_descriptor_components; }
+        const DescriptorComponents &descriptor_components() const { return *m_descriptor_components; }
 
-        RenderPassComponents &render_pass() { return *m_render_pass; }
+        const RenderPassComponents &render_pass() const { return *m_render_pass; }
 
-        SwapchainComponents &swapchain() { return *m_swapchain; }
+        const SwapchainComponents &swapchain() const { return *m_swapchain; }
 
-        GraphicsPipelineComponents &graphics_pipeline() { return *m_graphics_pipeline; }
+        const GraphicsPipelineComponents &graphics_pipeline() const { return *m_graphics_pipeline; }
 
         GraphicsCommands &graphics_commands() { return *m_graphics_commands; }
+        const GraphicsCommands &graphics_commands() const { return *m_graphics_commands; }
 
-        BufferGPU &vertex_buffer() { return *m_vertex_buffer; }
+        const BufferGPU &vertex_buffer() const { return *m_vertex_buffer; }
 
-        BufferGPU &index_buffer() { return *m_index_buffer; }
+        const BufferGPU &index_buffer() const { return *m_index_buffer; }
 
+        const BufferCPUtoGPU &uniform_buffer(uint32_t index) const { return *m_uniform_buffers[index]; }
         BufferCPUtoGPU &uniform_buffer(uint32_t index) { return *m_uniform_buffers[index]; }
 
-        UniformBufferDescriptorSet &uniform_buffer_descriptor_set() { return *m_uniform_buffer_descriptor_set; }
+        const UniformBufferDescriptorSet &uniform_buffer_descriptor_set() const { return *m_uniform_buffer_descriptor_set; }
 
         void next_frame()
         {
@@ -84,9 +86,9 @@ namespace levin
         std::unique_ptr<VulkanContext> m_context;
 
     public:
-        VulkanContextBuilder() : m_context(std::make_unique<VulkanContext>()) {}
+        VulkanContextBuilder(): m_context(std::make_unique<VulkanContext>()) {}
 
-        VulkanContextBuilder(std::unique_ptr<VulkanContext> context) : m_context(std::move(context)) {}
+        VulkanContextBuilder(std::unique_ptr<VulkanContext> context): m_context(std::move(context)) {}
 
         VulkanContextBuilder &configure_window(int width, int height, const std::string &title);
 

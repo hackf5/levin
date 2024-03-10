@@ -25,6 +25,6 @@ namespace levin
         void register_destruction(destruction_callback_t destroy);
 
     public:
-        const vkb::Device &get_device() const;
+        const vkb::Device &device() const;
     };
 }

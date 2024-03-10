@@ -12,8 +12,9 @@ namespace levin
     class DescriptorSetComponents
     {
     protected:
-        DescriptorComponents const * const m_descriptor_components;
         DeviceComponents const * const m_device_components;
+
+        DescriptorComponents const * const m_descriptor_components;
 
         std::vector<VkDescriptorSet> m_descriptor_sets;
 

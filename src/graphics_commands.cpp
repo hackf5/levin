@@ -8,7 +8,7 @@ using namespace levin;
 
 GraphicsCommands::GraphicsCommands(const DeviceComponents &device_components):
     m_graphics_queue(device_components.get_graphics_queue()),
-    m_command_factory(device_components.get_device()),
+    m_command_factory(device_components),
     m_command_pool(create_command_pool(m_command_factory)),
     m_command_buffers(create_command_buffers(m_command_factory, m_command_pool)),
     m_image_available(m_command_factory.create_semaphores(DeviceComponents::frames_in_flight)),
@@ -22,7 +22,7 @@ VkCommandPool GraphicsCommands::create_command_pool(CommandFactory &command_fact
     VkCommandPoolCreateInfo create_info {};
     create_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     create_info.queueFamilyIndex = command_factory
-        .get_device()
+        .device()
         .get_queue_index(vkb::QueueType::graphics).value();
     create_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
@@ -85,7 +85,7 @@ void GraphicsCommands::submit_command_buffer(uint32_t index) const
     submit_info.signalSemaphoreCount = 1;
     submit_info.pSignalSemaphores = signal_semaphores;
 
-    vkResetFences(m_command_factory.get_device(), 1, &m_in_flight_fences[index]);
+    vkResetFences(m_command_factory.device(), 1, &m_in_flight_fences[index]);
 
     if (vkQueueSubmit(
         m_graphics_queue,
@@ -102,16 +102,16 @@ GraphicsResult GraphicsCommands::acquire_next_image(
     VkSwapchainKHR swapchain)
 {
     vkWaitForFences(
-        m_command_factory.get_device(),
+        m_command_factory.device(),
         1,
         &m_in_flight_fences[index],
         VK_TRUE,
         std::numeric_limits<uint64_t>::max());
 
-    vkResetFences(m_command_factory.get_device(), 1, &m_in_flight_fences[index]);
+    vkResetFences(m_command_factory.device(), 1, &m_in_flight_fences[index]);
 
     VkResult result = vkAcquireNextImageKHR(
-        m_command_factory.get_device(),
+        m_command_factory.device(),
         swapchain,
         std::numeric_limits<uint64_t>::max(),
         m_image_available[index],

@@ -8,13 +8,13 @@ BufferTransferQueue::BufferTransferQueue(
     DeviceComponents &device_components,
     size_t command_buffer_count):
     m_device_components(&device_components),
-    m_command_factory(device_components.get_device()),
+    m_command_factory(device_components),
     m_queue(device_components.get_transfer_queue())
 {
     VkCommandPoolCreateInfo pool_info = {};
     pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     pool_info.queueFamilyIndex = m_command_factory
-        .get_device()
+        .device()
         .get_queue_index(vkb::QueueType::transfer).value();
     pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 

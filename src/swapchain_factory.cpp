@@ -56,7 +56,7 @@ vkb::Swapchain SwapchainFactory::create_swapchain()
 {
     spdlog::info("Creating Swapchain");
 
-    auto swapchain = create_swapchain(get_device());
+    auto swapchain = create_swapchain(device());
 
     register_destruction([=, this]()
         {
@@ -79,7 +79,7 @@ std::vector<VkImageView> SwapchainFactory::create_image_views(vkb::Swapchain &sw
             {
                 spdlog::info("Destroying Image Views");
                 {
-                    vkDestroyImageView(get_device(), image_view, nullptr);
+                    vkDestroyImageView(device(), image_view, nullptr);
                 }
             });
     }
@@ -93,7 +93,7 @@ VkFramebuffer SwapchainFactory::create_framebuffer(const VkFramebufferCreateInfo
     spdlog::info("Creating Framebuffer");
 
     VkFramebuffer framebuffer;
-    if (vkCreateFramebuffer(get_device(), &create_info, nullptr, &framebuffer) != VK_SUCCESS)
+    if (vkCreateFramebuffer(device(), &create_info, nullptr, &framebuffer) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to create framebuffer");
     }
@@ -101,7 +101,7 @@ VkFramebuffer SwapchainFactory::create_framebuffer(const VkFramebufferCreateInfo
     register_destruction([=, this]()
         {
             spdlog::info("Destroying Framebuffer");
-            vkDestroyFramebuffer(get_device(), framebuffer, nullptr);
+            vkDestroyFramebuffer(device(), framebuffer, nullptr);
         });
 
     return framebuffer;
