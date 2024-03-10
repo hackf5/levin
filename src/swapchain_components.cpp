@@ -9,16 +9,29 @@ SwapchainComponents::SwapchainComponents(const DeviceComponents &device_componen
     m_swapchain(m_factory.create_swapchain()),
     m_swapchain_images(m_swapchain.get_images().value()),
     m_swapchain_image_views(m_factory.create_image_views(m_swapchain)),
-    m_viewport(VkViewport{}),
-    m_scissor(VkRect2D{})
+    m_viewport(create_viewport()),
+    m_scissor(create_scissor())
 {
-    m_viewport.x = 0.0f;
-    m_viewport.y = 0.0f;
-    m_viewport.width = static_cast<float>(m_swapchain.extent.width);
-    m_viewport.height = static_cast<float>(m_swapchain.extent.height);
-    m_viewport.minDepth = 0.0f;
-    m_viewport.maxDepth = 1.0f;
+}
 
-    m_scissor.offset = {0, 0};
-    m_scissor.extent = m_swapchain.extent;
+VkViewport SwapchainComponents::create_viewport()
+{
+    VkViewport viewport{};
+    viewport.x = 0.0f;
+    viewport.y = 0.0f;
+    viewport.width = static_cast<float>(m_swapchain.extent.width);
+    viewport.height = static_cast<float>(m_swapchain.extent.height);
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+
+    return viewport;
+}
+
+VkRect2D SwapchainComponents::create_scissor()
+{
+    VkRect2D scissor{};
+    scissor.offset = {0, 0};
+    scissor.extent = m_swapchain.extent;
+
+    return scissor;
 }

@@ -24,13 +24,13 @@ namespace levin
 
         CommandFactory m_command_factory;
 
-        VkQueue m_graphics_queue;
-        VkCommandPool m_command_pool;
+        const VkQueue m_graphics_queue;
+        const VkCommandPool m_command_pool;
 
-        std::vector<VkCommandBuffer> m_command_buffers;
-        std::vector<VkSemaphore> m_image_available;
-        std::vector<VkSemaphore> m_render_finished;
-        std::vector<VkFence> m_in_flight_fences;
+        const std::vector<VkCommandBuffer> m_command_buffers;
+        const std::vector<VkSemaphore> m_image_available;
+        const std::vector<VkSemaphore> m_render_finished;
+        const std::vector<VkFence> m_in_flight_fences;
 
         VkCommandPool create_command_pool();
         std::vector<VkCommandBuffer> create_command_buffers();

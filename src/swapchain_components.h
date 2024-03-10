@@ -13,11 +13,14 @@ namespace levin
         SwapchainFactory m_factory;
 
         vkb::Swapchain m_swapchain;
-        VkViewport m_viewport;
-        VkRect2D m_scissor;
+        const VkViewport m_viewport;
+        const VkRect2D m_scissor;
 
-        std::vector<VkImage> m_swapchain_images;
-        std::vector<VkImageView> m_swapchain_image_views;
+        const std::vector<VkImage> m_swapchain_images;
+        const std::vector<VkImageView> m_swapchain_image_views;
+
+        VkViewport create_viewport();
+        VkRect2D create_scissor();
 
     public:
         SwapchainComponents(const DeviceComponents &device_components);

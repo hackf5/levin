@@ -16,8 +16,8 @@ namespace levin
     private:
         GraphicsPipelineFactory m_factory;
 
-        VkPipelineLayout m_pipeline_layout;
-        VkPipeline m_pipeline;
+        const VkPipelineLayout m_pipeline_layout;
+        const VkPipeline m_pipeline;
 
         VkPipelineLayout create_pipeline_layout(
             const DescriptorPoolComponents &descriptor_components);

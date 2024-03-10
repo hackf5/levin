@@ -13,7 +13,7 @@ namespace levin
     private:
         RenderPassFactory m_factory;
 
-        VkRenderPass m_render_pass;
+        const VkRenderPass m_render_pass;
 
         VkRenderPass create_render_pass(const SwapchainComponents &swapchain);
 

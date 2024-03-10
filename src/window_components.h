@@ -36,6 +36,6 @@ namespace levin
 
         void poll_events() const { glfwPollEvents(); }
 
-        void wait_resize() const;
+        void wait_resize();
     };
 }

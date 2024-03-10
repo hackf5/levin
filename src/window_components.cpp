@@ -63,13 +63,12 @@ void WindowComponents::register_framebuffer_resize_callback(framebuffer_resize_c
     m_framebuffer_resize_callback = callback;
 }
 
-void WindowComponents::wait_resize() const
+void WindowComponents::wait_resize()
 {
-    int width, height;
-    glfwGetFramebufferSize(m_window, &width, &height);
-    while (width == 0 || height == 0)
+    glfwGetFramebufferSize(m_window, &m_width, &m_height);
+    while (m_width == 0 || m_height == 0)
     {
-        glfwGetFramebufferSize(m_window, &width, &height);
+        glfwGetFramebufferSize(m_window, &m_width, &m_height);
         glfwWaitEvents();
     }
 }
