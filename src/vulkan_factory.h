@@ -14,15 +14,17 @@ namespace levin
 
     private:
         std::vector<std::function<void()>> m_destruction_queue;
-        vkb::Device *const m_device;
+        const vkb::Device &m_device;
 
     protected:
-        VulkanFactory(vkb::Device &device);
+        VulkanFactory(const vkb::Device &device);
+        VulkanFactory(const VulkanFactory &) = delete;
+
         ~VulkanFactory();
 
         void register_destruction(destruction_callback_t destroy);
 
     public:
-        vkb::Device &get_device();
+        const vkb::Device &get_device() const;
     };
 }

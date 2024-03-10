@@ -5,12 +5,12 @@
 using namespace levin;
 
 Buffer::Buffer(
-    const std::shared_ptr<DeviceComponents> &device_components,
+    const DeviceComponents &device_components,
     VkDeviceSize size,
     VkBufferUsageFlags usage,
     VmaMemoryUsage memory_usage,
     VmaAllocationCreateFlags flags):
-    m_allocator(device_components->get_allocator()),
+    m_allocator(device_components.get_allocator()),
     m_size(size),
     m_usage(usage),
     m_memory_usage(memory_usage),
@@ -46,7 +46,7 @@ void Buffer::create_buffer()
 }
 
 BufferCPUtoGPU::BufferCPUtoGPU(
-    const std::shared_ptr<DeviceComponents> &device_components,
+    const DeviceComponents &device_components,
     VkDeviceSize size,
     VkBufferUsageFlags usage):
     Buffer(
@@ -73,19 +73,19 @@ void BufferCPUtoGPU::copy_from(void *data, VkDeviceSize size)
 }
 
 BufferGPU::BufferGPU(
-    const std::shared_ptr<DeviceComponents> &device_components,
-    const std::shared_ptr<BufferTransferQueue> &transfer_queue,
+    const DeviceComponents &device_components,
+    const BufferTransferQueue &transfer_queue,
     VkDeviceSize size,
     VkBufferUsageFlags usage):
     Buffer(
     device_components,
     size,
     usage | VK_BUFFER_USAGE_TRANSFER_DST_BIT),
-    m_transfer_queue(transfer_queue)
+    m_transfer_queue(&transfer_queue)
 {
 }
 
-void BufferGPU::copy_from(BufferCPUtoGPU &buffer)
+void BufferGPU::copy_from(const BufferCPUtoGPU &buffer) const
 {
     auto command_buffer = m_transfer_queue->begin();
 

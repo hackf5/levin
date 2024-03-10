@@ -6,7 +6,7 @@
 
 using namespace levin;
 
-DescriptorFactory::DescriptorFactory(vkb::Device &device)
+DescriptorFactory::DescriptorFactory(const vkb::Device &device)
     : VulkanFactory(device)
 {
 }

@@ -7,8 +7,8 @@
 using namespace levin;
 
 RenderPassComponents::RenderPassComponents(
-    const std::shared_ptr<DeviceComponents> &device_components)
-    : m_factory(device_components->get_device()),
+    const DeviceComponents &device_components)
+    : m_factory(device_components.get_device()),
     m_render_pass(create_render_pass(m_factory))
 {
 }

@@ -26,22 +26,14 @@ namespace levin
 
     public:
         SwapchainComponents(
-            const std::shared_ptr<DeviceComponents> &device_components,
+            const DeviceComponents &device_components,
             VkRenderPass render_pass);
+        SwapchainComponents(const SwapchainComponents &) = delete;
 
-        VkSwapchainKHR get_swapchain() const
-        {
-            return m_swapchain.swapchain;
-        }
+        VkSwapchainKHR get_swapchain() const { return m_swapchain.swapchain; }
 
-        VkExtent2D get_extent() const
-        {
-            return m_swapchain.extent;
-        }
+        VkExtent2D get_extent() const { return m_swapchain.extent; }
 
-        VkFramebuffer get_framebuffer(uint32_t index) const
-        {
-            return m_framebuffers[index];
-        }
+        VkFramebuffer get_framebuffer(uint32_t index) const { return m_framebuffers[index]; }
     };
 }

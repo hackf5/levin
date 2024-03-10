@@ -10,7 +10,7 @@ namespace levin
     class BufferTransferQueue
     {
     private:
-        std::shared_ptr<DeviceComponents> m_device_components;
+        DeviceComponents const * const m_device_components;
 
         CommandFactory m_command_factory;
 
@@ -20,11 +20,12 @@ namespace levin
 
     public:
         BufferTransferQueue(
-            const std::shared_ptr<DeviceComponents> &device_components,
+            DeviceComponents &device_components,
             size_t command_buffer_count = 1);
+        BufferTransferQueue(const BufferTransferQueue &) = delete;
 
-        VkCommandBuffer begin(size_t index = 0);
+        VkCommandBuffer begin(size_t index = 0) const;
 
-        void submit_and_wait(size_t index = 0);
+        void submit_and_wait(size_t index = 0) const;
     };
 }

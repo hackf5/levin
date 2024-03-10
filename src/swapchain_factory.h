@@ -22,15 +22,16 @@ namespace levin
     {
     private:
         static SwapchainConfig config;
-        static vkb::Swapchain create_swapchain(vkb::Device &device);
+        static vkb::Swapchain create_swapchain(const vkb::Device &device);
 
     public:
-        SwapchainFactory(vkb::Device &device);
+        SwapchainFactory(const vkb::Device &device);
+        SwapchainFactory(const SwapchainFactory &) = delete;
 
         vkb::Swapchain create_swapchain();
         std::vector<VkImageView> create_image_views(vkb::Swapchain &swapchain);
         VkFramebuffer create_framebuffer(const VkFramebufferCreateInfo &create_info);
 
-        static const SwapchainConfig& get_config(vkb::Device *device = nullptr);
+        static const SwapchainConfig& get_config(vkb::Device const * device = nullptr);
     };
 }

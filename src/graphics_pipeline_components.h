@@ -13,7 +13,7 @@ namespace levin
     class GraphicsPipelineComponents
     {
     private:
-        const std::shared_ptr<DescriptorComponents> m_descriptor_components;
+        DescriptorComponents const * const m_descriptor_components;
 
         GraphicsPipelineFactory m_factory;
 
@@ -54,18 +54,13 @@ namespace levin
 
     public:
         GraphicsPipelineComponents(
-            const std::shared_ptr<DeviceComponents> &device_components,
-            const std::shared_ptr<DescriptorComponents> &descriptor_components,
+            const DeviceComponents &device_components,
+            const DescriptorComponents &descriptor_components,
             VkRenderPass render_pass);
+        GraphicsPipelineComponents(const GraphicsPipelineComponents &) = delete;
 
-        VkPipeline get_pipeline() const
-        {
-            return m_pipeline;
-        }
+        VkPipeline get_pipeline() const { return m_pipeline; }
 
-        VkPipelineLayout get_pipeline_layout() const
-        {
-            return m_pipeline_layout;
-        }
+        VkPipelineLayout get_pipeline_layout() const { return m_pipeline_layout; }
     };
 }

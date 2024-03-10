@@ -5,7 +5,7 @@
 
 using namespace levin;
 
-GraphicsPipelineFactory::GraphicsPipelineFactory(vkb::Device& device)
+GraphicsPipelineFactory::GraphicsPipelineFactory(const vkb::Device& device)
     : VulkanFactory(device)
 {
 }

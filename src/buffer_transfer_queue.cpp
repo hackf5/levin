@@ -5,11 +5,11 @@
 using namespace levin;
 
 BufferTransferQueue::BufferTransferQueue(
-    const std::shared_ptr<DeviceComponents> &device_components,
+    DeviceComponents &device_components,
     size_t command_buffer_count):
-    m_device_components(device_components),
-    m_command_factory(device_components->get_device()),
-    m_queue(device_components->get_transfer_queue())
+    m_device_components(&device_components),
+    m_command_factory(device_components.get_device()),
+    m_queue(device_components.get_transfer_queue())
 {
     VkCommandPoolCreateInfo pool_info = {};
     pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -29,7 +29,7 @@ BufferTransferQueue::BufferTransferQueue(
     m_command_buffers = m_command_factory.create_command_buffers(alloc_info);
 }
 
-VkCommandBuffer BufferTransferQueue::begin(size_t index)
+VkCommandBuffer BufferTransferQueue::begin(size_t index) const
 {
     assert(index < m_command_buffers.size());
 
@@ -50,7 +50,7 @@ VkCommandBuffer BufferTransferQueue::begin(size_t index)
     return command_buffer;
 }
 
-void BufferTransferQueue::submit_and_wait(size_t index)
+void BufferTransferQueue::submit_and_wait(size_t index) const
 {
     assert(index < m_command_buffers.size());
 

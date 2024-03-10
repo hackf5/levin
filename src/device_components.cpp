@@ -10,9 +10,9 @@
 using namespace levin;
 
 DeviceComponents::DeviceComponents(
-    const std::shared_ptr<WindowComponents> &window_components,
+    const WindowComponents &window_components,
     bool enable_validation_layers)
-    : m_window_components(window_components)
+    : m_window_components(&window_components)
 {
     spdlog::info("Initializing Vulkan Engine Components");
 

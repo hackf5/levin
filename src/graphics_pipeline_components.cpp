@@ -23,11 +23,11 @@ const VkPipelineColorBlendAttachmentState color_blend_attachment =
 };
 
 GraphicsPipelineComponents::GraphicsPipelineComponents(
-    const std::shared_ptr<DeviceComponents> &device_components,
-    const std::shared_ptr<DescriptorComponents> &descriptor_components,
+    const DeviceComponents &device_components,
+    const DescriptorComponents &descriptor_components,
     VkRenderPass render_pass):
-    m_descriptor_components(descriptor_components),
-    m_factory(GraphicsPipelineFactory(device_components.get()->get_device()))
+    m_descriptor_components(&descriptor_components),
+    m_factory(device_components.get_device())
 {
     spdlog::info("Initializing Graphics Pipeline Components");
 

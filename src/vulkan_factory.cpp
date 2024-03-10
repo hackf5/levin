@@ -6,8 +6,8 @@
 
 using namespace levin;
 
-VulkanFactory::VulkanFactory(vkb::Device &device)
-    : m_device(&device)
+VulkanFactory::VulkanFactory(const vkb::Device &device)
+    : m_device(device)
 {
 }
 
@@ -27,7 +27,7 @@ void VulkanFactory::register_destruction(destruction_callback_t destroy)
     m_destruction_queue.push_back(destroy);
 }
 
-vkb::Device &VulkanFactory::get_device()
+const vkb::Device &VulkanFactory::get_device() const
 {
-    return *m_device;
+    return m_device;
 }

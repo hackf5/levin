@@ -25,16 +25,17 @@ namespace levin
 
     public:
         WindowComponents(int width, int height, const std::string &title);
+        WindowComponents(const WindowComponents &) = delete;
         ~WindowComponents();
 
-        VkSurfaceKHR create_window_surface(VkInstance instance);
+        VkSurfaceKHR create_window_surface(VkInstance instance) const;
 
         void register_framebuffer_resize_callback(framebuffer_resize_callback_t callback);
 
-        bool should_close() { return glfwWindowShouldClose(m_window); }
+        bool should_close() const { return glfwWindowShouldClose(m_window); }
 
-        void poll_events() { glfwPollEvents(); }
+        void poll_events() const { glfwPollEvents(); }
 
-        void wait_resize();
+        void wait_resize() const;
     };
 }

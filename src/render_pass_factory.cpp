@@ -4,7 +4,7 @@
 
 using namespace levin;
 
-RenderPassFactory::RenderPassFactory(vkb::Device& device)
+RenderPassFactory::RenderPassFactory(const vkb::Device& device)
     : VulkanFactory(device)
 {
 }

@@ -21,10 +21,11 @@ namespace levin
         void init_descriptor_pool();
 
     public:
-        DescriptorComponents(std::shared_ptr<DeviceComponents> device);
+        DescriptorComponents(const DeviceComponents& device);
+        DescriptorComponents(const DescriptorComponents&) = delete;
 
-        VkDescriptorSetLayout layout() { return m_descriptor_set_layout; }
+        VkDescriptorSetLayout layout() const { return m_descriptor_set_layout; }
 
-        VkDescriptorPool pool() { return m_descriptor_pool; }
+        VkDescriptorPool pool() const { return m_descriptor_pool; }
     };
 }

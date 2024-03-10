@@ -11,7 +11,8 @@ namespace levin
     class CommandFactory : public VulkanFactory
     {
     public:
-        CommandFactory(vkb::Device& device);
+        CommandFactory(const vkb::Device& device);
+        CommandFactory(const CommandFactory&) = delete;
 
         VkCommandPool create_command_pool(const VkCommandPoolCreateInfo& create_info);
 

@@ -18,12 +18,9 @@ namespace levin
         static VkRenderPass create_render_pass(RenderPassFactory &factory);
 
     public:
-        RenderPassComponents(
-            const std::shared_ptr<DeviceComponents> &device_components);
+        RenderPassComponents(const DeviceComponents &device_components);
+        RenderPassComponents(const RenderPassComponents &) = delete;
 
-        VkRenderPass get_render_pass() const
-        {
-            return m_render_pass;
-        }
+        VkRenderPass get_render_pass() const { return m_render_pass; }
     };
 }

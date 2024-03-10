@@ -4,7 +4,7 @@
 
 using namespace levin;
 
-CommandFactory::CommandFactory(vkb::Device& device)
+CommandFactory::CommandFactory(const vkb::Device& device)
     : VulkanFactory(device)
 {
 }

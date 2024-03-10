@@ -12,7 +12,8 @@ namespace levin
         std::vector<char> read_file(const std::string &name);
 
     public:
-        GraphicsPipelineFactory(vkb::Device &device);
+        GraphicsPipelineFactory(const vkb::Device &device);
+        GraphicsPipelineFactory(const GraphicsPipelineFactory &) = delete;
 
         VkShaderModule create_shader_module(const std::string &name);
 

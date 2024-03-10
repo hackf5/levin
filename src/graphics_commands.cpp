@@ -6,9 +6,9 @@
 
 using namespace levin;
 
-GraphicsCommands::GraphicsCommands(const std::shared_ptr<DeviceComponents> &device_components):
-    m_graphics_queue(device_components->get_graphics_queue()),
-    m_command_factory(device_components->get_device()),
+GraphicsCommands::GraphicsCommands(const DeviceComponents &device_components):
+    m_graphics_queue(device_components.get_graphics_queue()),
+    m_command_factory(device_components.get_device()),
     m_command_pool(create_command_pool(m_command_factory)),
     m_command_buffers(create_command_buffers(m_command_factory, m_command_pool)),
     m_image_available(m_command_factory.create_semaphores(DeviceComponents::frames_in_flight)),
@@ -42,12 +42,12 @@ std::vector<VkCommandBuffer> GraphicsCommands::create_command_buffers(
     return command_factory.create_command_buffers(allocate_info);
 }
 
-void GraphicsCommands::reset_command_buffer(uint32_t index)
+void GraphicsCommands::reset_command_buffer(uint32_t index) const
 {
     vkResetCommandBuffer(m_command_buffers[index], 0);
 }
 
-VkCommandBuffer GraphicsCommands::begin_command_buffer(uint32_t index)
+VkCommandBuffer GraphicsCommands::begin_command_buffer(uint32_t index) const
 {
     VkCommandBufferBeginInfo begin_info {};
     begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -60,7 +60,7 @@ VkCommandBuffer GraphicsCommands::begin_command_buffer(uint32_t index)
     return m_command_buffers[index];
 }
 
-void GraphicsCommands::end_command_buffer(uint32_t index)
+void GraphicsCommands::end_command_buffer(uint32_t index) const
 {
     if (vkEndCommandBuffer(m_command_buffers[index]) != VK_SUCCESS)
     {
@@ -68,7 +68,7 @@ void GraphicsCommands::end_command_buffer(uint32_t index)
     }
 }
 
-void GraphicsCommands::submit_command_buffer(uint32_t index)
+void GraphicsCommands::submit_command_buffer(uint32_t index) const
 {
     VkSubmitInfo submit_info {};
     submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -99,8 +99,7 @@ void GraphicsCommands::submit_command_buffer(uint32_t index)
 
 GraphicsResult GraphicsCommands::acquire_next_image(
     uint32_t index,
-    VkSwapchainKHR swapchain,
-    uint32_t &image_index)
+    VkSwapchainKHR swapchain)
 {
     vkWaitForFences(
         m_command_factory.get_device(),
@@ -117,7 +116,7 @@ GraphicsResult GraphicsCommands::acquire_next_image(
         std::numeric_limits<uint64_t>::max(),
         m_image_available[index],
         VK_NULL_HANDLE,
-        &image_index);
+        &m_image_index);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {
@@ -133,8 +132,7 @@ GraphicsResult GraphicsCommands::acquire_next_image(
 
 GraphicsResult GraphicsCommands::present(
     uint32_t index,
-    VkSwapchainKHR swapchain,
-    uint32_t image_index)
+    VkSwapchainKHR swapchain) const
 {
     VkPresentInfoKHR present_info {};
     present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -146,7 +144,7 @@ GraphicsResult GraphicsCommands::present(
     VkSwapchainKHR swapchains[] = { swapchain };
     present_info.swapchainCount = 1;
     present_info.pSwapchains = swapchains;
-    present_info.pImageIndices = &image_index;
+    present_info.pImageIndices = &m_image_index;
 
     VkResult result = vkQueuePresentKHR(m_graphics_queue, &present_info);
 

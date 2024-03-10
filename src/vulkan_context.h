@@ -1,0 +1,117 @@
+#pragma once
+
+#include <memory>
+#include <vector>
+
+#include "window_components.h"
+#include "device_components.h"
+#include "buffer_transfer_queue.h"
+#include "descriptor_components.h"
+#include "render_pass_components.h"
+#include "swapchain_components.h"
+#include "graphics_pipeline_components.h"
+#include "graphics_commands.h"
+#include "buffer.h"
+#include "vertex.h"
+#include "descriptor_set_components.h"
+
+namespace levin
+{
+    class VulkanContext
+    {
+    private:
+        std::unique_ptr<WindowComponents> m_window;
+        std::unique_ptr<DeviceComponents> m_device;
+        std::unique_ptr<BufferTransferQueue> m_transfer_queue;
+        std::unique_ptr<DescriptorComponents> m_descriptor_components;
+        std::unique_ptr<RenderPassComponents> m_render_pass;
+        std::unique_ptr<SwapchainComponents> m_swapchain;
+        std::unique_ptr<GraphicsPipelineComponents> m_graphics_pipeline;
+        std::unique_ptr<GraphicsCommands> m_graphics_commands;
+
+        std::unique_ptr<BufferGPU> m_vertex_buffer;
+        std::unique_ptr<BufferGPU> m_index_buffer;
+        std::vector<std::shared_ptr<BufferCPUtoGPU>> m_uniform_buffers;
+
+        std::unique_ptr<UniformBufferDescriptorSet> m_uniform_buffer_descriptor_set;
+
+        uint32_t m_current_frame = 0;
+
+    public:
+        static const uint32_t max_frames_in_flight = 2;
+
+        VulkanContext() = default;
+
+        VulkanContext(const VulkanContext &) = delete;
+
+        uint32_t current_frame() const { return m_current_frame; }
+
+        WindowComponents &window() { return *m_window; }
+
+        DeviceComponents &device() { return *m_device; }
+
+        BufferTransferQueue &transfer_queue() { return *m_transfer_queue; }
+
+        DescriptorComponents &descriptor_components() { return *m_descriptor_components; }
+
+        RenderPassComponents &render_pass() { return *m_render_pass; }
+
+        SwapchainComponents &swapchain() { return *m_swapchain; }
+
+        GraphicsPipelineComponents &graphics_pipeline() { return *m_graphics_pipeline; }
+
+        GraphicsCommands &graphics_commands() { return *m_graphics_commands; }
+
+        BufferGPU &vertex_buffer() { return *m_vertex_buffer; }
+
+        BufferGPU &index_buffer() { return *m_index_buffer; }
+
+        BufferCPUtoGPU &uniform_buffer(uint32_t index) { return *m_uniform_buffers[index]; }
+
+        UniformBufferDescriptorSet &uniform_buffer_descriptor_set() { return *m_uniform_buffer_descriptor_set; }
+
+        void next_frame()
+        {
+            m_current_frame = (m_current_frame + 1) % DeviceComponents::frames_in_flight;
+        }
+
+        friend class VulkanContextBuilder;
+    };
+
+    class VulkanContextBuilder
+    {
+    private:
+        std::unique_ptr<VulkanContext> m_context;
+
+    public:
+        VulkanContextBuilder() : m_context(std::make_unique<VulkanContext>()) {}
+
+        VulkanContextBuilder(std::unique_ptr<VulkanContext> context) : m_context(std::move(context)) {}
+
+        VulkanContextBuilder &configure_window(int width, int height, const std::string &title);
+
+        VulkanContextBuilder &configure_device(bool enable_validation_layers = true);
+
+        VulkanContextBuilder &configure_transfer_queue(size_t command_buffer_count = 1);
+
+        VulkanContextBuilder &configure_descriptor_pool();
+
+        VulkanContextBuilder &configure_render_pass();
+
+        VulkanContextBuilder &configure_swapchain();
+
+        VulkanContextBuilder &configure_graphics_pipeline();
+
+        VulkanContextBuilder &configure_graphics_commands();
+
+        VulkanContextBuilder &configure_vertex_buffer(VkDeviceSize size);
+
+        VulkanContextBuilder &configure_index_buffer(VkDeviceSize size);
+
+        VulkanContextBuilder &configure_uniform_buffers(VkDeviceSize size);
+
+        VulkanContextBuilder &configure_uniform_buffer_descriptor_set(VkDeviceSize size);
+
+        std::unique_ptr<VulkanContext> build();
+    };
+}

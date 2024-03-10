@@ -2,8 +2,9 @@
 
 #include <memory>
 
-#include "window_components.h"
-#include "device_components.h"
+#include "vulkan_context.h"
+#include "vertex.h"
+#include "uniform_buffer_object.h"
 #include "vulkan_engine.h"
 
 #include "spdlog/spdlog.h"
@@ -28,9 +29,22 @@ int main()
 
     try
     {
-        auto window = std::make_shared<WindowComponents>(800, 600, "Levin");
-        auto device = std::make_shared<DeviceComponents>(window, enableValidationLayers);
-        VulkanEngine engine(window, device);
+        VulkanContextBuilder builder;
+        auto context = builder.configure_window(800, 600, "Levin")
+            .configure_device(enableValidationLayers)
+            .configure_transfer_queue()
+            .configure_descriptor_pool()
+            .configure_render_pass()
+            .configure_swapchain()
+            .configure_graphics_pipeline()
+            .configure_graphics_commands()
+            .configure_vertex_buffer(sizeof(Vertex) * 100)
+            .configure_index_buffer(sizeof(Vertex::index_t) * 100)
+            .configure_uniform_buffers(sizeof(UniformBufferObject))
+            .configure_uniform_buffer_descriptor_set(sizeof(UniformBufferObject))
+            .build();
+
+        VulkanEngine engine(std::move(context));
 
         engine.run();
     }

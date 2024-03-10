@@ -45,7 +45,7 @@ void WindowComponents::framebuffer_resize_callback(GLFWwindow *window, int width
     }
 }
 
-VkSurfaceKHR WindowComponents::create_window_surface(VkInstance instance)
+VkSurfaceKHR WindowComponents::create_window_surface(VkInstance instance) const
 {
     spdlog::info("Creating Window Surface");
 
@@ -63,7 +63,7 @@ void WindowComponents::register_framebuffer_resize_callback(framebuffer_resize_c
     m_framebuffer_resize_callback = callback;
 }
 
-void WindowComponents::wait_resize()
+void WindowComponents::wait_resize() const
 {
     int width, height;
     glfwGetFramebufferSize(m_window, &width, &height);

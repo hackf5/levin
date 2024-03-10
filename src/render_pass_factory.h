@@ -9,7 +9,8 @@ namespace levin
     class RenderPassFactory : public VulkanFactory
     {
     public:
-        RenderPassFactory(vkb::Device& device);
+        RenderPassFactory(const vkb::Device& device);
+        RenderPassFactory(const RenderPassFactory&) = delete;
 
         VkRenderPass create_render_pass(const VkRenderPassCreateInfo &create_info);
     };

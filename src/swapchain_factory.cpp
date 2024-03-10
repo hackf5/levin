@@ -6,12 +6,12 @@ using namespace levin;
 
 SwapchainConfig SwapchainFactory::config = {};
 
-SwapchainFactory::SwapchainFactory(vkb::Device &device)
+SwapchainFactory::SwapchainFactory(const vkb::Device &device)
     : VulkanFactory(device)
 {
 }
 
-vkb::Swapchain SwapchainFactory::create_swapchain(vkb::Device &device)
+vkb::Swapchain SwapchainFactory::create_swapchain(const vkb::Device &device)
 {
     vkb::SwapchainBuilder swapchain_builder { device };
 
@@ -38,7 +38,7 @@ vkb::Swapchain SwapchainFactory::create_swapchain(vkb::Device &device)
     return swapchain;
 }
 
-const SwapchainConfig& SwapchainFactory::get_config(vkb::Device *device)
+const SwapchainConfig& SwapchainFactory::get_config(vkb::Device const *device)
 {
     if (device)
     {

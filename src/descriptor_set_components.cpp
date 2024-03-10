@@ -7,17 +7,17 @@
 using namespace levin;
 
 DescriptorSetComponents::DescriptorSetComponents(
-    const std::shared_ptr<DeviceComponents> &device_components,
-    const std::shared_ptr<DescriptorComponents> &descriptor_components):
-    m_device_components(device_components),
-    m_descriptor_components(descriptor_components)
+    const DeviceComponents &device_components,
+    const DescriptorComponents &descriptor_components):
+    m_device_components(&device_components),
+    m_descriptor_components(&descriptor_components)
 {
 }
 
 DescriptorSetComponents::~DescriptorSetComponents()
 {
     vkFreeDescriptorSets(
-        m_device_components->get_device().device,
+        m_device_components->get_device(),
         m_descriptor_components->pool(),
         static_cast<uint32_t>(m_descriptor_sets.size()),
         m_descriptor_sets.data());
@@ -39,7 +39,7 @@ void DescriptorSetComponents::create_descriptor_sets(size_t count)
     alloc_info.pSetLayouts = layouts.data();
 
     m_descriptor_sets.resize(count);
-    if (vkAllocateDescriptorSets(m_device_components->get_device().device, &alloc_info, m_descriptor_sets.data()) != VK_SUCCESS)
+    if (vkAllocateDescriptorSets(m_device_components->get_device(), &alloc_info, m_descriptor_sets.data()) != VK_SUCCESS)
     {
         spdlog::error("Failed to allocate descriptor sets");
         throw std::runtime_error("Failed to allocate descriptor sets");
@@ -47,8 +47,8 @@ void DescriptorSetComponents::create_descriptor_sets(size_t count)
 }
 
 UniformBufferDescriptorSet::UniformBufferDescriptorSet(
-    const std::shared_ptr<DeviceComponents> &device_components,
-    const std::shared_ptr<DescriptorComponents> &descriptor_components,
+    const DeviceComponents &device_components,
+    const DescriptorComponents &descriptor_components,
     const std::vector<std::shared_ptr<BufferCPUtoGPU>> &uniform_buffers,
     size_t object_size):
     DescriptorSetComponents(device_components, descriptor_components)
@@ -71,6 +71,6 @@ UniformBufferDescriptorSet::UniformBufferDescriptorSet(
         descriptor_write.descriptorCount = 1;
         descriptor_write.pBufferInfo = &buffer_info;
 
-        vkUpdateDescriptorSets(m_device_components->get_device().device, 1, &descriptor_write, 0, nullptr);
+        vkUpdateDescriptorSets(m_device_components->get_device(), 1, &descriptor_write, 0, nullptr);
     }
 }

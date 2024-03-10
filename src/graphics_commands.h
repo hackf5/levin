@@ -24,6 +24,7 @@ namespace levin
 
         VkQueue m_graphics_queue;
         VkCommandPool m_command_pool;
+
         std::vector<VkCommandBuffer> m_command_buffers;
         std::vector<VkSemaphore> m_image_available;
         std::vector<VkSemaphore> m_render_finished;
@@ -35,16 +36,21 @@ namespace levin
             CommandFactory &command_factory,
             VkCommandPool command_pool);
 
+        uint32_t m_image_index = 0;
+
     public:
-        GraphicsCommands(const std::shared_ptr<DeviceComponents> &device_components);
+        GraphicsCommands(const DeviceComponents &device_components);
+        GraphicsCommands(const GraphicsCommands &) = delete;
 
-        GraphicsResult acquire_next_image(uint32_t frame, VkSwapchainKHR swapchain, uint32_t &image_index);
+        uint32_t image_index() const { return m_image_index; }
 
-        void reset_command_buffer(uint32_t frame);
-        VkCommandBuffer begin_command_buffer(uint32_t frame);
-        void end_command_buffer(uint32_t frame);
-        void submit_command_buffer(uint32_t frame);
+        GraphicsResult acquire_next_image(uint32_t frame, VkSwapchainKHR swapchain);
 
-        GraphicsResult present(uint32_t frame, VkSwapchainKHR swapchain, uint32_t image_index);
+        void reset_command_buffer(uint32_t frame) const;
+        VkCommandBuffer begin_command_buffer(uint32_t frame) const;
+        void end_command_buffer(uint32_t frame) const;
+        void submit_command_buffer(uint32_t frame) const;
+
+        GraphicsResult present(uint32_t frame, VkSwapchainKHR swapchain) const;
     };
 }
