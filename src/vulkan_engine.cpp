@@ -99,7 +99,12 @@ void VulkanEngine::recreate_swapchain()
     m_context->device().wait_idle();
 
     VulkanContextBuilder builder(std::move(m_context));
-    auto context = builder.configure_swapchain().build();
+    auto context = builder
+        .configure_swapchain()
+        .configure_render_pass()
+        .configure_framebuffers()
+        .configure_graphics_pipeline()
+        .build();
     m_context = std::move(context);
 }
 
