@@ -10,7 +10,7 @@
 #include "window_components.h"
 #include "device_components.h"
 #include "buffer_transfer_queue.h"
-#include "descriptor_components.h"
+#include "descriptor_pool_components.h"
 #include "render_pass_components.h"
 #include "swapchain_components.h"
 #include "framebuffer_components.h"
@@ -29,7 +29,7 @@ namespace levin
         std::unique_ptr<DeviceComponents> m_device;
         std::unique_ptr<BufferTransferQueue> m_transfer_queue;
         std::unique_ptr<GraphicsCommands> m_graphics_commands;
-        std::unique_ptr<DescriptorComponents> m_descriptor_pool;
+        std::unique_ptr<DescriptorPoolComponents> m_descriptor_pool;
         std::unique_ptr<BufferGPU> m_vertex_buffer;
         std::unique_ptr<BufferGPU> m_index_buffer;
         std::vector<std::unique_ptr<BufferCPUtoGPU>> m_uniform_buffers;
@@ -59,7 +59,7 @@ namespace levin
         GraphicsCommands &graphics_commands() { return *m_graphics_commands; }
         const GraphicsCommands &graphics_commands() const { return *m_graphics_commands; }
 
-        const DescriptorComponents &descriptor_components() const { return *m_descriptor_pool; }
+        const DescriptorPoolComponents &descriptor_components() const { return *m_descriptor_pool; }
 
         const BufferGPU &vertex_buffer() const { return *m_vertex_buffer; }
 

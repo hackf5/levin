@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "device_components.h"
-#include "descriptor_components.h"
+#include "descriptor_pool_components.h"
 #include "swapchain_components.h"
 #include "render_pass_components.h"
 #include "graphics_pipeline_factory.h"
@@ -20,7 +20,7 @@ namespace levin
         VkPipeline m_pipeline;
 
         VkPipelineLayout create_pipeline_layout(
-            const DescriptorComponents &descriptor_components);
+            const DescriptorPoolComponents &descriptor_components);
 
         VkPipeline create_pipeline(
             const SwapchainComponents &swapchain,
@@ -50,7 +50,7 @@ namespace levin
     public:
         GraphicsPipelineComponents(
             const DeviceComponents &device_components,
-            const DescriptorComponents &descriptor_components,
+            const DescriptorPoolComponents &descriptor_components,
             const SwapchainComponents &swapchain,
             const RenderPassComponents &render_pass);
         GraphicsPipelineComponents(const GraphicsPipelineComponents &) = delete;

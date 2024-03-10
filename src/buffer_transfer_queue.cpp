@@ -5,29 +5,35 @@
 using namespace levin;
 
 BufferTransferQueue::BufferTransferQueue(
-    DeviceComponents &device_components,
+    DeviceComponents &device,
     size_t command_buffer_count):
-    m_device_components(&device_components),
-    m_command_factory(device_components),
-    m_queue(device_components.transfer_queue())
+    m_device(device),
+    m_command_factory(device),
+    m_queue(device.transfer_queue()),
+    m_command_pool(create_command_pool()),
+    m_command_buffers(create_command_buffers(command_buffer_count))
+{
+}
+
+VkCommandPool BufferTransferQueue::create_command_pool()
 {
     VkCommandPoolCreateInfo pool_info = {};
     pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    pool_info.queueFamilyIndex =
-         ((vkb::Device)device_components)
-        .get_queue_index(vkb::QueueType::transfer)
-        .value();
+    pool_info.queueFamilyIndex = m_device.transfer_queue_index();
     pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-    m_command_pool = m_command_factory.create_command_pool(pool_info);
+    return m_command_factory.create_command_pool(pool_info);
+}
 
+std::vector<VkCommandBuffer> BufferTransferQueue::create_command_buffers(size_t count)
+{
     VkCommandBufferAllocateInfo alloc_info = {};
     alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     alloc_info.commandPool = m_command_pool;
     alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    alloc_info.commandBufferCount = static_cast<uint32_t>(command_buffer_count);
+    alloc_info.commandBufferCount = static_cast<uint32_t>(count);
 
-    m_command_buffers = m_command_factory.create_command_buffers(alloc_info);
+    return m_command_factory.create_command_buffers(alloc_info);
 }
 
 VkCommandBuffer BufferTransferQueue::begin(size_t index) const

@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "device_components.h"
-#include "descriptor_components.h"
+#include "descriptor_pool_components.h"
 #include "buffer.h"
 
 namespace levin
@@ -15,16 +15,14 @@ namespace levin
         std::vector<VkDescriptorSet> create_descriptor_sets(size_t count);
 
     protected:
-        DeviceComponents const *const m_device_components;
-
-        DescriptorComponents const *const m_descriptor_components;
-
-        std::vector<VkDescriptorSet> m_descriptor_sets;
+        const DeviceComponents &m_device;
+        const DescriptorPoolComponents &m_descriptor_pool;
+        const std::vector<VkDescriptorSet> m_descriptor_sets;
 
     public:
         DescriptorSetComponents(
-            const DeviceComponents &device_components,
-            const DescriptorComponents &descriptor_components,
+            const DeviceComponents &device,
+            const DescriptorPoolComponents &descriptor_pool,
             size_t count);
         DescriptorSetComponents(const DescriptorSetComponents &) = delete;
 
@@ -37,8 +35,8 @@ namespace levin
     {
     public:
         UniformBufferDescriptorSet(
-            const DeviceComponents &device_components,
-            const DescriptorComponents &descriptor_components,
+            const DeviceComponents &device,
+            const DescriptorPoolComponents &descriptor_pool,
             VkBuffer *uniform_buffers,
             size_t count,
             size_t object_size);

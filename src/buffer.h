@@ -10,21 +10,27 @@ namespace levin
     class Buffer
     {
     protected:
-        VmaAllocator m_allocator;
+        struct AllocationInfo
+        {
+            const VkBuffer buffer;
+            const VmaAllocation allocation;
+            const VmaAllocationInfo allocation_info;
+        };
 
-        VkDeviceSize m_size;
-        VkBufferUsageFlags m_usage;
-        VmaMemoryUsage m_memory_usage;
-        VmaAllocationCreateFlags m_flags;
+        const VmaAllocator m_allocator;
 
-        VkBuffer m_buffer;
-        VmaAllocation m_allocation;
-        VmaAllocationInfo m_allocation_info;
+        const VkDeviceSize m_size;
+        const VkBufferUsageFlags m_usage;
+        const VmaMemoryUsage m_memory_usage;
+        const VmaAllocationCreateFlags m_flags;
 
-        void create_buffer();
+        const AllocationInfo m_allocation_info;
+
+        AllocationInfo create_allocation_info();
+
     public:
         Buffer(
-            const DeviceComponents &device_components,
+            const DeviceComponents &device,
             VkDeviceSize size,
             VkBufferUsageFlags usage,
             VmaMemoryUsage memory_usage = VMA_MEMORY_USAGE_AUTO,
@@ -35,7 +41,11 @@ namespace levin
 
         VkDeviceSize size() const { return m_size; }
 
-        operator VkBuffer() const { return m_buffer; }
+        operator VkBuffer() const { return m_allocation_info.buffer; }
+
+        operator VmaAllocation() const { return m_allocation_info.allocation; }
+
+        operator VmaAllocationInfo() const { return m_allocation_info.allocation_info; }
     };
 
     class BufferCPUtoGPU: public Buffer
@@ -45,7 +55,7 @@ namespace levin
 
     public:
         BufferCPUtoGPU(
-            const DeviceComponents &device_components,
+            const DeviceComponents &device,
             VkDeviceSize size,
             VkBufferUsageFlags usage);
         BufferCPUtoGPU(const BufferCPUtoGPU &) = delete;
@@ -57,11 +67,11 @@ namespace levin
 
     class BufferGPU: public Buffer
     {
-        BufferTransferQueue const * const m_transfer_queue;
+        const BufferTransferQueue& m_transfer_queue;
 
     public:
         BufferGPU(
-            const DeviceComponents &device_components,
+            const DeviceComponents &device,
             const BufferTransferQueue &transfer_queue,
             VkDeviceSize size,
             VkBufferUsageFlags usage);

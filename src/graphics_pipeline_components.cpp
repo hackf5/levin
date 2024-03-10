@@ -24,7 +24,7 @@ const VkPipelineColorBlendAttachmentState color_blend_attachment =
 
 GraphicsPipelineComponents::GraphicsPipelineComponents(
     const DeviceComponents &device_components,
-    const DescriptorComponents &descriptor_components,
+    const DescriptorPoolComponents &descriptor_components,
     const SwapchainComponents &swapchain_components,
     const RenderPassComponents &render_pass_components):
     m_factory(device_components),
@@ -34,7 +34,7 @@ GraphicsPipelineComponents::GraphicsPipelineComponents(
 }
 
 VkPipelineLayout GraphicsPipelineComponents::create_pipeline_layout(
-    const DescriptorComponents &descriptor)
+    const DescriptorPoolComponents &descriptor)
 {
     VkPipelineLayoutCreateInfo pipeline_layout_info = {};
     pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

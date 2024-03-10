@@ -10,23 +10,17 @@
 using namespace levin;
 
 DeviceComponents::DeviceComponents(
-    const WindowComponents &window_components,
+    const WindowComponents &window,
     bool enable_validation_layers)
-    : m_window_components(&window_components)
+    : m_window(window),
+    m_instance(create_instance(enable_validation_layers)),
+    m_surface(create_surface()),
+    m_device(create_device()),
+    m_allocator(create_allocator()),
+    m_graphics_queue(create_queue(vkb::QueueType::graphics)),
+    m_present_queue(create_queue(vkb::QueueType::present)),
+    m_transfer_queue(create_queue(vkb::QueueType::transfer))
 {
-    spdlog::info("Initializing Vulkan Engine Components");
-
-    try
-    {
-        init_device(enable_validation_layers);
-        init_queues();
-        init_allocator();
-    }
-    catch (const std::exception &e)
-    {
-        this->~DeviceComponents();
-        throw;
-    }
 }
 
 DeviceComponents::~DeviceComponents()
@@ -39,11 +33,10 @@ DeviceComponents::~DeviceComponents()
     vkb::destroy_instance(m_instance);
 }
 
-void DeviceComponents::init_device(bool enable_validation_layers)
+vkb::Instance DeviceComponents::create_instance(bool enable_validation_layers)
 {
-    spdlog::info("Initializing Device");
-
     spdlog::info("Creating Vulkan Instance");
+
     vkb::InstanceBuilder builder;
     auto inst_ret = builder.set_app_name("Levin")
         .request_validation_layers(enable_validation_layers)
@@ -53,11 +46,19 @@ void DeviceComponents::init_device(bool enable_validation_layers)
     {
         throw std::runtime_error("Failed to create Vulkan Instance: " + inst_ret.error().message());
     }
-    m_instance = inst_ret.value();
 
-    m_surface = m_window_components->create_window_surface(m_instance.instance);
+    return inst_ret.value();
+}
 
+VkSurfaceKHR DeviceComponents::create_surface()
+{
+    return m_window.create_window_surface(m_instance.instance);
+}
+
+vkb::Device DeviceComponents::create_device()
+{
     spdlog::info("Selecting Vulkan Physical Device");
+
     vkb::PhysicalDeviceSelector selector { m_instance };
     auto phys_ret = selector.set_surface(m_surface)
         .set_minimum_version(1, 3)
@@ -69,52 +70,42 @@ void DeviceComponents::init_device(bool enable_validation_layers)
     }
 
     spdlog::info("Creating Vulkan Device");
+
     vkb::DeviceBuilder device_builder { phys_ret.value() };
     auto dev_ret = device_builder.build();
     if (!dev_ret)
     {
         throw std::runtime_error("Failed to create Vulkan Device: " + dev_ret.error().message());
     }
-    m_device = dev_ret.value();
+
+    return dev_ret.value();
 }
 
-void DeviceComponents::init_allocator()
+VmaAllocator DeviceComponents::create_allocator()
 {
-    spdlog::info("Initializing Allocator");
+    spdlog::info("Creating Vulkan Memory Allocator");
 
     VmaAllocatorCreateInfo allocator_info = {};
     allocator_info.physicalDevice = m_device.physical_device;
     allocator_info.device = m_device.device;
     allocator_info.instance = m_instance.instance;
 
-    vmaCreateAllocator(&allocator_info, &m_allocator);
+    VmaAllocator allocator;
+    if (vmaCreateAllocator(&allocator_info, &allocator) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create Vulkan Memory Allocator");
+    }
+
+    return allocator;
 }
 
-void DeviceComponents::init_queues()
+VkQueue DeviceComponents::create_queue(vkb::QueueType queue_type)
 {
-    spdlog::info("Initializing Queues");
-
-    auto graphics_queue_ret = m_device.get_queue(vkb::QueueType::graphics);
-    if (!graphics_queue_ret)
+    auto queue_ret = m_device.get_queue(queue_type);
+    if (!queue_ret)
     {
-        throw std::runtime_error("Failed to get graphics queue: " + graphics_queue_ret.error().message());
+        throw std::runtime_error("Failed to get queue: " + queue_ret.error().message());
     }
 
-    m_graphics_queue = graphics_queue_ret.value();
-
-    auto present_queue_ret = m_device.get_queue(vkb::QueueType::present);
-    if (!present_queue_ret)
-    {
-        throw std::runtime_error("Failed to get present queue: " + present_queue_ret.error().message());
-    }
-
-    m_present_queue = present_queue_ret.value();
-
-    auto transfer_queue_ret = m_device.get_queue(vkb::QueueType::transfer);
-    if (!transfer_queue_ret)
-    {
-        throw std::runtime_error("Failed to get transfer queue: " + transfer_queue_ret.error().message());
-    }
-
-    m_transfer_queue = transfer_queue_ret.value();
+    return queue_ret.value();
 }

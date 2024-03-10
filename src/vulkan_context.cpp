@@ -30,7 +30,7 @@ VulkanContextBuilder &VulkanContextBuilder::configure_graphics_commands()
 
 VulkanContextBuilder &VulkanContextBuilder::configure_descriptor_pool()
 {
-    m_context->m_descriptor_pool = std::make_unique<DescriptorComponents>(*m_context->m_device);
+    m_context->m_descriptor_pool = std::make_unique<DescriptorPoolComponents>(*m_context->m_device);
     return *this;
 }
 

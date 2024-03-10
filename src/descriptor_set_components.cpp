@@ -7,11 +7,11 @@
 using namespace levin;
 
 DescriptorSetComponents::DescriptorSetComponents(
-    const DeviceComponents &device_components,
-    const DescriptorComponents &descriptor_components,
+    const DeviceComponents &device,
+    const DescriptorPoolComponents &descriptor_pool,
     size_t count):
-    m_device_components(&device_components),
-    m_descriptor_components(&descriptor_components),
+    m_device(device),
+    m_descriptor_pool(descriptor_pool),
     m_descriptor_sets(create_descriptor_sets(count))
 {
 }
@@ -19,24 +19,24 @@ DescriptorSetComponents::DescriptorSetComponents(
 DescriptorSetComponents::~DescriptorSetComponents()
 {
     vkFreeDescriptorSets(
-        *m_device_components,
-        m_descriptor_components->pool(),
+        m_device,
+        m_descriptor_pool.pool(),
         static_cast<uint32_t>(m_descriptor_sets.size()),
         m_descriptor_sets.data());
 }
 
 std::vector<VkDescriptorSet> DescriptorSetComponents::create_descriptor_sets(size_t count)
 {
-    std::vector<VkDescriptorSetLayout> layouts(count, m_descriptor_components->layout());
+    std::vector<VkDescriptorSetLayout> layouts(count, m_descriptor_pool.layout());
 
     VkDescriptorSetAllocateInfo alloc_info{};
     alloc_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    alloc_info.descriptorPool = m_descriptor_components->pool();
+    alloc_info.descriptorPool = m_descriptor_pool.pool();
     alloc_info.descriptorSetCount = static_cast<uint32_t>(count);
     alloc_info.pSetLayouts = layouts.data();
 
     std::vector<VkDescriptorSet> descriptor_sets(count);
-    if (vkAllocateDescriptorSets(*m_device_components, &alloc_info, m_descriptor_sets.data()) != VK_SUCCESS)
+    if (vkAllocateDescriptorSets(m_device, &alloc_info, descriptor_sets.data()) != VK_SUCCESS)
     {
         spdlog::error("Failed to allocate descriptor sets");
         throw std::runtime_error("Failed to allocate descriptor sets");
@@ -46,12 +46,12 @@ std::vector<VkDescriptorSet> DescriptorSetComponents::create_descriptor_sets(siz
 }
 
 UniformBufferDescriptorSet::UniformBufferDescriptorSet(
-    const DeviceComponents &device_components,
-    const DescriptorComponents &descriptor_components,
+    const DeviceComponents &device,
+    const DescriptorPoolComponents &descriptor_pool,
     VkBuffer* uniform_buffers,
     size_t count,
     size_t object_size):
-    DescriptorSetComponents(device_components, descriptor_components, count)
+    DescriptorSetComponents(device, descriptor_pool, count)
 {
     for (size_t i = 0; i < count; i++)
     {
@@ -69,6 +69,6 @@ UniformBufferDescriptorSet::UniformBufferDescriptorSet(
         descriptor_write.descriptorCount = 1;
         descriptor_write.pBufferInfo = &buffer_info;
 
-        vkUpdateDescriptorSets(*m_device_components, 1, &descriptor_write, 0, nullptr);
+        vkUpdateDescriptorSets(m_device, 1, &descriptor_write, 0, nullptr);
     }
 }

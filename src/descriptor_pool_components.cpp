@@ -1,4 +1,4 @@
-#include "descriptor_components.h"
+#include "descriptor_pool_components.h"
 
 #include <stdexcept>
 
@@ -6,14 +6,14 @@
 
 using namespace levin;
 
-DescriptorComponents::DescriptorComponents(const DeviceComponents& device)
-    : m_factory(device)
+DescriptorPoolComponents::DescriptorPoolComponents(const DeviceComponents &device):
+    m_factory(device),
+    m_descriptor_set_layout(create_descriptor_set_layout()),
+    m_descriptor_pool(create_descriptor_pool())
 {
-    init_descriptor_set_layout();
-    init_descriptor_pool();
 }
 
-void DescriptorComponents::init_descriptor_set_layout()
+VkDescriptorSetLayout DescriptorPoolComponents::create_descriptor_set_layout()
 {
     VkDescriptorSetLayoutBinding ubo_layout_binding = {};
     ubo_layout_binding.binding = 0;
@@ -27,10 +27,10 @@ void DescriptorComponents::init_descriptor_set_layout()
     layout_info.bindingCount = 1;
     layout_info.pBindings = &ubo_layout_binding;
 
-    m_descriptor_set_layout = m_factory.create_descriptor_set_layout(layout_info);
+    return m_factory.create_descriptor_set_layout(layout_info);
 }
 
-void DescriptorComponents::init_descriptor_pool()
+VkDescriptorPool DescriptorPoolComponents::create_descriptor_pool()
 {
     VkDescriptorPoolSize pool_size = {};
     pool_size.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -43,5 +43,5 @@ void DescriptorComponents::init_descriptor_pool()
     pool_info.pPoolSizes = &pool_size;
     pool_info.maxSets = static_cast<uint32_t>(DeviceComponents::frames_in_flight);
 
-    m_descriptor_pool = m_factory.create_descriptor_pool(pool_info);
+    return m_factory.create_descriptor_pool(pool_info);
 }

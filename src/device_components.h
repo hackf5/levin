@@ -13,25 +13,26 @@ namespace levin
     class DeviceComponents
     {
     private:
-        WindowComponents const * const m_window_components;
-
-        VkSurfaceKHR m_surface;
+        const WindowComponents &m_window;
 
         vkb::Instance m_instance;
+        VkSurfaceKHR m_surface;
         vkb::Device m_device;
-
         VmaAllocator m_allocator;
 
         VkQueue m_graphics_queue;
         VkQueue m_present_queue;
         VkQueue m_transfer_queue;
 
-        void init_device(bool enable_validation_layers);
-        void init_allocator();
-        void init_queues();
+        vkb::Instance create_instance(bool enable_validation_layers);
+        VkSurfaceKHR create_surface();
+        vkb::Device create_device();
+        VmaAllocator create_allocator();
+        VkQueue create_queue(vkb::QueueType queue_type);
+
     public:
         DeviceComponents(
-            const WindowComponents &window_components,
+            const WindowComponents &window,
             bool enable_validation_layers);
         DeviceComponents(const DeviceComponents &) = delete;
 
@@ -39,7 +40,7 @@ namespace levin
 
         static const uint32_t frames_in_flight = 2;
 
-        operator const vkb::Device&() const { return m_device; }
+        operator const vkb::Device &() const { return m_device; }
 
         operator VkDevice() const { return m_device.device; }
 
