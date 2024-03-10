@@ -9,6 +9,7 @@
 #include "descriptor_components.h"
 #include "render_pass_components.h"
 #include "swapchain_components.h"
+#include "framebuffer_components.h"
 #include "graphics_pipeline_components.h"
 #include "graphics_commands.h"
 #include "buffer.h"
@@ -23,17 +24,16 @@ namespace levin
         std::unique_ptr<WindowComponents> m_window;
         std::unique_ptr<DeviceComponents> m_device;
         std::unique_ptr<BufferTransferQueue> m_transfer_queue;
-        std::unique_ptr<DescriptorComponents> m_descriptor_components;
-        std::unique_ptr<RenderPassComponents> m_render_pass;
-        std::unique_ptr<SwapchainComponents> m_swapchain;
-        std::unique_ptr<GraphicsPipelineComponents> m_graphics_pipeline;
         std::unique_ptr<GraphicsCommands> m_graphics_commands;
-
+        std::unique_ptr<DescriptorComponents> m_descriptor_components;
         std::unique_ptr<BufferGPU> m_vertex_buffer;
         std::unique_ptr<BufferGPU> m_index_buffer;
-        std::vector<std::shared_ptr<BufferCPUtoGPU>> m_uniform_buffers;
-
+        std::vector<std::unique_ptr<BufferCPUtoGPU>> m_uniform_buffers;
         std::unique_ptr<UniformBufferDescriptorSet> m_uniform_buffer_descriptor_set;
+        std::unique_ptr<SwapchainComponents> m_swapchain;
+        std::unique_ptr<RenderPassComponents> m_render_pass;
+        std::unique_ptr<FramebufferComponents> m_framebuffers;
+        std::unique_ptr<GraphicsPipelineComponents> m_graphics_pipeline;
 
         uint32_t m_current_frame = 0;
 
@@ -52,16 +52,10 @@ namespace levin
 
         const BufferTransferQueue &transfer_queue() const { return *m_transfer_queue; }
 
-        const DescriptorComponents &descriptor_components() const { return *m_descriptor_components; }
-
-        const RenderPassComponents &render_pass() const { return *m_render_pass; }
-
-        const SwapchainComponents &swapchain() const { return *m_swapchain; }
-
-        const GraphicsPipelineComponents &graphics_pipeline() const { return *m_graphics_pipeline; }
-
         GraphicsCommands &graphics_commands() { return *m_graphics_commands; }
         const GraphicsCommands &graphics_commands() const { return *m_graphics_commands; }
+
+        const DescriptorComponents &descriptor_components() const { return *m_descriptor_components; }
 
         const BufferGPU &vertex_buffer() const { return *m_vertex_buffer; }
 
@@ -70,7 +64,18 @@ namespace levin
         const BufferCPUtoGPU &uniform_buffer(uint32_t index) const { return *m_uniform_buffers[index]; }
         BufferCPUtoGPU &uniform_buffer(uint32_t index) { return *m_uniform_buffers[index]; }
 
-        const UniformBufferDescriptorSet &uniform_buffer_descriptor_set() const { return *m_uniform_buffer_descriptor_set; }
+        const UniformBufferDescriptorSet &uniform_buffer_descriptor_set() const
+        {
+            return *m_uniform_buffer_descriptor_set;
+        }
+
+        const SwapchainComponents &swapchain() const { return *m_swapchain; }
+
+        const RenderPassComponents &render_pass() const { return *m_render_pass; }
+
+        const FramebufferComponents &framebuffers() const { return *m_framebuffers; }
+
+        const GraphicsPipelineComponents &graphics_pipeline() const { return *m_graphics_pipeline; }
 
         void next_frame()
         {
@@ -96,15 +101,9 @@ namespace levin
 
         VulkanContextBuilder &configure_transfer_queue(size_t command_buffer_count = 1);
 
-        VulkanContextBuilder &configure_descriptor_pool();
-
-        VulkanContextBuilder &configure_render_pass();
-
-        VulkanContextBuilder &configure_swapchain();
-
-        VulkanContextBuilder &configure_graphics_pipeline();
-
         VulkanContextBuilder &configure_graphics_commands();
+
+        VulkanContextBuilder &configure_descriptor_pool();
 
         VulkanContextBuilder &configure_vertex_buffer(VkDeviceSize size);
 
@@ -113,6 +112,14 @@ namespace levin
         VulkanContextBuilder &configure_uniform_buffers(VkDeviceSize size);
 
         VulkanContextBuilder &configure_uniform_buffer_descriptor_set(VkDeviceSize size);
+
+        VulkanContextBuilder &configure_swapchain();
+
+        VulkanContextBuilder &configure_render_pass();
+
+        VulkanContextBuilder &configure_framebuffers();
+
+        VulkanContextBuilder &configure_graphics_pipeline();
 
         std::unique_ptr<VulkanContext> build();
     };

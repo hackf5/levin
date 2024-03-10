@@ -8,9 +8,11 @@ using namespace levin;
 
 DescriptorSetComponents::DescriptorSetComponents(
     const DeviceComponents &device_components,
-    const DescriptorComponents &descriptor_components):
+    const DescriptorComponents &descriptor_components,
+    size_t count):
     m_device_components(&device_components),
-    m_descriptor_components(&descriptor_components)
+    m_descriptor_components(&descriptor_components),
+    m_descriptor_sets(create_descriptor_sets(count))
 {
 }
 
@@ -23,13 +25,8 @@ DescriptorSetComponents::~DescriptorSetComponents()
         m_descriptor_sets.data());
 }
 
-void DescriptorSetComponents::create_descriptor_sets(size_t count)
+std::vector<VkDescriptorSet> DescriptorSetComponents::create_descriptor_sets(size_t count)
 {
-    if (m_descriptor_sets.size() > 0)
-    {
-        throw std::runtime_error("Descriptor sets already created");
-    }
-
     std::vector<VkDescriptorSetLayout> layouts(count, m_descriptor_components->layout());
 
     VkDescriptorSetAllocateInfo alloc_info{};
@@ -38,27 +35,28 @@ void DescriptorSetComponents::create_descriptor_sets(size_t count)
     alloc_info.descriptorSetCount = static_cast<uint32_t>(count);
     alloc_info.pSetLayouts = layouts.data();
 
-    m_descriptor_sets.resize(count);
+    std::vector<VkDescriptorSet> descriptor_sets(count);
     if (vkAllocateDescriptorSets(*m_device_components, &alloc_info, m_descriptor_sets.data()) != VK_SUCCESS)
     {
         spdlog::error("Failed to allocate descriptor sets");
         throw std::runtime_error("Failed to allocate descriptor sets");
     }
+
+    return descriptor_sets;
 }
 
 UniformBufferDescriptorSet::UniformBufferDescriptorSet(
     const DeviceComponents &device_components,
     const DescriptorComponents &descriptor_components,
-    const std::vector<std::shared_ptr<BufferCPUtoGPU>> &uniform_buffers,
+    VkBuffer* uniform_buffers,
+    size_t count,
     size_t object_size):
-    DescriptorSetComponents(device_components, descriptor_components)
+    DescriptorSetComponents(device_components, descriptor_components, count)
 {
-    create_descriptor_sets(uniform_buffers.size());
-
-    for (size_t i = 0; i < uniform_buffers.size(); i++)
+    for (size_t i = 0; i < count; i++)
     {
         VkDescriptorBufferInfo buffer_info{};
-        buffer_info.buffer = *uniform_buffers[i];
+        buffer_info.buffer = uniform_buffers[i];
         buffer_info.offset = 0;
         buffer_info.range = object_size;
 

@@ -6,6 +6,7 @@
 #include "device_components.h"
 #include "descriptor_components.h"
 #include "swapchain_components.h"
+#include "render_pass_components.h"
 #include "graphics_pipeline_factory.h"
 
 namespace levin
@@ -13,19 +14,17 @@ namespace levin
     class GraphicsPipelineComponents
     {
     private:
-        DescriptorComponents const * const m_descriptor_components;
-
         GraphicsPipelineFactory m_factory;
 
         VkPipelineLayout m_pipeline_layout;
         VkPipeline m_pipeline;
 
-        void init_pipeline(
-            VkShaderModule vert_module,
-            VkShaderModule frag_module,
-            VkRenderPass render_pass);
+        VkPipelineLayout create_pipeline_layout(
+            const DescriptorComponents &descriptor_components);
 
-        void init_pipeline_layout();
+        VkPipeline create_pipeline(
+            const SwapchainComponents &swapchain,
+            const RenderPassComponents &render_pass);
 
         std::vector<VkPipelineShaderStageCreateInfo> create_shader_stages(
             VkShaderModule vert_module,
@@ -38,11 +37,7 @@ namespace levin
 
         VkPipelineInputAssemblyStateCreateInfo create_input_assembly_state();
 
-        VkViewport create_viewport();
-
-        VkRect2D create_scissor();
-
-        VkPipelineViewportStateCreateInfo create_viewport_state(VkViewport &viewport, VkRect2D &scissor);
+        VkPipelineViewportStateCreateInfo create_viewport_state(const SwapchainComponents &swapchain);
 
         VkPipelineRasterizationStateCreateInfo create_rasterization_state();
 
@@ -56,11 +51,12 @@ namespace levin
         GraphicsPipelineComponents(
             const DeviceComponents &device_components,
             const DescriptorComponents &descriptor_components,
-            VkRenderPass render_pass);
+            const SwapchainComponents &swapchain,
+            const RenderPassComponents &render_pass);
         GraphicsPipelineComponents(const GraphicsPipelineComponents &) = delete;
 
-        VkPipeline get_pipeline() const { return m_pipeline; }
+        operator VkPipeline() const { return m_pipeline; }
 
-        VkPipelineLayout get_pipeline_layout() const { return m_pipeline_layout; }
+        VkPipelineLayout layout() const { return m_pipeline_layout; }
     };
 }

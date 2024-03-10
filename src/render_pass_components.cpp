@@ -7,16 +7,17 @@
 using namespace levin;
 
 RenderPassComponents::RenderPassComponents(
-    const DeviceComponents &device_components)
-    : m_factory(device_components),
-    m_render_pass(create_render_pass(m_factory))
+    const DeviceComponents &device_components,
+    const SwapchainComponents &swapchain_components):
+    m_factory(device_components),
+    m_render_pass(create_render_pass(swapchain_components))
 {
 }
 
-VkRenderPass RenderPassComponents::create_render_pass(RenderPassFactory &factory)
+VkRenderPass RenderPassComponents::create_render_pass(const SwapchainComponents &swapchain)
 {
     VkAttachmentDescription color_attachment = {};
-    color_attachment.format = SwapchainFactory::get_config().image_format;
+    color_attachment.format = swapchain.image_format();
     color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
     color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -51,5 +52,5 @@ VkRenderPass RenderPassComponents::create_render_pass(RenderPassFactory &factory
     render_pass_info.dependencyCount = 1;
     render_pass_info.pDependencies = &dependency;
 
-    return factory.create_render_pass(render_pass_info);
+    return m_factory.create_render_pass(render_pass_info);
 }

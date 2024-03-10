@@ -3,8 +3,8 @@
 #include <vector>
 
 #include "device_components.h"
-
 #include "render_pass_factory.h"
+#include "swapchain_components.h"
 
 namespace levin
 {
@@ -15,12 +15,14 @@ namespace levin
 
         VkRenderPass m_render_pass;
 
-        static VkRenderPass create_render_pass(RenderPassFactory &factory);
+        VkRenderPass create_render_pass(const SwapchainComponents &swapchain);
 
     public:
-        RenderPassComponents(const DeviceComponents &device_components);
+        RenderPassComponents(
+            const DeviceComponents &device_components,
+            const SwapchainComponents &swapchain_components);
         RenderPassComponents(const RenderPassComponents &) = delete;
 
-        VkRenderPass get_render_pass() const { return m_render_pass; }
+        operator VkRenderPass() const { return m_render_pass; }
     };
 }

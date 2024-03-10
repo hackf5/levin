@@ -11,24 +11,26 @@ namespace levin
 {
     class DescriptorSetComponents
     {
-    protected:
-        DeviceComponents const * const m_device_components;
+    private:
+        std::vector<VkDescriptorSet> create_descriptor_sets(size_t count);
 
-        DescriptorComponents const * const m_descriptor_components;
+    protected:
+        DeviceComponents const *const m_device_components;
+
+        DescriptorComponents const *const m_descriptor_components;
 
         std::vector<VkDescriptorSet> m_descriptor_sets;
-
-        void create_descriptor_sets(size_t count);
 
     public:
         DescriptorSetComponents(
             const DeviceComponents &device_components,
-            const DescriptorComponents &descriptor_components);
+            const DescriptorComponents &descriptor_components,
+            size_t count);
         DescriptorSetComponents(const DescriptorSetComponents &) = delete;
 
         ~DescriptorSetComponents();
 
-        VkDescriptorSet get_descriptor_set(size_t index) const { return m_descriptor_sets[index]; }
+        VkDescriptorSet descriptor_set(size_t index) const { return m_descriptor_sets[index]; }
     };
 
     class UniformBufferDescriptorSet: public DescriptorSetComponents
@@ -37,7 +39,8 @@ namespace levin
         UniformBufferDescriptorSet(
             const DeviceComponents &device_components,
             const DescriptorComponents &descriptor_components,
-            const std::vector<std::shared_ptr<BufferCPUtoGPU>> &uniform_buffers,
+            VkBuffer *uniform_buffers,
+            size_t count,
             size_t object_size);
     };
 }

@@ -4,16 +4,16 @@
 
 using namespace levin;
 
-SwapchainConfig SwapchainFactory::config = {};
-
 SwapchainFactory::SwapchainFactory(const vkb::Device &device)
     : VulkanFactory(device)
 {
 }
 
-vkb::Swapchain SwapchainFactory::create_swapchain(const vkb::Device &device)
+vkb::Swapchain SwapchainFactory::create_swapchain()
 {
-    vkb::SwapchainBuilder swapchain_builder { device };
+    spdlog::info("Creating Swapchain");
+
+    vkb::SwapchainBuilder swapchain_builder { device() };
 
     auto swapchain_ret = swapchain_builder.build();
     if (!swapchain_ret)
@@ -22,43 +22,12 @@ vkb::Swapchain SwapchainFactory::create_swapchain(const vkb::Device &device)
     }
 
     auto swapchain = swapchain_ret.value();
-
     if (swapchain.image_count < 3)
     {
         throw std::runtime_error("Swapchain image count must be at least 3");
     }
 
-    config.image_format = swapchain.image_format;
-    config.color_space = swapchain.color_space;
-    config.image_count = swapchain.image_count;
-    config.image_usage = swapchain.image_usage_flags;
-    config.present_mode = swapchain.present_mode;
-    config.extent = swapchain.extent;
-
-    return swapchain;
-}
-
-const SwapchainConfig& SwapchainFactory::get_config(vkb::Device const *device)
-{
-    if (device)
-    {
-        // there are circular dependencies between the swapchain and the render pass
-        // in that the framebuffers need the render pass and the render pass needs to know
-        // about the swapchain's config
-        auto swapchain = create_swapchain(*device);
-        vkb::destroy_swapchain(swapchain);
-    }
-
-    return config;
-}
-
-vkb::Swapchain SwapchainFactory::create_swapchain()
-{
-    spdlog::info("Creating Swapchain");
-
-    auto swapchain = create_swapchain(device());
-
-    register_destruction([=, this]()
+    register_destruction([swapchain](const vkb::Device & device)
         {
             spdlog::info("Destroying Swapchain");
             vkb::destroy_swapchain(swapchain);
@@ -75,34 +44,15 @@ std::vector<VkImageView> SwapchainFactory::create_image_views(vkb::Swapchain &sw
 
     for (auto image_view : image_views)
     {
-        register_destruction([=, this]()
+        register_destruction([image_view](const vkb::Device & device)
             {
                 spdlog::info("Destroying Image Views");
                 {
-                    vkDestroyImageView(device(), image_view, nullptr);
+                    vkDestroyImageView(device, image_view, nullptr);
                 }
             });
     }
 
     return image_views;
 
-}
-
-VkFramebuffer SwapchainFactory::create_framebuffer(const VkFramebufferCreateInfo &create_info)
-{
-    spdlog::info("Creating Framebuffer");
-
-    VkFramebuffer framebuffer;
-    if (vkCreateFramebuffer(device(), &create_info, nullptr, &framebuffer) != VK_SUCCESS)
-    {
-        throw std::runtime_error("Failed to create framebuffer");
-    }
-
-    register_destruction([=, this]()
-        {
-            spdlog::info("Destroying Framebuffer");
-            vkDestroyFramebuffer(device(), framebuffer, nullptr);
-        });
-
-    return framebuffer;
 }

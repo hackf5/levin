@@ -24,8 +24,8 @@ namespace levin
         DescriptorComponents(const DeviceComponents& device);
         DescriptorComponents(const DescriptorComponents&) = delete;
 
-        VkDescriptorSetLayout layout() const { return m_descriptor_set_layout; }
+        const VkDescriptorSetLayout& layout() const { return m_descriptor_set_layout; }
 
-        VkDescriptorPool pool() const { return m_descriptor_pool; }
+        const VkDescriptorPool& pool() const { return m_descriptor_pool; }
     };
 }

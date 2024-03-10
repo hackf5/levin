@@ -25,50 +25,34 @@ const VkPipelineColorBlendAttachmentState color_blend_attachment =
 GraphicsPipelineComponents::GraphicsPipelineComponents(
     const DeviceComponents &device_components,
     const DescriptorComponents &descriptor_components,
-    VkRenderPass render_pass):
-    m_descriptor_components(&descriptor_components),
-    m_factory(device_components)
+    const SwapchainComponents &swapchain_components,
+    const RenderPassComponents &render_pass_components):
+    m_factory(device_components),
+    m_pipeline_layout(create_pipeline_layout(descriptor_components)),
+    m_pipeline(create_pipeline(swapchain_components, render_pass_components))
 {
-    spdlog::info("Initializing Graphics Pipeline Components");
-
-    try
-    {
-        init_pipeline_layout();
-
-        auto vert_module = m_factory.create_shader_module("vert");
-        auto frag_module = m_factory.create_shader_module("frag");
-
-        init_pipeline(vert_module, frag_module, render_pass);
-
-        m_factory.destroy_shader_module(frag_module);
-        m_factory.destroy_shader_module(vert_module);
-    }
-    catch (const std::runtime_error &e)
-    {
-        spdlog::error("Failed to initialize graphics pipeline: {}", e.what());
-        this->~GraphicsPipelineComponents();
-        throw;
-    }
 }
 
-void GraphicsPipelineComponents::init_pipeline_layout()
+VkPipelineLayout GraphicsPipelineComponents::create_pipeline_layout(
+    const DescriptorComponents &descriptor)
 {
-    auto layout = m_descriptor_components->layout();
     VkPipelineLayoutCreateInfo pipeline_layout_info = {};
     pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipeline_layout_info.setLayoutCount = 1;
-    pipeline_layout_info.pSetLayouts = &layout;
+    pipeline_layout_info.pSetLayouts = &descriptor.layout();
     pipeline_layout_info.pushConstantRangeCount = 0;
     pipeline_layout_info.pPushConstantRanges = nullptr;
 
-    m_pipeline_layout = m_factory.create_pipeline_layout(pipeline_layout_info);
+    return m_factory.create_pipeline_layout(pipeline_layout_info);
 }
 
-void GraphicsPipelineComponents::init_pipeline(
-    VkShaderModule vert_module,
-    VkShaderModule frag_module,
-    VkRenderPass render_pass)
+VkPipeline GraphicsPipelineComponents::create_pipeline(
+    const SwapchainComponents &swapchain,
+    const RenderPassComponents &render_pass)
 {
+    auto vert_module = m_factory.create_shader_module("vert");
+    auto frag_module = m_factory.create_shader_module("frag");
+
     auto shader_stages = create_shader_stages(vert_module, frag_module);
 
     auto vertex_binding_description = Vertex::get_binding_description();
@@ -79,9 +63,7 @@ void GraphicsPipelineComponents::init_pipeline(
         vertex_attribute_descriptions.size());
 
     auto input_assembly_state = create_input_assembly_state();
-    auto viewport = create_viewport();
-    auto scissor = create_scissor();
-    auto viewport_state = create_viewport_state(viewport, scissor);
+    auto viewport_state = create_viewport_state(swapchain);
     auto rasterization_state = create_rasterization_state();
     auto multisampling_state = create_multisample_state();
     auto color_blend_state = create_color_blend_state();
@@ -103,7 +85,12 @@ void GraphicsPipelineComponents::init_pipeline(
     pipeline_info.subpass = 0;
     pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
 
-    m_pipeline = m_factory.create_pipeline(pipeline_info);
+    auto pipeline = m_factory.create_pipeline(pipeline_info);
+
+    m_factory.destroy_shader_module(frag_module);
+    m_factory.destroy_shader_module(vert_module);
+
+    return pipeline;
 }
 
 std::vector<VkPipelineShaderStageCreateInfo> GraphicsPipelineComponents::create_shader_stages(
@@ -151,40 +138,14 @@ VkPipelineInputAssemblyStateCreateInfo GraphicsPipelineComponents::create_input_
     return result;
 }
 
-VkViewport GraphicsPipelineComponents::create_viewport()
-{
-    auto extent = SwapchainFactory::get_config().extent;
-
-    VkViewport result = {};
-    result.x = 0.0f;
-    result.y = 0.0f;
-    result.width = static_cast<float>(extent.width);
-    result.height = static_cast<float>(extent.height);
-    result.minDepth = 0.0f;
-    result.maxDepth = 1.0f;
-
-    return result;
-}
-
-VkRect2D GraphicsPipelineComponents::create_scissor()
-{
-    auto extent = SwapchainFactory::get_config().extent;
-
-    VkRect2D result = {};
-    result.offset = { 0, 0 };
-    result.extent = extent;
-
-    return result;
-}
-
-VkPipelineViewportStateCreateInfo GraphicsPipelineComponents::create_viewport_state(VkViewport &viewport, VkRect2D &scissor)
+VkPipelineViewportStateCreateInfo GraphicsPipelineComponents::create_viewport_state(const SwapchainComponents &swapchain)
 {
     VkPipelineViewportStateCreateInfo result = {};
     result.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
     result.viewportCount = 1;
-    result.pViewports = &viewport;
+    result.pViewports = &swapchain.viewport();
     result.scissorCount = 1;
-    result.pScissors = &scissor;
+    result.pScissors = &swapchain.scissor();
 
     return result;
 }

@@ -62,10 +62,10 @@ VkPipelineLayout GraphicsPipelineFactory::create_pipeline_layout(const VkPipelin
         throw std::runtime_error("Failed to create pipeline layout");
     }
 
-    register_destruction([=, this]()
+    register_destruction([pipeline_layout](const vkb::Device &device)
         {
             spdlog::info("Destroying Pipeline Layout");
-            vkDestroyPipelineLayout(device(), pipeline_layout, nullptr);
+            vkDestroyPipelineLayout(device, pipeline_layout, nullptr);
         });
 
     return pipeline_layout;
@@ -81,10 +81,10 @@ VkPipeline GraphicsPipelineFactory::create_pipeline(const VkGraphicsPipelineCrea
         throw std::runtime_error("Failed to create pipeline");
     }
 
-    register_destruction([=, this]()
+    register_destruction([pipeline](const vkb::Device &device)
         {
             spdlog::info("Destroying Graphics Pipeline");
-            vkDestroyPipeline(device(), pipeline, nullptr);
+            vkDestroyPipeline(device, pipeline, nullptr);
         });
 
     return pipeline;
@@ -100,10 +100,10 @@ VkDescriptorSetLayout GraphicsPipelineFactory::create_descriptor_set_layout(cons
         throw std::runtime_error("Failed to create descriptor set layout");
     }
 
-    register_destruction([=, this]()
+    register_destruction([descriptor_set_layout](const vkb::Device &device)
         {
             spdlog::info("Destroying Descriptor Set Layout");
-            vkDestroyDescriptorSetLayout(device(), descriptor_set_layout, nullptr);
+            vkDestroyDescriptorSetLayout(device, descriptor_set_layout, nullptr);
         });
 
     return descriptor_set_layout;
@@ -119,10 +119,10 @@ VkDescriptorPool GraphicsPipelineFactory::create_descriptor_pool(const VkDescrip
         throw std::runtime_error("Failed to create descriptor pool");
     }
 
-    register_destruction([=, this]()
+    register_destruction([descriptor_pool](const vkb::Device &device)
         {
             spdlog::info("Destroying Descriptor Pool");
-            vkDestroyDescriptorPool(device(), descriptor_pool, nullptr);
+            vkDestroyDescriptorPool(device, descriptor_pool, nullptr);
         });
 
     return descriptor_pool;

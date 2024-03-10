@@ -76,8 +76,6 @@ void DeviceComponents::init_device(bool enable_validation_layers)
         throw std::runtime_error("Failed to create Vulkan Device: " + dev_ret.error().message());
     }
     m_device = dev_ret.value();
-
-    SwapchainFactory::get_config(&m_device);
 }
 
 void DeviceComponents::init_allocator()

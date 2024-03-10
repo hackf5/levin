@@ -10,21 +10,21 @@ namespace levin
     class VulkanFactory
     {
     public:
-        typedef std::function<void()> destruction_callback_t;
+        typedef std::function<void(const vkb::Device & device)> destruction_callback_t;
 
     private:
-        std::vector<std::function<void()>> m_destruction_queue;
+        std::vector<destruction_callback_t> m_destruction_queue;
         const vkb::Device &m_device;
 
-    protected:
+    public:
         VulkanFactory(const vkb::Device &device);
         VulkanFactory(const VulkanFactory &) = delete;
 
         ~VulkanFactory();
 
-        void register_destruction(destruction_callback_t destroy);
+        void register_destruction(destruction_callback_t destroy) { m_destruction_queue.push_back(destroy); }
 
-    public:
-        const vkb::Device &device() const;
+    protected:
+        const vkb::Device &device() const { return m_device; }
     };
 }

@@ -10,7 +10,7 @@ Buffer::Buffer(
     VkBufferUsageFlags usage,
     VmaMemoryUsage memory_usage,
     VmaAllocationCreateFlags flags):
-    m_allocator(device_components.get_allocator()),
+    m_allocator(device_components.allocator()),
     m_size(size),
     m_usage(usage),
     m_memory_usage(memory_usage),

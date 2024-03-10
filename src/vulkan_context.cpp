@@ -21,14 +21,22 @@ VulkanContextBuilder &VulkanContextBuilder::configure_device(bool enableValidati
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::configure_transfer_queue(size_t command_buffer_count)
+VulkanContextBuilder &VulkanContextBuilder::configure_uniform_buffers(VkDeviceSize size)
 {
     if (!m_context->m_device)
     {
-        throw std::runtime_error("Device must be configured before transfer queue");
+        throw std::runtime_error("Device must be configured before uniform buffers");
     }
 
-    m_context->m_transfer_queue = std::make_unique<BufferTransferQueue>(*m_context->m_device);
+    m_context->m_uniform_buffers.resize(VulkanContext::max_frames_in_flight);
+    for (size_t i = 0; i < VulkanContext::max_frames_in_flight; i++)
+    {
+        m_context->m_uniform_buffers[i] = std::make_unique<BufferCPUtoGPU>(
+            *m_context->m_device,
+            size,
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+    }
+
     return *this;
 }
 
@@ -43,76 +51,47 @@ VulkanContextBuilder &VulkanContextBuilder::configure_descriptor_pool()
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::configure_render_pass()
+VulkanContextBuilder &VulkanContextBuilder::configure_uniform_buffer_descriptor_set(VkDeviceSize size)
 {
     if (!m_context->m_device)
     {
-        throw std::runtime_error("Device must be configured before render pass");
-    }
-
-    m_context->m_render_pass = std::make_unique<RenderPassComponents>(*m_context->m_device);
-    return *this;
-}
-
-VulkanContextBuilder &VulkanContextBuilder::configure_swapchain()
-{
-    if (!m_context->m_device)
-    {
-        throw std::runtime_error("Device must be configured before swapchain");
-    }
-
-    if (!m_context->m_render_pass)
-    {
-        throw std::runtime_error("Render pass must be configured before swapchain");
-    }
-
-    if (m_context->m_swapchain)
-    {
-        m_context->m_swapchain.reset();
-    }
-
-    m_context->m_swapchain = std::make_unique<SwapchainComponents>(
-        *m_context->m_device,
-        m_context->m_render_pass->get_render_pass());
-
-    return *this;
-}
-
-VulkanContextBuilder &VulkanContextBuilder::configure_graphics_pipeline()
-{
-    if (!m_context->m_device)
-    {
-        throw std::runtime_error("Device must be configured before graphics pipeline");
+        throw std::runtime_error("Device must be configured before uniform buffer descriptor set");
     }
 
     if (!m_context->m_descriptor_components)
     {
-        throw std::runtime_error("Descriptor components must be configured before graphics pipeline");
+        throw std::runtime_error("Descriptor components must be configured before uniform buffer descriptor set");
     }
 
-    if (!m_context->m_render_pass)
+    if (m_context->m_uniform_buffers.empty())
     {
-        throw std::runtime_error("Render pass must be configured before graphics pipeline");
+        throw std::runtime_error("Uniform buffers must be configured before uniform buffer descriptor set");
     }
 
-    m_context->m_graphics_pipeline = std::make_unique<GraphicsPipelineComponents>(
+    std::vector<VkBuffer> uniform_buffers;
+    for (size_t i = 0; i < m_context->m_uniform_buffers.size(); i++)
+    {
+        uniform_buffers.push_back(*m_context->m_uniform_buffers[i]);
+    }
+
+    m_context->m_uniform_buffer_descriptor_set = std::make_unique<UniformBufferDescriptorSet>(
         *m_context->m_device,
         *m_context->m_descriptor_components,
-        m_context->m_render_pass->get_render_pass());
+        uniform_buffers.data(),
+        uniform_buffers.size(),
+        size);
 
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::configure_graphics_commands()
+VulkanContextBuilder &VulkanContextBuilder::configure_transfer_queue(size_t command_buffer_count)
 {
     if (!m_context->m_device)
     {
-        throw std::runtime_error("Device must be configured before graphics commands");
+        throw std::runtime_error("Device must be configured before transfer queue");
     }
 
-    m_context->m_graphics_commands = std::make_unique<GraphicsCommands>(
-        *m_context->m_device);
-
+    m_context->m_transfer_queue = std::make_unique<BufferTransferQueue>(*m_context->m_device);
     return *this;
 }
 
@@ -158,112 +137,112 @@ VulkanContextBuilder &VulkanContextBuilder::configure_index_buffer(VkDeviceSize 
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::configure_uniform_buffers(VkDeviceSize size)
+VulkanContextBuilder &VulkanContextBuilder::configure_graphics_commands()
 {
     if (!m_context->m_device)
     {
-        throw std::runtime_error("Device must be configured before uniform buffers");
+        throw std::runtime_error("Device must be configured before graphics commands");
     }
 
-    m_context->m_uniform_buffers.resize(VulkanContext::max_frames_in_flight);
-    for (size_t i = 0; i < VulkanContext::max_frames_in_flight; i++)
-    {
-        m_context->m_uniform_buffers[i] = std::make_shared<BufferCPUtoGPU>(
-            *m_context->m_device,
-            size,
-            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-    }
+    m_context->m_graphics_commands = std::make_unique<GraphicsCommands>(
+        *m_context->m_device);
 
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::configure_uniform_buffer_descriptor_set(VkDeviceSize size)
+VulkanContextBuilder &VulkanContextBuilder::configure_swapchain()
 {
     if (!m_context->m_device)
     {
-        throw std::runtime_error("Device must be configured before uniform buffer descriptor set");
+        throw std::runtime_error("Device must be configured before swapchain");
+    }
+
+    m_context->m_swapchain = std::make_unique<SwapchainComponents>(*m_context->m_device);
+
+    return *this;
+}
+
+VulkanContextBuilder &VulkanContextBuilder::configure_render_pass()
+{
+    if (!m_context->m_device)
+    {
+        throw std::runtime_error("Device must be configured before render pass");
+    }
+
+    if (!m_context->m_swapchain)
+    {
+        throw std::runtime_error("Swapchain must be configured before render pass");
+    }
+
+    m_context->m_render_pass = std::make_unique<RenderPassComponents>(
+        *m_context->m_device,
+        *m_context->m_swapchain);
+    return *this;
+}
+
+VulkanContextBuilder &VulkanContextBuilder::configure_framebuffers()
+{
+    if (!m_context->m_device)
+    {
+        throw std::runtime_error("Device must be configured before framebuffers");
+    }
+
+    if (!m_context->m_swapchain)
+    {
+        throw std::runtime_error("Swapchain must be configured before framebuffers");
+    }
+
+    if (!m_context->m_render_pass)
+    {
+        throw std::runtime_error("Render pass must be configured before framebuffers");
+    }
+
+    if (m_context->m_framebuffers)
+    {
+        m_context->m_framebuffers.reset();
+    }
+
+    m_context->m_framebuffers = std::make_unique<FramebufferComponents>(
+        *m_context->m_device,
+        *m_context->m_swapchain,
+        *m_context->m_render_pass);
+
+    return *this;
+}
+
+VulkanContextBuilder &VulkanContextBuilder::configure_graphics_pipeline()
+{
+    if (!m_context->m_device)
+    {
+        throw std::runtime_error("Device must be configured before graphics pipeline");
     }
 
     if (!m_context->m_descriptor_components)
     {
-        throw std::runtime_error("Descriptor components must be configured before uniform buffer descriptor set");
+        throw std::runtime_error("Descriptor components must be configured before graphics pipeline");
     }
 
-    if (m_context->m_uniform_buffers.empty())
+    if (!m_context->m_swapchain)
     {
-        throw std::runtime_error("Uniform buffers must be configured before uniform buffer descriptor set");
+        throw std::runtime_error("Swapchain must be configured before graphics pipeline");
     }
 
-    m_context->m_uniform_buffer_descriptor_set = std::make_unique<UniformBufferDescriptorSet>(
+    if (!m_context->m_render_pass)
+    {
+        throw std::runtime_error("Render pass must be configured before graphics pipeline");
+    }
+
+    m_context->m_graphics_pipeline = std::make_unique<GraphicsPipelineComponents>(
         *m_context->m_device,
         *m_context->m_descriptor_components,
-        m_context->m_uniform_buffers,
-        size);
+        *m_context->m_swapchain,
+        *m_context->m_render_pass);
 
     return *this;
 }
 
 std::unique_ptr<VulkanContext> VulkanContextBuilder::build()
 {
-    if (!m_context->m_window)
-    {
-        throw std::runtime_error("Window must be configured before building Vulkan context");
-    }
-
-    if (!m_context->m_device)
-    {
-        throw std::runtime_error("Device must be configured before building Vulkan context");
-    }
-
-    if (!m_context->m_transfer_queue)
-    {
-        throw std::runtime_error("Transfer queue must be configured before building Vulkan context");
-    }
-
-    if (!m_context->m_descriptor_components)
-    {
-        throw std::runtime_error("Descriptor components must be configured before building Vulkan context");
-    }
-
-    if (!m_context->m_render_pass)
-    {
-        throw std::runtime_error("Render pass must be configured before building Vulkan context");
-    }
-
-    if (!m_context->m_swapchain)
-    {
-        throw std::runtime_error("Swapchain must be configured before building Vulkan context");
-    }
-
-    if (!m_context->m_graphics_pipeline)
-    {
-        throw std::runtime_error("Graphics pipeline must be configured before building Vulkan context");
-    }
-
-    if (!m_context->m_graphics_commands)
-    {
-        throw std::runtime_error("Graphics commands must be configured before building Vulkan context");
-    }
-
-    if (!m_context->m_vertex_buffer)
-    {
-        throw std::runtime_error("Vertex buffer must be configured before building Vulkan context");
-    }
-
-    if (!m_context->m_index_buffer)
-    {
-        throw std::runtime_error("Index buffer must be configured before building Vulkan context");
-    }
-
-    if (m_context->m_uniform_buffers.empty())
-    {
-        throw std::runtime_error("Uniform buffers must be configured before building Vulkan context");
-    }
-
-    if (!m_context->m_uniform_buffer_descriptor_set)
-    {
-        throw std::runtime_error("Uniform buffer descriptor set must be configured before building Vulkan context");
-    }
 
     return std::move(m_context);
 }

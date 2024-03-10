@@ -43,14 +43,17 @@ namespace levin
 
         operator VkDevice() const { return m_device.device; }
 
-        VkQueue get_graphics_queue() const { return m_graphics_queue; }
+        VkQueue graphics_queue() const { return m_graphics_queue; }
+        uint32_t graphics_queue_index() const { return m_device.get_queue_index(vkb::QueueType::graphics).value(); }
 
-        VkQueue get_present_queue() const { return m_present_queue; }
+        VkQueue present_queue() const { return m_present_queue; }
+        uint32_t present_queue_index() const { return m_device.get_queue_index(vkb::QueueType::present).value(); }
 
-        VkQueue get_transfer_queue() const { return m_transfer_queue; }
+        VkQueue transfer_queue() const { return m_transfer_queue; }
+        uint32_t transfer_queue_index() const { return m_device.get_queue_index(vkb::QueueType::transfer).value(); }
 
         void wait_idle() const { vkDeviceWaitIdle(m_device); }
 
-        VmaAllocator get_allocator() const { return m_allocator; }
+        VmaAllocator allocator() const { return m_allocator; }
     };
 }

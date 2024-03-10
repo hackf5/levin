@@ -7,48 +7,45 @@
 using namespace levin;
 
 GraphicsCommands::GraphicsCommands(const DeviceComponents &device_components):
-    m_graphics_queue(device_components.get_graphics_queue()),
+    m_device_components(device_components),
     m_command_factory(device_components),
-    m_command_pool(create_command_pool(m_command_factory)),
-    m_command_buffers(create_command_buffers(m_command_factory, m_command_pool)),
+    m_graphics_queue(device_components.graphics_queue()),
+    m_command_pool(create_command_pool()),
+    m_command_buffers(create_command_buffers()),
     m_image_available(m_command_factory.create_semaphores(DeviceComponents::frames_in_flight)),
     m_render_finished(m_command_factory.create_semaphores(DeviceComponents::frames_in_flight)),
     m_in_flight_fences(m_command_factory.create_fences(DeviceComponents::frames_in_flight))
 {
 }
 
-VkCommandPool GraphicsCommands::create_command_pool(CommandFactory &command_factory)
+VkCommandPool GraphicsCommands::create_command_pool()
 {
     VkCommandPoolCreateInfo create_info {};
     create_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    create_info.queueFamilyIndex = command_factory
-        .device()
-        .get_queue_index(vkb::QueueType::graphics).value();
+    create_info.queueFamilyIndex = m_device_components.graphics_queue_index();
     create_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-    return command_factory.create_command_pool(create_info);
+    return m_command_factory.create_command_pool(create_info);
 }
 
-std::vector<VkCommandBuffer> GraphicsCommands::create_command_buffers(
-    CommandFactory &command_factory,
-    VkCommandPool command_pool)
+std::vector<VkCommandBuffer> GraphicsCommands::create_command_buffers()
 {
     VkCommandBufferAllocateInfo allocate_info {};
     allocate_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocate_info.commandPool = command_pool;
+    allocate_info.commandPool = m_command_pool;
     allocate_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocate_info.commandBufferCount = DeviceComponents::frames_in_flight;
 
-    return command_factory.create_command_buffers(allocate_info);
+    return m_command_factory.create_command_buffers(allocate_info);
 }
 
-void GraphicsCommands::reset_command_buffer(uint32_t index) const
+VkCommandBuffer GraphicsCommands::begin(uint32_t index) const
 {
-    vkResetCommandBuffer(m_command_buffers[index], 0);
-}
+    if (vkResetCommandBuffer(m_command_buffers[index], 0) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to reset command buffer");
+    }
 
-VkCommandBuffer GraphicsCommands::begin_command_buffer(uint32_t index) const
-{
     VkCommandBufferBeginInfo begin_info {};
     begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -60,16 +57,13 @@ VkCommandBuffer GraphicsCommands::begin_command_buffer(uint32_t index) const
     return m_command_buffers[index];
 }
 
-void GraphicsCommands::end_command_buffer(uint32_t index) const
+void GraphicsCommands::end_and_submit(uint32_t index) const
 {
     if (vkEndCommandBuffer(m_command_buffers[index]) != VK_SUCCESS)
     {
-        throw std::runtime_error("Failed to record command buffer");
+        throw std::runtime_error("Failed to end recording command buffer");
     }
-}
 
-void GraphicsCommands::submit_command_buffer(uint32_t index) const
-{
     VkSubmitInfo submit_info {};
     submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submit_info.commandBufferCount = 1;
@@ -85,7 +79,7 @@ void GraphicsCommands::submit_command_buffer(uint32_t index) const
     submit_info.signalSemaphoreCount = 1;
     submit_info.pSignalSemaphores = signal_semaphores;
 
-    vkResetFences(m_command_factory.device(), 1, &m_in_flight_fences[index]);
+    vkResetFences(m_device_components, 1, &m_in_flight_fences[index]);
 
     if (vkQueueSubmit(
         m_graphics_queue,
@@ -102,16 +96,16 @@ GraphicsResult GraphicsCommands::acquire_next_image(
     VkSwapchainKHR swapchain)
 {
     vkWaitForFences(
-        m_command_factory.device(),
+        m_device_components,
         1,
         &m_in_flight_fences[index],
         VK_TRUE,
         std::numeric_limits<uint64_t>::max());
 
-    vkResetFences(m_command_factory.device(), 1, &m_in_flight_fences[index]);
+    vkResetFences(m_device_components, 1, &m_in_flight_fences[index]);
 
     VkResult result = vkAcquireNextImageKHR(
-        m_command_factory.device(),
+        m_device_components,
         swapchain,
         std::numeric_limits<uint64_t>::max(),
         m_image_available[index],

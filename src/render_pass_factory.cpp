@@ -19,10 +19,10 @@ VkRenderPass RenderPassFactory::create_render_pass(const VkRenderPassCreateInfo 
         throw std::runtime_error("Failed to create render pass");
     }
 
-    register_destruction([=, this]()
+    register_destruction([render_pass](const vkb::Device &device)
         {
             spdlog::info("Destroying Render Pass");
-            vkDestroyRenderPass(device(), render_pass, nullptr);
+            vkDestroyRenderPass(device, render_pass, nullptr);
         });
 
     return render_pass;

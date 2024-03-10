@@ -11,7 +11,8 @@ DescriptorFactory::DescriptorFactory(const vkb::Device &device)
 {
 }
 
-VkDescriptorSetLayout DescriptorFactory::create_descriptor_set_layout(const VkDescriptorSetLayoutCreateInfo &create_info)
+VkDescriptorSetLayout DescriptorFactory::create_descriptor_set_layout(
+    const VkDescriptorSetLayoutCreateInfo &create_info)
 {
     spdlog::info("Creating Descriptor Set Layout");
 
@@ -21,16 +22,17 @@ VkDescriptorSetLayout DescriptorFactory::create_descriptor_set_layout(const VkDe
         throw std::runtime_error("Failed to create descriptor set layout");
     }
 
-    register_destruction([=, this]()
+    register_destruction([descriptor_set_layout](const vkb::Device &device)
         {
             spdlog::info("Destroying Descriptor Set Layout");
-            vkDestroyDescriptorSetLayout(device(), descriptor_set_layout, nullptr);
+            vkDestroyDescriptorSetLayout(device, descriptor_set_layout, nullptr);
         });
 
     return descriptor_set_layout;
 }
 
-VkDescriptorPool DescriptorFactory::create_descriptor_pool(const VkDescriptorPoolCreateInfo &create_info)
+VkDescriptorPool DescriptorFactory::create_descriptor_pool(
+    const VkDescriptorPoolCreateInfo &create_info)
 {
     spdlog::info("Creating Descriptor Pool");
 
@@ -40,10 +42,10 @@ VkDescriptorPool DescriptorFactory::create_descriptor_pool(const VkDescriptorPoo
         throw std::runtime_error("Failed to create descriptor pool");
     }
 
-    register_destruction([=, this]()
+    register_destruction([descriptor_pool](const vkb::Device &device)
         {
             spdlog::info("Destroying Descriptor Pool");
-            vkDestroyDescriptorPool(device(), descriptor_pool, nullptr);
+            vkDestroyDescriptorPool(device, descriptor_pool, nullptr);
         });
 
     return descriptor_pool;

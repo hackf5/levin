@@ -13,27 +13,30 @@ namespace levin
         SwapchainFactory m_factory;
 
         vkb::Swapchain m_swapchain;
+        VkViewport m_viewport;
+        VkRect2D m_scissor;
+
         std::vector<VkImage> m_swapchain_images;
         std::vector<VkImageView> m_swapchain_image_views;
-        std::vector<VkFramebuffer> m_framebuffers;
-
-        static std::vector<VkFramebuffer> create_framebuffers(
-            SwapchainFactory &factory,
-            const vkb::Swapchain &swapchain,
-            const std::vector<VkImage> &swapchain_images,
-            const std::vector<VkImageView> &swapchain_image_views,
-            VkRenderPass render_pass);
 
     public:
-        SwapchainComponents(
-            const DeviceComponents &device_components,
-            VkRenderPass render_pass);
+        SwapchainComponents(const DeviceComponents &device_components);
         SwapchainComponents(const SwapchainComponents &) = delete;
 
-        VkSwapchainKHR get_swapchain() const { return m_swapchain.swapchain; }
+        operator VkSwapchainKHR() const { return m_swapchain.swapchain; }
 
-        VkExtent2D get_extent() const { return m_swapchain.extent; }
+        VkExtent2D extent() const { return m_swapchain.extent; }
 
-        VkFramebuffer get_framebuffer(uint32_t index) const { return m_framebuffers[index]; }
+        uint32_t image_count() const { return m_swapchain.image_count; }
+
+        VkFormat image_format() const { return m_swapchain.image_format; }
+
+        const VkViewport &viewport() const { return m_viewport; }
+
+        const VkRect2D &scissor() const { return m_scissor; }
+
+        const VkImage &image(size_t index) const { return m_swapchain_images[index]; }
+
+        const VkImageView &image_view(size_t index) const { return m_swapchain_image_views[index]; }
     };
 }

@@ -20,6 +20,8 @@ namespace levin
     class GraphicsCommands
     {
     private:
+        const DeviceComponents &m_device_components;
+
         CommandFactory m_command_factory;
 
         VkQueue m_graphics_queue;
@@ -30,11 +32,8 @@ namespace levin
         std::vector<VkSemaphore> m_render_finished;
         std::vector<VkFence> m_in_flight_fences;
 
-        static VkCommandPool create_command_pool(CommandFactory &command_factory);
-
-        static std::vector<VkCommandBuffer> create_command_buffers(
-            CommandFactory &command_factory,
-            VkCommandPool command_pool);
+        VkCommandPool create_command_pool();
+        std::vector<VkCommandBuffer> create_command_buffers();
 
         uint32_t m_image_index = 0;
 
@@ -46,10 +45,8 @@ namespace levin
 
         GraphicsResult acquire_next_image(uint32_t frame, VkSwapchainKHR swapchain);
 
-        void reset_command_buffer(uint32_t frame) const;
-        VkCommandBuffer begin_command_buffer(uint32_t frame) const;
-        void end_command_buffer(uint32_t frame) const;
-        void submit_command_buffer(uint32_t frame) const;
+        VkCommandBuffer begin(uint32_t frame) const;
+        void end_and_submit(uint32_t frame) const;
 
         GraphicsResult present(uint32_t frame, VkSwapchainKHR swapchain) const;
     };

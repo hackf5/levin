@@ -4,12 +4,12 @@
 
 using namespace levin;
 
-CommandFactory::CommandFactory(const vkb::Device& device)
+CommandFactory::CommandFactory(const vkb::Device &device)
     : VulkanFactory(device)
 {
 }
 
-VkCommandPool CommandFactory::create_command_pool(const VkCommandPoolCreateInfo& create_info)
+VkCommandPool CommandFactory::create_command_pool(const VkCommandPoolCreateInfo &create_info)
 {
     spdlog::info("Creating Command Pool");
 
@@ -19,16 +19,16 @@ VkCommandPool CommandFactory::create_command_pool(const VkCommandPoolCreateInfo&
         throw std::runtime_error("Failed to create command pool");
     }
 
-    register_destruction([=, this]()
+    register_destruction([=](const vkb::Device &device)
         {
             spdlog::info("Destroying Command Pool");
-            vkDestroyCommandPool(device(), command_pool, nullptr);
+            vkDestroyCommandPool(device, command_pool, nullptr);
         });
 
     return command_pool;
 }
 
-std::vector<VkCommandBuffer> CommandFactory::create_command_buffers(const VkCommandBufferAllocateInfo& allocate_info)
+std::vector<VkCommandBuffer> CommandFactory::create_command_buffers(const VkCommandBufferAllocateInfo &allocate_info)
 {
     spdlog::info("Creating Command Buffers");
 
@@ -38,10 +38,10 @@ std::vector<VkCommandBuffer> CommandFactory::create_command_buffers(const VkComm
         throw std::runtime_error("Failed to allocate command buffers");
     }
 
-    register_destruction([=, this]()
+    register_destruction([=](const vkb::Device &device)
         {
             spdlog::info("Destroying Command Buffers");
-            vkFreeCommandBuffers(device(), allocate_info.commandPool, command_buffers.size(), command_buffers.data());
+            vkFreeCommandBuffers(device, allocate_info.commandPool, command_buffers.size(), command_buffers.data());
         });
 
     return command_buffers;
@@ -52,7 +52,7 @@ std::vector<VkSemaphore> CommandFactory::create_semaphores(uint32_t count)
     spdlog::info("Creating Semaphores");
 
     std::vector<VkSemaphore> semaphores(count);
-    for (auto& semaphore : semaphores)
+    for (auto &semaphore : semaphores)
     {
         VkSemaphoreCreateInfo create_info {};
         create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -63,14 +63,14 @@ std::vector<VkSemaphore> CommandFactory::create_semaphores(uint32_t count)
         }
     }
 
-    register_destruction([=, this]()
-        {
-            spdlog::info("Destroying Semaphores");
-            for (auto& semaphore : semaphores)
+    for (auto &semaphore : semaphores)
+    {
+        register_destruction([semaphore](const vkb::Device &device)
             {
-                vkDestroySemaphore(device(), semaphore, nullptr);
-            }
-        });
+                spdlog::info("Destroying Semaphores");
+                vkDestroySemaphore(device, semaphore, nullptr);
+            });
+    }
 
     return semaphores;
 }
@@ -80,7 +80,7 @@ std::vector<VkFence> CommandFactory::create_fences(uint32_t count, VkFenceCreate
     spdlog::info("Creating Fences");
 
     std::vector<VkFence> fences(count);
-    for (auto& fence : fences)
+    for (auto &fence : fences)
     {
         VkFenceCreateInfo create_info {};
         create_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
@@ -92,14 +92,14 @@ std::vector<VkFence> CommandFactory::create_fences(uint32_t count, VkFenceCreate
         }
     }
 
-    register_destruction([=, this]()
-        {
-            spdlog::info("Destroying Fences");
-            for (auto& fence : fences)
+    for (auto &fence : fences)
+    {
+        register_destruction([fence](const vkb::Device &device)
             {
-                vkDestroyFence(device(), fence, nullptr);
-            }
-        });
+                spdlog::info("Destroying Fences");
+                vkDestroyFence(device, fence, nullptr);
+            });
+    }
 
     return fences;
 }
