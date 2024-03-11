@@ -6,11 +6,11 @@
 
 namespace levin
 {
-    class DescriptorFactory: public VulkanFactory
+    class DescriptorPoolFactory: public VulkanFactory
     {
     public:
-        DescriptorFactory(const vkb::Device &device);
-        DescriptorFactory(const DescriptorFactory &) = delete;
+        DescriptorPoolFactory(const vkb::Device &device);
+        DescriptorPoolFactory(const DescriptorPoolFactory &) = delete;
 
         VkDescriptorSetLayout create_descriptor_set_layout(const VkDescriptorSetLayoutCreateInfo &create_info);
 

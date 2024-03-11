@@ -22,7 +22,7 @@ namespace levin
         const VkDeviceSize m_size;
         const VkBufferUsageFlags m_usage;
         const VmaMemoryUsage m_memory_usage;
-        const VmaAllocationCreateFlags m_flags;
+        const VmaAllocationCreateFlags m_allocation_flags;
 
         const AllocationInfo m_allocation_info;
 
@@ -34,7 +34,7 @@ namespace levin
             VkDeviceSize size,
             VkBufferUsageFlags usage,
             VmaMemoryUsage memory_usage = VMA_MEMORY_USAGE_AUTO,
-            VmaAllocationCreateFlags flags = 0);
+            VmaAllocationCreateFlags allocation_flags = 0);
         Buffer(const Buffer &) = delete;
 
         ~Buffer();

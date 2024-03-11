@@ -9,12 +9,12 @@ Buffer::Buffer(
     VkDeviceSize size,
     VkBufferUsageFlags usage,
     VmaMemoryUsage memory_usage,
-    VmaAllocationCreateFlags flags):
+    VmaAllocationCreateFlags allocation_flags):
     m_allocator(device.allocator()),
     m_size(size),
     m_usage(usage),
     m_memory_usage(memory_usage),
-    m_flags(flags),
+    m_allocation_flags(allocation_flags),
     m_allocation_info(create_allocation_info())
 {
 }
@@ -34,7 +34,7 @@ Buffer::AllocationInfo Buffer::create_allocation_info()
 
     VmaAllocationCreateInfo alloc_info = {};
     alloc_info.usage = m_memory_usage;
-    alloc_info.flags = m_flags;
+    alloc_info.flags = m_allocation_flags;
 
     VkBuffer buffer;
     VmaAllocation allocation;

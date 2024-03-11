@@ -15,14 +15,14 @@ namespace levin
     private:
         const WindowComponents &m_window;
 
-        vkb::Instance m_instance;
-        VkSurfaceKHR m_surface;
-        vkb::Device m_device;
-        VmaAllocator m_allocator;
+        const vkb::Instance m_instance;
+        const VkSurfaceKHR m_surface;
+        const vkb::Device m_device;
+        const VmaAllocator m_allocator;
 
-        VkQueue m_graphics_queue;
-        VkQueue m_present_queue;
-        VkQueue m_transfer_queue;
+        const VkQueue m_graphics_queue;
+        const VkQueue m_present_queue;
+        const VkQueue m_transfer_queue;
 
         vkb::Instance create_instance(bool enable_validation_layers);
         VkSurfaceKHR create_surface();

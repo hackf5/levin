@@ -8,9 +8,17 @@ FramebufferComponents::FramebufferComponents(
     const DeviceComponents &device_components,
     const SwapchainComponents &swapchain_components,
     const RenderPassComponents &render_pass_components)
-    : m_factory(device_components)
+    : m_factory(device_components),
+    m_framebuffers(create_framebuffers(swapchain_components, render_pass_components))
 {
-    m_framebuffers.resize(swapchain_components.image_count());
+}
+
+std::vector<VkFramebuffer> FramebufferComponents::create_framebuffers(
+    const SwapchainComponents &swapchain_components,
+    const RenderPassComponents &render_pass_components)
+{
+    std::vector<VkFramebuffer> framebuffers;
+    framebuffers.resize(swapchain_components.image_count());
 
     for (size_t i = 0; i < swapchain_components.image_count(); i++)
     {
@@ -27,18 +35,9 @@ FramebufferComponents::FramebufferComponents(
         framebuffer_info.height = swapchain_components.extent().height;
         framebuffer_info.layers = 1;
 
-        VkFramebuffer framebuffer;
-        if (vkCreateFramebuffer(device_components, &framebuffer_info, nullptr, &framebuffer) != VK_SUCCESS)
-        {
-            throw std::runtime_error("Failed to create framebuffer");
-        }
-
-        m_factory.register_destruction([=, this](const vkb::Device & device)
-            {
-                spdlog::info("Destroying Framebuffer");
-                vkDestroyFramebuffer(device, framebuffer, nullptr);
-            });
-
-        m_framebuffers[i] = framebuffer;
+        auto framebuffer = m_factory.create_framebuffer(framebuffer_info);
+        framebuffers[i] = framebuffer;
     }
+
+    return framebuffers;
 }

@@ -1,9 +1,11 @@
 #pragma once
 
+#include <vector>
+#include <vulkan/vulkan.h>
+
 #include "device_components.h"
 #include "command_factory.h"
 
-#include <vector>
 
 namespace levin
 {
@@ -12,7 +14,7 @@ namespace levin
     private:
         const DeviceComponents &m_device;
 
-        CommandFactory m_command_factory;
+        CommandFactory m_factory;
 
         const VkQueue m_queue;
         const VkCommandPool m_command_pool;
@@ -23,7 +25,7 @@ namespace levin
 
     public:
         BufferTransferQueue(
-            DeviceComponents &device,
+            const DeviceComponents &device,
             size_t command_buffer_count = 1);
         BufferTransferQueue(const BufferTransferQueue &) = delete;
 

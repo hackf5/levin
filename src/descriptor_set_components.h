@@ -1,11 +1,10 @@
 #pragma once
 
-#include <memory>
 #include <vector>
+#include <vulkan/vulkan.h>
 
 #include "device_components.h"
 #include "descriptor_pool_components.h"
-#include "buffer.h"
 
 namespace levin
 {

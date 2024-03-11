@@ -1,4 +1,4 @@
-#include "descriptor_factory.h"
+#include "descriptor_pool_factory.h"
 
 #include <stdexcept>
 
@@ -6,12 +6,12 @@
 
 using namespace levin;
 
-DescriptorFactory::DescriptorFactory(const vkb::Device &device)
+DescriptorPoolFactory::DescriptorPoolFactory(const vkb::Device &device)
     : VulkanFactory(device)
 {
 }
 
-VkDescriptorSetLayout DescriptorFactory::create_descriptor_set_layout(
+VkDescriptorSetLayout DescriptorPoolFactory::create_descriptor_set_layout(
     const VkDescriptorSetLayoutCreateInfo &create_info)
 {
     spdlog::info("Creating Descriptor Set Layout");
@@ -31,7 +31,7 @@ VkDescriptorSetLayout DescriptorFactory::create_descriptor_set_layout(
     return descriptor_set_layout;
 }
 
-VkDescriptorPool DescriptorFactory::create_descriptor_pool(
+VkDescriptorPool DescriptorPoolFactory::create_descriptor_pool(
     const VkDescriptorPoolCreateInfo &create_info)
 {
     spdlog::info("Creating Descriptor Pool");

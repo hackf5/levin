@@ -7,39 +7,26 @@
 
 using namespace levin;
 
-const std::vector<VkDynamicState> dynamic_states =
-{
-    VK_DYNAMIC_STATE_VIEWPORT,
-    VK_DYNAMIC_STATE_SCISSOR
-};
-
-const VkPipelineColorBlendAttachmentState color_blend_attachment =
-{
-    .blendEnable = VK_FALSE,
-    .colorWriteMask = VK_COLOR_COMPONENT_R_BIT
-        | VK_COLOR_COMPONENT_G_BIT
-        | VK_COLOR_COMPONENT_B_BIT
-        | VK_COLOR_COMPONENT_A_BIT,
-};
-
 GraphicsPipelineComponents::GraphicsPipelineComponents(
-    const DeviceComponents &device_components,
-    const DescriptorPoolComponents &descriptor_components,
-    const SwapchainComponents &swapchain_components,
+    const DeviceComponents &device,
+    const DescriptorPoolComponents &descriptor_pool,
+    const ShaderModuleComponents &shader_modules,
+    const SwapchainComponents &swapchain,
     const RenderPassComponents &render_pass_components):
-    m_factory(device_components),
-    m_pipeline_layout(create_pipeline_layout(descriptor_components)),
-    m_pipeline(create_pipeline(swapchain_components, render_pass_components))
+    m_factory(device),
+    m_shader_modules(shader_modules),
+    m_pipeline_layout(create_pipeline_layout(descriptor_pool)),
+    m_pipeline(create_pipeline(swapchain, render_pass_components))
 {
 }
 
 VkPipelineLayout GraphicsPipelineComponents::create_pipeline_layout(
-    const DescriptorPoolComponents &descriptor)
+    const DescriptorPoolComponents &descriptor_pool)
 {
     VkPipelineLayoutCreateInfo pipeline_layout_info = {};
     pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipeline_layout_info.setLayoutCount = 1;
-    pipeline_layout_info.pSetLayouts = &descriptor.layout();
+    pipeline_layout_info.pSetLayouts = &descriptor_pool.layout();
     pipeline_layout_info.pushConstantRangeCount = 0;
     pipeline_layout_info.pPushConstantRanges = nullptr;
 
@@ -50,10 +37,7 @@ VkPipeline GraphicsPipelineComponents::create_pipeline(
     const SwapchainComponents &swapchain,
     const RenderPassComponents &render_pass)
 {
-    auto vert_module = m_factory.create_shader_module("vert");
-    auto frag_module = m_factory.create_shader_module("frag");
-
-    auto shader_stages = create_shader_stages(vert_module, frag_module);
+    auto shader_stages = create_shader_stages();
 
     auto vertex_binding_description = Vertex::get_binding_description();
     auto vertex_attribute_descriptions = Vertex::get_attribute_descriptions();
@@ -66,8 +50,10 @@ VkPipeline GraphicsPipelineComponents::create_pipeline(
     auto viewport_state = create_viewport_state(swapchain);
     auto rasterization_state = create_rasterization_state();
     auto multisampling_state = create_multisample_state();
-    auto color_blend_state = create_color_blend_state();
-    auto dynamic_state = create_dynamic_state();
+    auto color_blend_attachment = create_color_blend_attachment_state();
+    auto color_blend_state = create_color_blend_state(color_blend_attachment);
+    auto dynamic_states = create_dynamic_states();
+    auto dynamic_state = create_dynamic_state(dynamic_states);
 
     VkGraphicsPipelineCreateInfo pipeline_info = {};
     pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -86,27 +72,21 @@ VkPipeline GraphicsPipelineComponents::create_pipeline(
     pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
 
     auto pipeline = m_factory.create_pipeline(pipeline_info);
-
-    m_factory.destroy_shader_module(frag_module);
-    m_factory.destroy_shader_module(vert_module);
-
     return pipeline;
 }
 
-std::vector<VkPipelineShaderStageCreateInfo> GraphicsPipelineComponents::create_shader_stages(
-    VkShaderModule vert_module,
-    VkShaderModule frag_module)
+std::vector<VkPipelineShaderStageCreateInfo> GraphicsPipelineComponents::create_shader_stages()
 {
     VkPipelineShaderStageCreateInfo vert_stage_info = {};
     vert_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     vert_stage_info.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    vert_stage_info.module = vert_module;
+    vert_stage_info.module = m_shader_modules.get("vert");
     vert_stage_info.pName = "main";
 
     VkPipelineShaderStageCreateInfo frag_stage_info = {};
     frag_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     frag_stage_info.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    frag_stage_info.module = frag_module;
+    frag_stage_info.module = m_shader_modules.get("frag");
     frag_stage_info.pName = "main";
 
     return { vert_stage_info, frag_stage_info };
@@ -175,7 +155,20 @@ VkPipelineMultisampleStateCreateInfo GraphicsPipelineComponents::create_multisam
     return result;
 }
 
-VkPipelineColorBlendStateCreateInfo GraphicsPipelineComponents::create_color_blend_state()
+VkPipelineColorBlendAttachmentState GraphicsPipelineComponents::create_color_blend_attachment_state()
+{
+    VkPipelineColorBlendAttachmentState result = {};
+    result.blendEnable = VK_FALSE;
+    result.colorWriteMask = VK_COLOR_COMPONENT_R_BIT
+        | VK_COLOR_COMPONENT_G_BIT
+        | VK_COLOR_COMPONENT_B_BIT
+        | VK_COLOR_COMPONENT_A_BIT;
+
+    return result;
+}
+
+VkPipelineColorBlendStateCreateInfo GraphicsPipelineComponents::create_color_blend_state(
+    const VkPipelineColorBlendAttachmentState &color_blend_attachment)
 {
     VkPipelineColorBlendStateCreateInfo result = {};
     result.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -191,7 +184,17 @@ VkPipelineColorBlendStateCreateInfo GraphicsPipelineComponents::create_color_ble
     return result;
 }
 
-VkPipelineDynamicStateCreateInfo GraphicsPipelineComponents::create_dynamic_state()
+std::vector<VkDynamicState> GraphicsPipelineComponents::create_dynamic_states()
+{
+    return
+    {
+        VK_DYNAMIC_STATE_VIEWPORT,
+        VK_DYNAMIC_STATE_SCISSOR
+    };
+}
+
+VkPipelineDynamicStateCreateInfo GraphicsPipelineComponents::create_dynamic_state(
+    const std::vector<VkDynamicState> &dynamic_states)
 {
     VkPipelineDynamicStateCreateInfo result = {};
     result.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;

@@ -1,17 +1,16 @@
 #pragma once
 
-#include <memory>
-#include <vector>
+#include <vulkan/vulkan.h>
 
 #include "device_components.h"
-#include "descriptor_factory.h"
+#include "descriptor_pool_factory.h"
 
 namespace levin
 {
     class DescriptorPoolComponents
     {
     private:
-        DescriptorFactory m_factory;
+        DescriptorPoolFactory m_factory;
 
         const VkDescriptorSetLayout m_descriptor_set_layout;
         const VkDescriptorPool m_descriptor_pool;

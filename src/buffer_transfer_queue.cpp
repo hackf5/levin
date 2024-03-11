@@ -5,10 +5,10 @@
 using namespace levin;
 
 BufferTransferQueue::BufferTransferQueue(
-    DeviceComponents &device,
+    const DeviceComponents &device,
     size_t command_buffer_count):
     m_device(device),
-    m_command_factory(device),
+    m_factory(device),
     m_queue(device.transfer_queue()),
     m_command_pool(create_command_pool()),
     m_command_buffers(create_command_buffers(command_buffer_count))
@@ -22,7 +22,7 @@ VkCommandPool BufferTransferQueue::create_command_pool()
     pool_info.queueFamilyIndex = m_device.transfer_queue_index();
     pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-    return m_command_factory.create_command_pool(pool_info);
+    return m_factory.create_command_pool(pool_info);
 }
 
 std::vector<VkCommandBuffer> BufferTransferQueue::create_command_buffers(size_t count)
@@ -33,7 +33,7 @@ std::vector<VkCommandBuffer> BufferTransferQueue::create_command_buffers(size_t 
     alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     alloc_info.commandBufferCount = static_cast<uint32_t>(count);
 
-    return m_command_factory.create_command_buffers(alloc_info);
+    return m_factory.create_command_buffers(alloc_info);
 }
 
 VkCommandBuffer BufferTransferQueue::begin(size_t index) const

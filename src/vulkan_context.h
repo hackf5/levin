@@ -10,15 +10,16 @@
 #include "window_components.h"
 #include "device_components.h"
 #include "buffer_transfer_queue.h"
-#include "descriptor_pool_components.h"
-#include "render_pass_components.h"
-#include "swapchain_components.h"
-#include "framebuffer_components.h"
-#include "graphics_pipeline_components.h"
 #include "graphics_commands.h"
+#include "descriptor_pool_components.h"
 #include "buffer.h"
 #include "vertex.h"
 #include "descriptor_set_components.h"
+#include "shader_module_components.h"
+#include "swapchain_components.h"
+#include "render_pass_components.h"
+#include "framebuffer_components.h"
+#include "graphics_pipeline_components.h"
 
 namespace levin
 {
@@ -34,6 +35,7 @@ namespace levin
         std::unique_ptr<BufferGPU> m_index_buffer;
         std::vector<std::unique_ptr<BufferCPUtoGPU>> m_uniform_buffers;
         std::unique_ptr<UniformBufferDescriptorSet> m_uniform_buffer_descriptor_set;
+        std::unique_ptr<ShaderModuleComponents> m_shader_modules;
         std::unique_ptr<SwapchainComponents> m_swapchain;
         std::unique_ptr<RenderPassComponents> m_render_pass;
         std::unique_ptr<FramebufferComponents> m_framebuffers;
@@ -72,6 +74,8 @@ namespace levin
         {
             return *m_uniform_buffer_descriptor_set;
         }
+
+        const ShaderModuleComponents &shader_modules() const { return *m_shader_modules; }
 
         const SwapchainComponents &swapchain() const { return *m_swapchain; }
 
@@ -116,6 +120,8 @@ namespace levin
         VulkanContextBuilder &configure_uniform_buffers(VkDeviceSize size);
 
         VulkanContextBuilder &configure_uniform_buffer_descriptor_set(VkDeviceSize size);
+
+        VulkanContextBuilder &configure_shader_modules();
 
         VulkanContextBuilder &configure_swapchain();
 

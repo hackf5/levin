@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "vulkan_factory.h"
+#include "framebuffers_factory.h"
 #include "device_components.h"
 #include "swapchain_components.h"
 #include "render_pass_components.h"
@@ -14,9 +14,13 @@ namespace levin
     private:
         bool m_initialized = false;
 
-        VulkanFactory m_factory;
+        FramebuffersFactory m_factory;
 
-        std::vector<VkFramebuffer> m_framebuffers;
+        const std::vector<VkFramebuffer> m_framebuffers;
+
+        std::vector<VkFramebuffer> create_framebuffers(
+            const SwapchainComponents &swapchain_components,
+            const RenderPassComponents &render_pass_components);
 
     public:
         FramebufferComponents(
