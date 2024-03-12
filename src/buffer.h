@@ -1,6 +1,8 @@
 #pragma once
 
+#include <vector>
 #include <vma/vk_mem_alloc.h>
+#include <vulkan/vulkan.h>
 
 #include "device_components.h"
 #include "buffer_transfer_queue.h"
@@ -62,12 +64,23 @@ namespace levin
 
         ~BufferCPUtoGPU();
 
-        void copy_from(void *data, VkDeviceSize size);
+        void copy_from(void *data, VkDeviceSize size)
+        {
+            memcpy(m_mapped_data, data, size);
+        }
+
+        template <typename T>
+        void copy_from(const std::vector<T> &data)
+        {
+            copy_from((void *)data.data(), sizeof(T) * data.size());
+        }
     };
 
     class BufferGPU: public Buffer
     {
-        const BufferTransferQueue& m_transfer_queue;
+    private:
+        const DeviceComponents &m_device;
+        const BufferTransferQueue &m_transfer_queue;
 
     public:
         BufferGPU(
@@ -78,5 +91,16 @@ namespace levin
         BufferGPU(const BufferGPU &) = delete;
 
         void copy_from(const BufferCPUtoGPU &buffer) const;
+
+        template <typename T>
+        void copy_from(const std::vector<T> &data) const
+        {
+            BufferCPUtoGPU staging_buffer(
+                m_device,
+                sizeof(T) * data.size(),
+                VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+            staging_buffer.copy_from(data);
+            copy_from(staging_buffer);
+        }
     };
 }

@@ -38,7 +38,7 @@ namespace levin
 
         ~DeviceComponents();
 
-        static const uint32_t frames_in_flight = 2;
+        static const uint32_t max_frames_in_flight = 2;
 
         operator const vkb::Device &() const { return m_device; }
 

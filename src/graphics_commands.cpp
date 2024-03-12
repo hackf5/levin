@@ -12,9 +12,9 @@ GraphicsCommands::GraphicsCommands(const DeviceComponents &device_components):
     m_graphics_queue(device_components.graphics_queue()),
     m_command_pool(create_command_pool()),
     m_command_buffers(create_command_buffers()),
-    m_image_available(m_command_factory.create_semaphores(DeviceComponents::frames_in_flight)),
-    m_render_finished(m_command_factory.create_semaphores(DeviceComponents::frames_in_flight)),
-    m_in_flight_fences(m_command_factory.create_fences(DeviceComponents::frames_in_flight))
+    m_image_available(m_command_factory.create_semaphores(DeviceComponents::max_frames_in_flight)),
+    m_render_finished(m_command_factory.create_semaphores(DeviceComponents::max_frames_in_flight)),
+    m_in_flight_fences(m_command_factory.create_fences(DeviceComponents::max_frames_in_flight))
 {
 }
 
@@ -34,14 +34,55 @@ std::vector<VkCommandBuffer> GraphicsCommands::create_command_buffers()
     allocate_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocate_info.commandPool = m_command_pool;
     allocate_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocate_info.commandBufferCount = DeviceComponents::frames_in_flight;
+    allocate_info.commandBufferCount = DeviceComponents::max_frames_in_flight;
 
     return m_command_factory.create_command_buffers(allocate_info);
 }
 
-VkCommandBuffer GraphicsCommands::begin(uint32_t index) const
+VkFramebuffer GraphicsCommands::prepare_framebuffer(
+    uint32_t current_frame,
+    VkSwapchainKHR swapchain,
+    const FramebufferComponents &framebuffers)
 {
-    if (vkResetCommandBuffer(m_command_buffers[index], 0) != VK_SUCCESS)
+    assert(m_swapchain == VK_NULL_HANDLE);
+
+    m_current_frame = current_frame;
+    m_swapchain = swapchain;
+
+    vkWaitForFences(
+        m_device_components,
+        1,
+        &m_in_flight_fences[m_current_frame],
+        VK_TRUE,
+        std::numeric_limits<uint64_t>::max());
+
+    vkResetFences(m_device_components, 1, &m_in_flight_fences[m_current_frame]);
+
+    VkResult result = vkAcquireNextImageKHR(
+        m_device_components,
+        swapchain,
+        std::numeric_limits<uint64_t>::max(),
+        m_image_available[m_current_frame],
+        VK_NULL_HANDLE,
+        &m_image_index);
+
+    if (result == VK_ERROR_OUT_OF_DATE_KHR)
+    {
+        return nullptr;
+    }
+    if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+    {
+        throw std::runtime_error("Failed to acquire swap chain image");
+    }
+
+    return framebuffers.framebuffer(m_image_index);
+}
+
+VkCommandBuffer GraphicsCommands::begin_command() const
+{
+    assert(m_swapchain != VK_NULL_HANDLE);
+
+    if (vkResetCommandBuffer(m_command_buffers[m_current_frame], 0) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to reset command buffer");
     }
@@ -49,17 +90,19 @@ VkCommandBuffer GraphicsCommands::begin(uint32_t index) const
     VkCommandBufferBeginInfo begin_info {};
     begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-    if (vkBeginCommandBuffer(m_command_buffers[index], &begin_info) != VK_SUCCESS)
+    if (vkBeginCommandBuffer(m_command_buffers[m_current_frame], &begin_info) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to begin recording command buffer");
     }
 
-    return m_command_buffers[index];
+    return m_command_buffers[m_current_frame];
 }
 
-void GraphicsCommands::end_and_submit(uint32_t index) const
+void GraphicsCommands::submit_command() const
 {
-    if (vkEndCommandBuffer(m_command_buffers[index]) != VK_SUCCESS)
+    assert(m_swapchain != VK_NULL_HANDLE);
+
+    if (vkEndCommandBuffer(m_command_buffers[m_current_frame]) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to end recording command buffer");
     }
@@ -67,71 +110,40 @@ void GraphicsCommands::end_and_submit(uint32_t index) const
     VkSubmitInfo submit_info {};
     submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submit_info.commandBufferCount = 1;
-    submit_info.pCommandBuffers = &m_command_buffers[index];
+    submit_info.pCommandBuffers = &m_command_buffers[m_current_frame];
 
-    VkSemaphore wait_semaphores[] = { m_image_available[index] };
+    VkSemaphore wait_semaphores[] = { m_image_available[m_current_frame] };
     VkPipelineStageFlags wait_stages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
     submit_info.waitSemaphoreCount = 1;
     submit_info.pWaitSemaphores = wait_semaphores;
     submit_info.pWaitDstStageMask = wait_stages;
 
-    VkSemaphore signal_semaphores[] = { m_render_finished[index] };
+    VkSemaphore signal_semaphores[] = { m_render_finished[m_current_frame] };
     submit_info.signalSemaphoreCount = 1;
     submit_info.pSignalSemaphores = signal_semaphores;
 
-    vkResetFences(m_device_components, 1, &m_in_flight_fences[index]);
+    vkResetFences(m_device_components, 1, &m_in_flight_fences[m_current_frame]);
 
     if (vkQueueSubmit(
         m_graphics_queue,
         1,
         &submit_info,
-        m_in_flight_fences[index]) != VK_SUCCESS)
+        m_in_flight_fences[m_current_frame]) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to submit draw command buffer");
     }
 }
 
-GraphicsResult GraphicsCommands::acquire_next_image(
-    uint32_t index,
-    VkSwapchainKHR swapchain)
+bool GraphicsCommands::present_framebuffer()
 {
-    vkWaitForFences(
-        m_device_components,
-        1,
-        &m_in_flight_fences[index],
-        VK_TRUE,
-        std::numeric_limits<uint64_t>::max());
+    assert(m_swapchain != VK_NULL_HANDLE);
+    auto swapchain = m_swapchain;
+    m_swapchain = VK_NULL_HANDLE;
 
-    vkResetFences(m_device_components, 1, &m_in_flight_fences[index]);
-
-    VkResult result = vkAcquireNextImageKHR(
-        m_device_components,
-        swapchain,
-        std::numeric_limits<uint64_t>::max(),
-        m_image_available[index],
-        VK_NULL_HANDLE,
-        &m_image_index);
-
-    if (result == VK_ERROR_OUT_OF_DATE_KHR)
-    {
-        return GraphicsResult::RecreateSwapchain;
-    }
-    else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-    {
-        throw std::runtime_error("Failed to acquire swap chain image");
-    }
-
-    return GraphicsResult::Success;
-}
-
-GraphicsResult GraphicsCommands::present(
-    uint32_t index,
-    VkSwapchainKHR swapchain) const
-{
     VkPresentInfoKHR present_info {};
     present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
-    VkSemaphore wait_semaphores[] = { m_render_finished[index] };
+    VkSemaphore wait_semaphores[] = { m_render_finished[m_current_frame] };
     present_info.waitSemaphoreCount = 1;
     present_info.pWaitSemaphores = wait_semaphores;
 
@@ -144,12 +156,12 @@ GraphicsResult GraphicsCommands::present(
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
     {
-        return GraphicsResult::RecreateSwapchain;
+        return false;
     }
     else if (result != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to present swap chain image");
     }
 
-    return GraphicsResult::Success;
+    return true;
 }

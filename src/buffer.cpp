@@ -69,11 +69,6 @@ BufferCPUtoGPU::~BufferCPUtoGPU()
     vmaUnmapMemory(m_allocator, *this);
 }
 
-void BufferCPUtoGPU::copy_from(void *data, VkDeviceSize size)
-{
-    memcpy(m_mapped_data, data, size);
-}
-
 BufferGPU::BufferGPU(
     const DeviceComponents &device,
     const BufferTransferQueue &transfer_queue,
@@ -83,6 +78,7 @@ BufferGPU::BufferGPU(
     device,
     size,
     usage | VK_BUFFER_USAGE_TRANSFER_DST_BIT),
+    m_device(device),
     m_transfer_queue(transfer_queue)
 {
 }

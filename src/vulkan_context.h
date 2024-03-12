@@ -1,11 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <functional>
-#include <string>
-#include <stack>
 #include <vector>
-#include "spdlog/spdlog.h"
 
 #include "window_components.h"
 #include "device_components.h"
@@ -41,16 +37,10 @@ namespace levin
         std::unique_ptr<FramebufferComponents> m_framebuffers;
         std::unique_ptr<GraphicsPipelineComponents> m_graphics_pipeline;
 
-        uint32_t m_current_frame = 0;
-
     public:
-        static const uint32_t max_frames_in_flight = 2;
-
         VulkanContext() = default;
 
         VulkanContext(const VulkanContext &) = delete;
-
-        uint32_t current_frame() const { return m_current_frame; }
 
         WindowComponents &window() { return *m_window; }
 
@@ -85,52 +75,6 @@ namespace levin
 
         const GraphicsPipelineComponents &graphics_pipeline() const { return *m_graphics_pipeline; }
 
-        void next_frame()
-        {
-            m_current_frame = (m_current_frame + 1) % DeviceComponents::frames_in_flight;
-        }
-
         friend class VulkanContextBuilder;
-    };
-
-    class VulkanContextBuilder
-    {
-    private:
-        std::unique_ptr<VulkanContext> m_context;
-
-    public:
-        VulkanContextBuilder(): m_context(std::make_unique<VulkanContext>()) {}
-
-        VulkanContextBuilder(std::unique_ptr<VulkanContext> context): m_context(std::move(context)) {}
-
-        VulkanContextBuilder &configure_window(int width, int height, const std::string &title);
-
-        VulkanContextBuilder &configure_device(bool enable_validation_layers = true);
-
-        VulkanContextBuilder &configure_transfer_queue(size_t command_buffer_count = 1);
-
-        VulkanContextBuilder &configure_graphics_commands();
-
-        VulkanContextBuilder &configure_descriptor_pool();
-
-        VulkanContextBuilder &configure_vertex_buffer(VkDeviceSize size);
-
-        VulkanContextBuilder &configure_index_buffer(VkDeviceSize size);
-
-        VulkanContextBuilder &configure_uniform_buffers(VkDeviceSize size);
-
-        VulkanContextBuilder &configure_uniform_buffer_descriptor_set(VkDeviceSize size);
-
-        VulkanContextBuilder &configure_shader_modules();
-
-        VulkanContextBuilder &configure_swapchain();
-
-        VulkanContextBuilder &configure_render_pass();
-
-        VulkanContextBuilder &configure_framebuffers();
-
-        VulkanContextBuilder &configure_graphics_pipeline();
-
-        std::unique_ptr<VulkanContext> build();
     };
 }

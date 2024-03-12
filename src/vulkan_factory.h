@@ -9,8 +9,8 @@ namespace levin
 {
     class VulkanFactory
     {
-    public:
-        typedef std::function<void(const vkb::Device & device)> destruction_callback_t;
+    protected:
+        typedef std::function<void(const vkb::Device &device)> destruction_callback_t;
 
     private:
         std::vector<destruction_callback_t> m_destruction_queue;
@@ -22,9 +22,9 @@ namespace levin
 
         ~VulkanFactory();
 
-        void register_destruction(destruction_callback_t destroy) { m_destruction_queue.push_back(destroy); }
-
     protected:
         const vkb::Device &device() const { return m_device; }
+
+        void register_destruction(destruction_callback_t destroy) { m_destruction_queue.push_back(destroy); }
     };
 }

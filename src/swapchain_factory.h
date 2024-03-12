@@ -10,9 +10,6 @@ namespace levin
 {
     class SwapchainFactory: public VulkanFactory
     {
-    private:
-        static vkb::Swapchain create_swapchain(const vkb::Device &device);
-
     public:
         SwapchainFactory(const vkb::Device &device);
         SwapchainFactory(const SwapchainFactory &) = delete;

@@ -6,17 +6,13 @@
 #include "VkBootstrap.h"
 
 #include "device_components.h"
+#include "swapchain_components.h"
+#include "framebuffer_components.h"
 
 #include "command_factory.h"
 
 namespace levin
 {
-    enum class GraphicsResult
-    {
-        Success,
-        RecreateSwapchain,
-    };
-
     class GraphicsCommands
     {
     private:
@@ -36,18 +32,20 @@ namespace levin
         std::vector<VkCommandBuffer> create_command_buffers();
 
         uint32_t m_image_index = 0;
+        uint32_t m_current_frame = 0;
+        VkSwapchainKHR m_swapchain = VK_NULL_HANDLE;
 
     public:
         GraphicsCommands(const DeviceComponents &device_components);
         GraphicsCommands(const GraphicsCommands &) = delete;
 
-        uint32_t image_index() const { return m_image_index; }
+        VkFramebuffer prepare_framebuffer(
+            uint32_t current_frame,
+            VkSwapchainKHR swapchain,
+            const FramebufferComponents& framebuffers);
 
-        GraphicsResult acquire_next_image(uint32_t frame, VkSwapchainKHR swapchain);
-
-        VkCommandBuffer begin(uint32_t frame) const;
-        void end_and_submit(uint32_t frame) const;
-
-        GraphicsResult present(uint32_t frame, VkSwapchainKHR swapchain) const;
+        VkCommandBuffer begin_command() const;
+        void submit_command() const;
+        bool present_framebuffer();
     };
 }

@@ -3,23 +3,22 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "vulkan_context_builder.h"
 #include "vulkan_engine.h"
-
 #include "uniform_buffer_object.h"
-#include "vertex.h"
 
 #include "spdlog/spdlog.h"
 
 using namespace levin;
 
-const std::vector<Vertex> vertices = {
+const std::vector<Vertex> vertexes = {
     {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
     {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
     {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
     {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
 };
 
-const std::vector<uint16_t> indices = {
+const std::vector<uint16_t> indexes = {
     0, 1, 2, 2, 3, 0
 };
 
@@ -47,50 +46,12 @@ void VulkanEngine::run()
 
 void VulkanEngine::load_vertexes()
 {
-    auto staging_buffer = BufferCPUtoGPU(
-        m_context->device(),
-        sizeof(vertices[0]) * vertices.size(),
-        VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-    staging_buffer.copy_from((void *)vertices.data(), sizeof(vertices[0]) * vertices.size());
-    m_context->vertex_buffer().copy_from(staging_buffer);
+    m_context->vertex_buffer().copy_from(vertexes);
 }
 
 void VulkanEngine::load_indexes()
 {
-    auto staging_buffer = BufferCPUtoGPU(
-        m_context->device(),
-        sizeof(indices[0]) * indices.size(),
-        VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-    staging_buffer.copy_from((void *)indices.data(), sizeof(indices[0]) * indices.size());
-    m_context->index_buffer().copy_from(staging_buffer);
-}
-
-void VulkanEngine::draw_frame()
-{
-    auto result = m_context->graphics_commands().acquire_next_image(
-        m_context->current_frame(),
-        m_context->swapchain());
-
-    if (result == GraphicsResult::RecreateSwapchain)
-    {
-        recreate_swapchain();
-        return;
-    }
-
-    update_uniform_buffer();
-
-    execute_command_buffer();
-
-    result = m_context->graphics_commands().present(
-        m_context->current_frame(),
-        m_context->swapchain());
-
-    if (result == GraphicsResult::RecreateSwapchain)
-    {
-        recreate_swapchain();
-    }
-
-    m_context->next_frame();
+    m_context->index_buffer().copy_from(indexes);
 }
 
 void VulkanEngine::recreate_swapchain()
@@ -108,17 +69,43 @@ void VulkanEngine::recreate_swapchain()
     m_context = std::move(context);
 }
 
-void VulkanEngine::execute_command_buffer()
+void VulkanEngine::draw_frame()
 {
-    auto command_buffer = m_context->graphics_commands().begin(m_context->current_frame());
+    auto framebuffer = m_context
+        ->graphics_commands()
+        .prepare_framebuffer(
+            m_current_frame,
+            m_context->swapchain(),
+            m_context->framebuffers());
+    if (!framebuffer)
+    {
+        recreate_swapchain();
+        return;
+    }
+
+    update_uniform_buffer();
+    render(framebuffer);
+
+    if (!m_context->graphics_commands().present_framebuffer())
+    {
+        recreate_swapchain();
+    }
+
+    next_frame();
+}
+
+void VulkanEngine::render(VkFramebuffer framebuffer)
+{
+    auto command_buffer = m_context
+        ->graphics_commands()
+        .begin_command();
 
     auto extent = m_context->swapchain().extent();
 
     VkRenderPassBeginInfo render_pass_info {};
     render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     render_pass_info.renderPass = m_context->render_pass();
-    render_pass_info.framebuffer = m_context->framebuffers().framebuffer(
-        m_context->graphics_commands().image_index());
+    render_pass_info.framebuffer = framebuffer;
     render_pass_info.renderArea.offset = { 0, 0 };
     render_pass_info.renderArea.extent = extent;
 
@@ -158,7 +145,8 @@ void VulkanEngine::execute_command_buffer()
 
     auto descriptor_set = m_context
         ->uniform_buffer_descriptor_set()
-        .descriptor_set(m_context->current_frame());
+        .descriptor_set(m_current_frame);
+
     vkCmdBindDescriptorSets(
         command_buffer,
         VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -169,11 +157,13 @@ void VulkanEngine::execute_command_buffer()
         0,
         nullptr);
 
-    vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+    vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indexes.size()), 1, 0, 0, 0);
 
     vkCmdEndRenderPass(command_buffer);
 
-    m_context->graphics_commands().end_and_submit(m_context->current_frame());
+    m_context
+        ->graphics_commands()
+        .submit_command();
 }
 
 void VulkanEngine::update_uniform_buffer()
@@ -196,5 +186,5 @@ void VulkanEngine::update_uniform_buffer()
         10.0f);
     ubo.proj[1][1] *= -1;
 
-    m_context->uniform_buffer(m_context->current_frame()).copy_from(&ubo, sizeof(ubo));
+    m_context->uniform_buffer(m_current_frame).copy_from(&ubo, sizeof(ubo));
 }

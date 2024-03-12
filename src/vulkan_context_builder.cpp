@@ -1,4 +1,4 @@
-#include "vulkan_context.h"
+#include "vulkan_context_builder.h"
 
 #include <stdexcept>
 
@@ -36,8 +36,8 @@ VulkanContextBuilder &VulkanContextBuilder::configure_descriptor_pool()
 
 VulkanContextBuilder &VulkanContextBuilder::configure_uniform_buffers(VkDeviceSize size)
 {
-    m_context->m_uniform_buffers.resize(VulkanContext::max_frames_in_flight);
-    for (size_t i = 0; i < VulkanContext::max_frames_in_flight; i++)
+    m_context->m_uniform_buffers.resize(DeviceComponents::max_frames_in_flight);
+    for (size_t i = 0; i < DeviceComponents::max_frames_in_flight; i++)
     {
         m_context->m_uniform_buffers[i] = std::make_unique<BufferCPUtoGPU>(
             *m_context->m_device,

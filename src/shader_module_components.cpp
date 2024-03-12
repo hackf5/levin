@@ -11,8 +11,6 @@ ShaderModuleComponents::ShaderModuleComponents(const vkb::Device &device):
 
 void ShaderModuleComponents::load(const std::string &name)
 {
-    spdlog::info("Loading Shader Module: {}", name);
-
     if (m_shader_modules.find(name) != m_shader_modules.end())
     {
         spdlog::warn("Shader Module already loaded: {}", name);

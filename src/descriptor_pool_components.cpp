@@ -34,14 +34,14 @@ VkDescriptorPool DescriptorPoolComponents::create_descriptor_pool()
 {
     VkDescriptorPoolSize pool_size = {};
     pool_size.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    pool_size.descriptorCount = static_cast<uint32_t>(DeviceComponents::frames_in_flight);
+    pool_size.descriptorCount = static_cast<uint32_t>(DeviceComponents::max_frames_in_flight);
 
     VkDescriptorPoolCreateInfo pool_info = {};
     pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
     pool_info.poolSizeCount = 1;
     pool_info.pPoolSizes = &pool_size;
-    pool_info.maxSets = static_cast<uint32_t>(DeviceComponents::frames_in_flight);
+    pool_info.maxSets = static_cast<uint32_t>(DeviceComponents::max_frames_in_flight);
 
     return m_factory.create_descriptor_pool(pool_info);
 }
