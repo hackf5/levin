@@ -16,19 +16,18 @@ namespace levin
         {
             const VkBuffer buffer;
             const VmaAllocation allocation;
-            const VmaAllocationInfo allocation_info;
+            const VmaAllocationInfo info;
         };
 
         const VmaAllocator m_allocator;
 
-        const VkDeviceSize m_size;
         const VkBufferUsageFlags m_usage;
         const VmaMemoryUsage m_memory_usage;
         const VmaAllocationCreateFlags m_allocation_flags;
 
         const AllocationInfo m_allocation_info;
 
-        AllocationInfo create_allocation_info();
+        AllocationInfo create_allocation_info(VkDeviceSize size);
 
     public:
         Buffer(
@@ -41,20 +40,17 @@ namespace levin
 
         ~Buffer();
 
-        VkDeviceSize size() const { return m_size; }
+        VkDeviceSize size() const { return m_allocation_info.info.size; }
 
         operator VkBuffer() const { return m_allocation_info.buffer; }
 
         operator VmaAllocation() const { return m_allocation_info.allocation; }
 
-        operator VmaAllocationInfo() const { return m_allocation_info.allocation_info; }
+        operator VmaAllocationInfo() const { return m_allocation_info.info; }
     };
 
     class BufferCPUtoGPU: public Buffer
     {
-    private:
-        void *m_mapped_data;
-
     public:
         BufferCPUtoGPU(
             const DeviceComponents &device,
@@ -62,11 +58,9 @@ namespace levin
             VkBufferUsageFlags usage);
         BufferCPUtoGPU(const BufferCPUtoGPU &) = delete;
 
-        ~BufferCPUtoGPU();
-
         void copy_from(void *data, VkDeviceSize size)
         {
-            memcpy(m_mapped_data, data, size);
+            memcpy(m_allocation_info.info.pMappedData, data, size);
         }
 
         template <typename T>

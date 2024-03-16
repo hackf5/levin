@@ -11,7 +11,7 @@ namespace levin
     class DescriptorSetComponents
     {
     private:
-        std::vector<VkDescriptorSet> create_descriptor_sets(size_t count);
+        std::vector<VkDescriptorSet> create_descriptor_sets();
 
     protected:
         const DeviceComponents &m_device;
@@ -21,8 +21,7 @@ namespace levin
     public:
         DescriptorSetComponents(
             const DeviceComponents &device,
-            const DescriptorPoolComponents &descriptor_pool,
-            size_t count);
+            const DescriptorPoolComponents &descriptor_pool);
         DescriptorSetComponents(const DescriptorSetComponents &) = delete;
 
         ~DescriptorSetComponents();
@@ -37,7 +36,6 @@ namespace levin
             const DeviceComponents &device,
             const DescriptorPoolComponents &descriptor_pool,
             VkBuffer *uniform_buffers,
-            size_t count,
             size_t object_size);
     };
 }

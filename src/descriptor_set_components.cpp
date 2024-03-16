@@ -8,11 +8,10 @@ using namespace levin;
 
 DescriptorSetComponents::DescriptorSetComponents(
     const DeviceComponents &device,
-    const DescriptorPoolComponents &descriptor_pool,
-    size_t count):
+    const DescriptorPoolComponents &descriptor_pool):
     m_device(device),
     m_descriptor_pool(descriptor_pool),
-    m_descriptor_sets(create_descriptor_sets(count))
+    m_descriptor_sets(create_descriptor_sets())
 {
 }
 
@@ -25,17 +24,19 @@ DescriptorSetComponents::~DescriptorSetComponents()
         m_descriptor_sets.data());
 }
 
-std::vector<VkDescriptorSet> DescriptorSetComponents::create_descriptor_sets(size_t count)
+std::vector<VkDescriptorSet> DescriptorSetComponents::create_descriptor_sets()
 {
-    std::vector<VkDescriptorSetLayout> layouts(count, m_descriptor_pool.layout());
+    std::vector<VkDescriptorSetLayout> layouts(
+        DeviceComponents::max_frames_in_flight,
+        m_descriptor_pool.layout());
 
     VkDescriptorSetAllocateInfo alloc_info{};
     alloc_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     alloc_info.descriptorPool = m_descriptor_pool.pool();
-    alloc_info.descriptorSetCount = static_cast<uint32_t>(count);
+    alloc_info.descriptorSetCount = DeviceComponents::max_frames_in_flight;
     alloc_info.pSetLayouts = layouts.data();
 
-    std::vector<VkDescriptorSet> descriptor_sets(count);
+    std::vector<VkDescriptorSet> descriptor_sets(DeviceComponents::max_frames_in_flight);
     if (vkAllocateDescriptorSets(m_device, &alloc_info, descriptor_sets.data()) != VK_SUCCESS)
     {
         spdlog::error("Failed to allocate descriptor sets");
@@ -49,11 +50,10 @@ UniformBufferDescriptorSet::UniformBufferDescriptorSet(
     const DeviceComponents &device,
     const DescriptorPoolComponents &descriptor_pool,
     VkBuffer* uniform_buffers,
-    size_t count,
     size_t object_size):
-    DescriptorSetComponents(device, descriptor_pool, count)
+    DescriptorSetComponents(device, descriptor_pool)
 {
-    for (size_t i = 0; i < count; i++)
+    for (size_t i = 0; i < m_descriptor_sets.size(); i++)
     {
         VkDescriptorBufferInfo buffer_info{};
         buffer_info.buffer = uniform_buffers[i];

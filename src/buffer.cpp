@@ -11,11 +11,10 @@ Buffer::Buffer(
     VmaMemoryUsage memory_usage,
     VmaAllocationCreateFlags allocation_flags):
     m_allocator(device.allocator()),
-    m_size(size),
     m_usage(usage),
     m_memory_usage(memory_usage),
     m_allocation_flags(allocation_flags),
-    m_allocation_info(create_allocation_info())
+    m_allocation_info(create_allocation_info(size))
 {
 }
 
@@ -24,11 +23,11 @@ Buffer::~Buffer()
     vmaDestroyBuffer(m_allocator, *this, *this);
 }
 
-Buffer::AllocationInfo Buffer::create_allocation_info()
+Buffer::AllocationInfo Buffer::create_allocation_info(VkDeviceSize size)
 {
     VkBufferCreateInfo buffer_info = {};
     buffer_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    buffer_info.size = m_size;
+    buffer_info.size = size;
     buffer_info.usage = m_usage;
     buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
@@ -56,17 +55,8 @@ BufferCPUtoGPU::BufferCPUtoGPU(
     size,
     usage,
     VMA_MEMORY_USAGE_AUTO,
-    VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
+    VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT)
 {
-    if (vmaMapMemory(m_allocator, *this, &m_mapped_data) != VK_SUCCESS)
-    {
-        throw std::runtime_error("Failed to map CPU to GPU buffer memory");
-    }
-}
-
-BufferCPUtoGPU::~BufferCPUtoGPU()
-{
-    vmaUnmapMemory(m_allocator, *this);
 }
 
 BufferGPU::BufferGPU(

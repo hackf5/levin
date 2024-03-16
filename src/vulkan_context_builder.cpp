@@ -60,7 +60,6 @@ VulkanContextBuilder &VulkanContextBuilder::configure_uniform_buffer_descriptor_
         *m_context->m_device,
         *m_context->m_descriptor_pool,
         uniform_buffers.data(),
-        uniform_buffers.size(),
         size);
 
     return *this;
