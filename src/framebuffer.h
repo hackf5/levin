@@ -12,8 +12,6 @@ namespace levin
     class Framebuffer
     {
     private:
-        bool m_initialized = false;
-
         FramebuffersFactory m_factory;
 
         const std::vector<VkFramebuffer> m_framebuffers;
@@ -24,11 +22,11 @@ namespace levin
 
     public:
         Framebuffer(
-            const Device &device_components,
+            const Device &device,
             const Swapchain &swapchain,
             const RenderPass &render_pass);
         Framebuffer(const Framebuffer &) = delete;
 
-        VkFramebuffer framebuffer(uint32_t index) const { return m_framebuffers[index]; }
+        VkFramebuffer framebuffer(uint32_t image_index) const { return m_framebuffers[image_index]; }
     };
 }

@@ -12,25 +12,21 @@ namespace levin
     class BufferTransferQueue
     {
     private:
-        const Device &m_device;
-
         CommandFactory m_factory;
 
         const VkQueue m_queue;
         const VkCommandPool m_command_pool;
-        const std::vector<VkCommandBuffer> m_command_buffers;
+        const VkCommandBuffer m_command_buffer;
 
-        VkCommandPool create_command_pool();
-        std::vector<VkCommandBuffer> create_command_buffers(size_t count);
+        VkCommandPool create_command_pool(const Device &device);
+        VkCommandBuffer create_command_buffer();
 
     public:
-        BufferTransferQueue(
-            const Device &device,
-            size_t command_buffer_count = 1);
+        BufferTransferQueue(const Device &device);
         BufferTransferQueue(const BufferTransferQueue &) = delete;
 
-        VkCommandBuffer begin(size_t index = 0) const;
+        VkCommandBuffer begin() const;
 
-        void submit_and_wait(size_t index = 0) const;
+        void submit_and_wait() const;
     };
 }

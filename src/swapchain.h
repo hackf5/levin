@@ -23,7 +23,7 @@ namespace levin
         VkRect2D create_scissor();
 
     public:
-        Swapchain(const Device &device_components);
+        Swapchain(const Device &device);
         Swapchain(const Swapchain &) = delete;
 
         operator VkSwapchainKHR() const { return m_swapchain.swapchain; }

@@ -6,10 +6,10 @@
 
 using namespace levin;
 
-GraphicsCommands::GraphicsCommands(const Device &device_components):
-    m_device_components(device_components),
-    m_command_factory(device_components),
-    m_graphics_queue(device_components.graphics_queue()),
+GraphicsCommands::GraphicsCommands(const Device &device):
+    m_device(device),
+    m_command_factory(device),
+    m_graphics_queue(device.graphics_queue()),
     m_command_pool(create_command_pool()),
     m_command_buffers(create_command_buffers()),
     m_image_available(m_command_factory.create_semaphores(Device::max_frames_in_flight)),
@@ -22,7 +22,7 @@ VkCommandPool GraphicsCommands::create_command_pool()
 {
     VkCommandPoolCreateInfo create_info {};
     create_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    create_info.queueFamilyIndex = m_device_components.graphics_queue_index();
+    create_info.queueFamilyIndex = m_device.graphics_queue_index();
     create_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
     return m_command_factory.create_command_pool(create_info);
@@ -50,16 +50,16 @@ VkFramebuffer GraphicsCommands::prepare_framebuffer(
     m_swapchain = swapchain;
 
     vkWaitForFences(
-        m_device_components,
+        m_device,
         1,
         &m_in_flight_fences[m_current_frame],
         VK_TRUE,
         std::numeric_limits<uint64_t>::max());
 
-    vkResetFences(m_device_components, 1, &m_in_flight_fences[m_current_frame]);
+    vkResetFences(m_device, 1, &m_in_flight_fences[m_current_frame]);
 
     VkResult result = vkAcquireNextImageKHR(
-        m_device_components,
+        m_device,
         swapchain,
         std::numeric_limits<uint64_t>::max(),
         m_image_available[m_current_frame],
@@ -122,7 +122,7 @@ void GraphicsCommands::submit_command() const
     submit_info.signalSemaphoreCount = 1;
     submit_info.pSignalSemaphores = signal_semaphores;
 
-    vkResetFences(m_device_components, 1, &m_in_flight_fences[m_current_frame]);
+    vkResetFences(m_device, 1, &m_in_flight_fences[m_current_frame]);
 
     if (vkQueueSubmit(
         m_graphics_queue,

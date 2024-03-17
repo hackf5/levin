@@ -4,8 +4,8 @@
 
 using namespace levin;
 
-Swapchain::Swapchain(const Device &device_components):
-    m_factory(SwapchainFactory(device_components)),
+Swapchain::Swapchain(const Device &device):
+    m_factory(SwapchainFactory(device)),
     m_swapchain(m_factory.create_swapchain()),
     m_swapchain_images(m_swapchain.get_images().value()),
     m_swapchain_image_views(m_factory.create_image_views(m_swapchain)),

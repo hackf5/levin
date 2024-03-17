@@ -16,7 +16,7 @@ namespace levin
     class GraphicsCommands
     {
     private:
-        const Device &m_device_components;
+        const Device &m_device;
 
         CommandFactory m_command_factory;
 
@@ -36,7 +36,7 @@ namespace levin
         VkSwapchainKHR m_swapchain = VK_NULL_HANDLE;
 
     public:
-        GraphicsCommands(const Device &device_components);
+        GraphicsCommands(const Device &device);
         GraphicsCommands(const GraphicsCommands &) = delete;
 
         VkFramebuffer prepare_framebuffer(

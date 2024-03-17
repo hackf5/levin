@@ -5,10 +5,10 @@
 using namespace levin;
 
 Framebuffer::Framebuffer(
-    const Device &device_components,
+    const Device &device,
     const Swapchain &swapchain,
-    const RenderPass &render_pass)
-    : m_factory(device_components),
+    const RenderPass &render_pass):
+    m_factory(device),
     m_framebuffers(create_framebuffers(swapchain, render_pass))
 {
 }

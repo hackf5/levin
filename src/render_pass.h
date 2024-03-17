@@ -19,7 +19,7 @@ namespace levin
 
     public:
         RenderPass(
-            const Device &device_components,
+            const Device &device,
             const Swapchain &swapchain);
         RenderPass(const RenderPass &) = delete;
 
