@@ -39,12 +39,7 @@ VkPipeline GraphicsPipelineComponents::create_pipeline(
 {
     auto shader_stages = create_shader_stages();
 
-    auto vertex_binding_description = Vertex::get_binding_description();
-    auto vertex_attribute_descriptions = Vertex::get_attribute_descriptions();
-    auto vertex_input_state = create_vertex_input_state(
-        vertex_binding_description,
-        vertex_attribute_descriptions.data(),
-        vertex_attribute_descriptions.size());
+    VertexInputState vertex_input_state(0, { VertexComponent::Position, VertexComponent::Color });
 
     auto input_assembly_state = create_input_assembly_state();
     auto viewport_state = create_viewport_state(swapchain);
@@ -59,7 +54,7 @@ VkPipeline GraphicsPipelineComponents::create_pipeline(
     pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     pipeline_info.stageCount = static_cast<uint32_t>(shader_stages.size());
     pipeline_info.pStages = shader_stages.data();
-    pipeline_info.pVertexInputState = &vertex_input_state;
+    pipeline_info.pVertexInputState = &vertex_input_state.pipeline;
     pipeline_info.pInputAssemblyState = &input_assembly_state;
     pipeline_info.pViewportState = &viewport_state;
     pipeline_info.pRasterizationState = &rasterization_state;
@@ -90,22 +85,6 @@ std::vector<VkPipelineShaderStageCreateInfo> GraphicsPipelineComponents::create_
     frag_stage_info.pName = "main";
 
     return { vert_stage_info, frag_stage_info };
-}
-
-VkPipelineVertexInputStateCreateInfo GraphicsPipelineComponents::create_vertex_input_state(
-    VkVertexInputBindingDescription &binding_description,
-    VkVertexInputAttributeDescription *attribute_descriptions,
-    uint32_t attribute_count)
-{
-    VkPipelineVertexInputStateCreateInfo result = {};
-
-    result.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    result.vertexBindingDescriptionCount = 1;
-    result.pVertexBindingDescriptions = &binding_description;
-    result.vertexAttributeDescriptionCount = attribute_count;
-    result.pVertexAttributeDescriptions = attribute_descriptions;
-
-    return result;
 }
 
 VkPipelineInputAssemblyStateCreateInfo GraphicsPipelineComponents::create_input_assembly_state()

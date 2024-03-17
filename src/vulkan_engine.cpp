@@ -18,7 +18,7 @@ const std::vector<Vertex> vertexes = {
     {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
 };
 
-const std::vector<uint16_t> indexes = {
+const std::vector<Vertex::index_t> indexes = {
     0, 1, 2, 2, 3, 0
 };
 

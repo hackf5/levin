@@ -35,7 +35,12 @@ file(GLOB_RECURSE SOURCES
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE src inc)
+target_include_directories(
+    ${PROJECT_NAME}
+    PRIVATE
+    src
+    src/models
+    inc)
 
 target_link_libraries(
     ${PROJECT_NAME}

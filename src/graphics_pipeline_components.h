@@ -30,11 +30,6 @@ namespace levin
 
         std::vector<VkPipelineShaderStageCreateInfo> create_shader_stages();
 
-        VkPipelineVertexInputStateCreateInfo create_vertex_input_state(
-            VkVertexInputBindingDescription &binding_description,
-            VkVertexInputAttributeDescription *attribute_descriptions,
-            uint32_t attribute_count);
-
         VkPipelineInputAssemblyStateCreateInfo create_input_assembly_state();
 
         VkPipelineViewportStateCreateInfo create_viewport_state(const SwapchainComponents &swapchain);
