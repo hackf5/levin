@@ -12,6 +12,7 @@
 #include "buffer.h"
 #include "vertex.h"
 #include "model.h"
+#include "camera.h"
 #include "descriptor_set.h"
 #include "shader_module.h"
 #include "swapchain.h"
@@ -31,6 +32,7 @@ namespace levin
         std::unique_ptr<DescriptorPool> m_descriptor_pool;
         std::unique_ptr<DescriptorSetLayout> m_descriptor_set_layout;
         std::unique_ptr<Model> m_model;
+        std::unique_ptr<Camera> m_camera;
         std::unique_ptr<Swapchain> m_swapchain;
         std::unique_ptr<RenderPass> m_render_pass;
         std::unique_ptr<Framebuffers> m_framebuffers;
@@ -56,6 +58,9 @@ namespace levin
 
         const Model &model() const { return *m_model; }
         Model &model() { return *m_model; }
+
+        const Camera &camera() const { return *m_camera; }
+        Camera &camera() { return *m_camera; }
 
         const Swapchain &swapchain() const { return *m_swapchain; }
 

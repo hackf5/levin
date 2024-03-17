@@ -49,6 +49,15 @@ VulkanContextBuilder &VulkanContextBuilder::configure_model()
     return *this;
 }
 
+VulkanContextBuilder &VulkanContextBuilder::configure_camera()
+{
+    m_context->m_camera = std::make_unique<Camera>(
+        *m_context->m_device,
+        *m_context->m_descriptor_pool,
+        *m_context->m_descriptor_set_layout);
+    return *this;
+}
+
 VulkanContextBuilder &VulkanContextBuilder::configure_swapchain()
 {
     if (m_context->m_swapchain.get() != nullptr)

@@ -13,60 +13,11 @@
 #include "device.h"
 #include "descriptor_pool.h"
 #include "descriptor_set_layout.h"
-#include "descriptor_set.h"
-#include "buffer.h"
 #include "transfer_queue.h"
+#include "uniform_buffer.h"
 
 namespace levin
 {
-    class Camera
-    {
-    private:
-        glm::mat4 m_view;
-        glm::mat4 m_projection;
-
-    public:
-        Camera(
-            glm::mat4 view,
-            glm::mat4 projection):
-            m_view(view),
-            m_projection(projection)
-        {
-        }
-
-        const glm::mat4 &view() const { return m_view; }
-        glm::mat4 &view() { return m_view; }
-
-        const glm::mat4 &projection() const { return m_projection; }
-        glm::mat4 &projection() { return m_projection; }
-
-        glm::mat4 matrix() const { return m_projection * m_view; }
-
-        static glm::mat4 default_proj()
-        {
-            auto m = glm::perspective(
-                glm::radians(45.0f),
-                800.0f / 600.0f,
-                0.1f,
-                10.0f);
-            m[1][1] *= -1;
-
-            return m;
-        }
-
-        static Camera &default_camera()
-        {
-            static Camera camera(
-                glm::lookAt(
-                    glm::vec3(2.0f, 2.0f, 2.0f),
-                    glm::vec3(0.0f, 0.0f, 0.0f),
-                    glm::vec3(0.0f, 0.0f, 1.0f)),
-                default_proj());
-
-            return camera;
-        }
-    };
-
     class Primitive
     {
     private:
@@ -95,24 +46,13 @@ namespace levin
         struct UniformBlock
         {
             glm::mat4 model;
-            glm::mat4 view;
-            glm::mat4 proj;
         } m_uniform_block;
 
         // although raw pointers are bad juju, shared pointers are worse.
         // primitives will be shared between meshes.
         std::vector<Primitive *> m_primitives;
 
-        // one for each frame in flight
-        std::unique_ptr<BufferCPUtoGPU> m_uniform_buffer;
-        std::unique_ptr<UniformBufferDescriptorSet> m_descriptor_set;
-
-        std::unique_ptr<BufferCPUtoGPU> create_uniform_buffer(const Device &device);
-
-        std::unique_ptr<UniformBufferDescriptorSet> create_descriptor_set(
-            const Device &device,
-            const DescriptorPool &descriptor_pool,
-            const DescriptorSetLayout &descriptor_set_layout);
+        UniformBuffer m_uniform_buffer;
 
     public:
         Mesh(
@@ -128,19 +68,14 @@ namespace levin
 
         void flush()
         {
-            UniformBlock block {
-                m_uniform_block.model,
-                Camera::default_camera().view(),
-                Camera::default_camera().projection()
-            };
-            m_uniform_buffer->copy_from(&block, sizeof(m_uniform_block));
+            m_uniform_buffer.copy_from(&m_uniform_block, sizeof(m_uniform_block));
         }
 
         void draw(
             VkCommandBuffer command_buffer,
             const GraphicsPipeline &pipeline) const
         {
-            m_descriptor_set->bind(command_buffer, pipeline);
+            m_uniform_buffer.bind(command_buffer, pipeline);
             for (auto &primitive : m_primitives)
             {
                 primitive->draw(command_buffer);
@@ -176,9 +111,9 @@ namespace levin
 
         std::vector<std::unique_ptr<Node>> &children() { return m_children; }
 
-        Node& add_child(std::unique_ptr<Mesh> mesh = nullptr)
+        Node &add_child(std::unique_ptr<Mesh> mesh = nullptr)
         {
-            auto& child = m_children.emplace_back(
+            auto &child = m_children.emplace_back(
                 std::make_unique<Node>(this, std::move(mesh)));
 
             return *child;
@@ -211,7 +146,7 @@ namespace levin
             return m_parent ? m_parent->global_matrix() * local_matrix() : local_matrix();
         }
 
-        void update()
+        void flush()
         {
             if (m_mesh)
             {
@@ -221,7 +156,7 @@ namespace levin
 
             for (auto &child : m_children)
             {
-                child->update();
+                child->flush();
             }
         }
 
@@ -279,7 +214,7 @@ namespace levin
             return primitives;
         }
 
-        Node& root_node() { return *m_root_node; }
+        Node &root_node() { return *m_root_node; }
 
         void bind(VkCommandBuffer command_buffer) const
         {
@@ -296,9 +231,9 @@ namespace levin
             m_root_node->draw(command_buffer, pipeline);
         }
 
-        void update()
+        void flush()
         {
-            m_root_node->update();
+            m_root_node->flush();
         }
     };
 }

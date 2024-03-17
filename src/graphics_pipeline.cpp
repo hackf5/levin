@@ -1,5 +1,7 @@
 #include "graphics_pipeline.h"
 
+#include <array>
+
 #include "vertex.h"
 
 #include "spdlog/spdlog.h"
@@ -29,11 +31,14 @@ VkPipelineLayout GraphicsPipeline::create_pipeline_layout(
 {
     spdlog::info("Creating Graphics Pipeline Layout");
 
-    VkDescriptorSetLayout descriptor_set_layouts[] = { descriptor_set_layout };
+    // Set 0 = Camera UBO
+    // Set 1 = Model UBO
+    const std::array<VkDescriptorSetLayout, 2> set_layouts = { descriptor_set_layout, descriptor_set_layout };
+
     VkPipelineLayoutCreateInfo pipeline_layout_info = {};
     pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipeline_layout_info.setLayoutCount = 1;
-    pipeline_layout_info.pSetLayouts = descriptor_set_layouts;
+    pipeline_layout_info.setLayoutCount = static_cast<uint32_t>(set_layouts.size());
+    pipeline_layout_info.pSetLayouts = set_layouts.data();
     pipeline_layout_info.pushConstantRangeCount = 0;
     pipeline_layout_info.pPushConstantRanges = nullptr;
 

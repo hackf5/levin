@@ -33,6 +33,14 @@ void VulkanEngine::run()
 
     load_model();
 
+    auto &camera = m_context->camera();
+    camera.position() = glm::vec3(2.0f, 2.0f, 2.0f);
+    camera.target() = glm::vec3(0.0f, 0.0f, 0.0f);
+    camera.clip_far() = 10.0f;
+    camera.clip_near() = 0.1f;
+    camera.fov() = 45.0f;
+    camera.aspect_ratio() = m_context->swapchain().extent().width / (float)m_context->swapchain().extent().height;
+
     while (!m_context->window().should_close())
     {
         m_context->window().poll_events();
@@ -51,19 +59,19 @@ void VulkanEngine::load_model()
     primitives.push_back(std::make_unique<Primitive>(0, indexes.size()));
     m_context->model().load_primitives(primitives);
 
-    std::vector<Primitive*> mesh_primitives;
+    std::vector<Primitive *> mesh_primitives;
     for (auto &primitive : m_context->model().primitives())
     {
         mesh_primitives.push_back(primitive);
     }
 
-    auto& root_node = m_context->model().root_node();
+    auto &root_node = m_context->model().root_node();
     auto mesh1 = std::make_unique<Mesh>(
         m_context->device(),
         m_context->descriptor_pool(),
         m_context->descriptor_set_layout(),
         mesh_primitives);
-    auto& child1 = root_node.add_child(std::move(mesh1));
+    auto &child1 = root_node.add_child(std::move(mesh1));
     child1.translation() = glm::vec3(-0.5f, 0.0f, 0.0f);
 
     auto mesh2 = std::make_unique<Mesh>(
@@ -71,7 +79,7 @@ void VulkanEngine::load_model()
         m_context->descriptor_pool(),
         m_context->descriptor_set_layout(),
         mesh_primitives);
-    auto& child2 = root_node.add_child(std::move(mesh2));
+    auto &child2 = root_node.add_child(std::move(mesh2));
     child2.translation() = glm::vec3(0.5f, 0.0f, 0.0f);
 }
 
@@ -88,6 +96,10 @@ void VulkanEngine::recreate_swapchain()
         .configure_graphics_pipeline()
         .build();
     m_context = std::move(context);
+
+    auto &camera = m_context->camera();
+    camera.aspect_ratio() = m_context->swapchain().extent().width / (float)m_context->swapchain().extent().height;
+    m_context->camera().flush();
 }
 
 void VulkanEngine::draw_frame()
@@ -95,9 +107,9 @@ void VulkanEngine::draw_frame()
     auto framebuffer = m_context
         ->graphics_queue()
         .prepare_framebuffer(
-            m_current_frame,
-            m_context->swapchain(),
-            m_context->framebuffers());
+        m_current_frame,
+        m_context->swapchain(),
+        m_context->framebuffers());
     if (!framebuffer)
     {
         recreate_swapchain();
@@ -159,6 +171,7 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
     vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 
     m_context->model().bind(command_buffer);
+    m_context->camera().bind(command_buffer, m_context->graphics_pipeline());
     m_context->model().draw(command_buffer, m_context->graphics_pipeline());
 
     vkCmdEndRenderPass(command_buffer);
@@ -175,16 +188,17 @@ void VulkanEngine::update_uniform_buffer()
     auto current_time = std::chrono::high_resolution_clock::now();
     auto time = std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
 
-    auto rotation = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    auto rotation = glm::quat_cast(
+        glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
 
-    auto& node = m_context->model().root_node();
+    auto &node = m_context->model().root_node();
 
-    node.rotation() = glm::quat_cast(rotation);
-
+    node.rotation() = rotation;
     for (auto &child : node.children())
     {
-        child->rotation() = glm::quat_cast(rotation);
+        child->rotation() = rotation;
     }
 
-    m_context->model().update();
+    m_context->camera().flush();
+    m_context->model().flush();
 }

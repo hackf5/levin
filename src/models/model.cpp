@@ -13,34 +13,13 @@ Mesh::Mesh(
     std::vector<Primitive *> primitives):
     m_uniform_block {},
     m_primitives(primitives),
-    m_uniform_buffer(create_uniform_buffer(device)),
-    m_descriptor_set(create_descriptor_set(device, descriptor_pool, descriptor_set_layout))
-{
-}
-
-std::unique_ptr<BufferCPUtoGPU> Mesh::create_uniform_buffer(const Device &device)
-{
-    auto buffer = std::make_unique<BufferCPUtoGPU>(
-        device,
-        sizeof(m_uniform_block),
-        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-
-    return std::move(buffer);
-}
-
-std::unique_ptr<UniformBufferDescriptorSet> Mesh::create_descriptor_set(
-    const Device &device,
-    const DescriptorPool &descriptor_pool,
-    const DescriptorSetLayout &descriptor_set_layout)
-{
-
-    auto set = std::make_unique<UniformBufferDescriptorSet>(
+    m_uniform_buffer(
         device,
         descriptor_pool,
         descriptor_set_layout,
-        *m_uniform_buffer);
-
-    return std::move(set);
+        sizeof(m_uniform_block),
+        UniformBuffer::MESH)
+{
 }
 
 Model::Model(
