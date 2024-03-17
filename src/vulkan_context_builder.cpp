@@ -93,7 +93,7 @@ VulkanContextBuilder &VulkanContextBuilder::configure_framebuffers()
 
 VulkanContextBuilder &VulkanContextBuilder::configure_graphics_pipeline()
 {
-    m_context->m_graphics_pipeline = std::make_unique<GraphicsPipelineComponents>(
+    m_context->m_graphics_pipeline = std::make_unique<GraphicsPipeline>(
         *m_context->m_device,
         *m_context->m_descriptor_set_layout,
         *m_context->m_shader_modules,

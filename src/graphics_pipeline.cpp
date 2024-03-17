@@ -1,4 +1,4 @@
-#include "graphics_pipeline_components.h"
+#include "graphics_pipeline.h"
 
 #include "swapchain_factory.h"
 #include "vertex.h"
@@ -7,7 +7,7 @@
 
 using namespace levin;
 
-GraphicsPipelineComponents::GraphicsPipelineComponents(
+GraphicsPipeline::GraphicsPipeline(
     const Device &device,
     const DescriptorSetLayout &descriptor_set_layout,
     const ShaderModuleComponents &shader_modules,
@@ -20,7 +20,7 @@ GraphicsPipelineComponents::GraphicsPipelineComponents(
 {
 }
 
-VkPipelineLayout GraphicsPipelineComponents::create_pipeline_layout(
+VkPipelineLayout GraphicsPipeline::create_pipeline_layout(
     const DescriptorSetLayout &descriptor_set_layout)
 {
     VkDescriptorSetLayout descriptor_set_layouts[] = { descriptor_set_layout };
@@ -35,7 +35,7 @@ VkPipelineLayout GraphicsPipelineComponents::create_pipeline_layout(
 
 }
 
-VkPipeline GraphicsPipelineComponents::create_pipeline(
+VkPipeline GraphicsPipeline::create_pipeline(
     const SwapchainComponents &swapchain,
     const RenderPassComponents &render_pass)
 {
@@ -72,7 +72,7 @@ VkPipeline GraphicsPipelineComponents::create_pipeline(
     return pipeline;
 }
 
-std::vector<VkPipelineShaderStageCreateInfo> GraphicsPipelineComponents::create_shader_stages()
+std::vector<VkPipelineShaderStageCreateInfo> GraphicsPipeline::create_shader_stages()
 {
     VkPipelineShaderStageCreateInfo vert_stage_info = {};
     vert_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -89,7 +89,7 @@ std::vector<VkPipelineShaderStageCreateInfo> GraphicsPipelineComponents::create_
     return { vert_stage_info, frag_stage_info };
 }
 
-VkPipelineInputAssemblyStateCreateInfo GraphicsPipelineComponents::create_input_assembly_state()
+VkPipelineInputAssemblyStateCreateInfo GraphicsPipeline::create_input_assembly_state()
 {
     VkPipelineInputAssemblyStateCreateInfo result = {};
     result.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -99,7 +99,7 @@ VkPipelineInputAssemblyStateCreateInfo GraphicsPipelineComponents::create_input_
     return result;
 }
 
-VkPipelineViewportStateCreateInfo GraphicsPipelineComponents::create_viewport_state(const SwapchainComponents &swapchain)
+VkPipelineViewportStateCreateInfo GraphicsPipeline::create_viewport_state(const SwapchainComponents &swapchain)
 {
     VkPipelineViewportStateCreateInfo result = {};
     result.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -111,7 +111,7 @@ VkPipelineViewportStateCreateInfo GraphicsPipelineComponents::create_viewport_st
     return result;
 }
 
-VkPipelineRasterizationStateCreateInfo GraphicsPipelineComponents::create_rasterization_state()
+VkPipelineRasterizationStateCreateInfo GraphicsPipeline::create_rasterization_state()
 {
     VkPipelineRasterizationStateCreateInfo result = {};
     result.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -126,7 +126,7 @@ VkPipelineRasterizationStateCreateInfo GraphicsPipelineComponents::create_raster
     return result;
 }
 
-VkPipelineMultisampleStateCreateInfo GraphicsPipelineComponents::create_multisample_state()
+VkPipelineMultisampleStateCreateInfo GraphicsPipeline::create_multisample_state()
 {
     VkPipelineMultisampleStateCreateInfo result = {};
     result.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
@@ -136,7 +136,7 @@ VkPipelineMultisampleStateCreateInfo GraphicsPipelineComponents::create_multisam
     return result;
 }
 
-VkPipelineColorBlendAttachmentState GraphicsPipelineComponents::create_color_blend_attachment_state()
+VkPipelineColorBlendAttachmentState GraphicsPipeline::create_color_blend_attachment_state()
 {
     VkPipelineColorBlendAttachmentState result = {};
     result.blendEnable = VK_FALSE;
@@ -148,7 +148,7 @@ VkPipelineColorBlendAttachmentState GraphicsPipelineComponents::create_color_ble
     return result;
 }
 
-VkPipelineColorBlendStateCreateInfo GraphicsPipelineComponents::create_color_blend_state(
+VkPipelineColorBlendStateCreateInfo GraphicsPipeline::create_color_blend_state(
     const VkPipelineColorBlendAttachmentState &color_blend_attachment)
 {
     VkPipelineColorBlendStateCreateInfo result = {};
@@ -165,7 +165,7 @@ VkPipelineColorBlendStateCreateInfo GraphicsPipelineComponents::create_color_ble
     return result;
 }
 
-std::vector<VkDynamicState> GraphicsPipelineComponents::create_dynamic_states()
+std::vector<VkDynamicState> GraphicsPipeline::create_dynamic_states()
 {
     return
     {
@@ -174,7 +174,7 @@ std::vector<VkDynamicState> GraphicsPipelineComponents::create_dynamic_states()
     };
 }
 
-VkPipelineDynamicStateCreateInfo GraphicsPipelineComponents::create_dynamic_state(
+VkPipelineDynamicStateCreateInfo GraphicsPipeline::create_dynamic_state(
     const std::vector<VkDynamicState> &dynamic_states)
 {
     VkPipelineDynamicStateCreateInfo result = {};

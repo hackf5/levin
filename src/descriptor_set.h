@@ -6,7 +6,7 @@
 #include "device.h"
 #include "descriptor_pool.h"
 #include "descriptor_set_layout.h"
-#include "graphics_pipeline_components.h"
+#include "graphics_pipeline.h"
 #include "buffer.h"
 
 namespace levin
@@ -45,7 +45,7 @@ namespace levin
 
         void bind(
             VkCommandBuffer command_buffer,
-            const GraphicsPipelineComponents &pipeline) const
+            const GraphicsPipeline &pipeline) const
         {
             vkCmdBindDescriptorSets(
                 command_buffer,

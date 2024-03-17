@@ -138,7 +138,7 @@ namespace levin
 
         void draw(
             VkCommandBuffer command_buffer,
-            const GraphicsPipelineComponents &pipeline) const
+            const GraphicsPipeline &pipeline) const
         {
             m_descriptor_set->bind(command_buffer, pipeline);
             for (auto &primitive : m_primitives)
@@ -227,7 +227,7 @@ namespace levin
 
         void draw(
             VkCommandBuffer command_buffer,
-            const GraphicsPipelineComponents &pipeline) const
+            const GraphicsPipeline &pipeline) const
         {
             if (m_mesh)
             {
@@ -291,7 +291,7 @@ namespace levin
 
         void draw(
             VkCommandBuffer command_buffer,
-            const GraphicsPipelineComponents &pipeline) const
+            const GraphicsPipeline &pipeline) const
         {
             m_root_node->draw(command_buffer, pipeline);
         }

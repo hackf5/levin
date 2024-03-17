@@ -17,7 +17,7 @@
 #include "swapchain_components.h"
 #include "render_pass_components.h"
 #include "framebuffer.h"
-#include "graphics_pipeline_components.h"
+#include "graphics_pipeline.h"
 
 namespace levin
 {
@@ -35,7 +35,7 @@ namespace levin
         std::unique_ptr<SwapchainComponents> m_swapchain;
         std::unique_ptr<RenderPassComponents> m_render_pass;
         std::unique_ptr<Framebuffer> m_framebuffers;
-        std::unique_ptr<GraphicsPipelineComponents> m_graphics_pipeline;
+        std::unique_ptr<GraphicsPipeline> m_graphics_pipeline;
 
     public:
         VulkanContext() = default;
@@ -66,7 +66,7 @@ namespace levin
 
         const Framebuffer &framebuffers() const { return *m_framebuffers; }
 
-        const GraphicsPipelineComponents &graphics_pipeline() const { return *m_graphics_pipeline; }
+        const GraphicsPipeline &graphics_pipeline() const { return *m_graphics_pipeline; }
 
         friend class VulkanContextBuilder;
     };

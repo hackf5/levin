@@ -12,7 +12,7 @@
 
 namespace levin
 {
-    class GraphicsPipelineComponents
+    class GraphicsPipeline
     {
     private:
         GraphicsPipelineFactory m_factory;
@@ -49,13 +49,13 @@ namespace levin
             const std::vector<VkDynamicState> &dynamic_states);
 
     public:
-        GraphicsPipelineComponents(
+        GraphicsPipeline(
             const Device &device,
             const DescriptorSetLayout &descriptor_set_layout,
             const ShaderModuleComponents &shader_modules,
             const SwapchainComponents &swapchain,
             const RenderPassComponents &render_pass);
-        GraphicsPipelineComponents(const GraphicsPipelineComponents &) = delete;
+        GraphicsPipeline(const GraphicsPipeline &) = delete;
 
         operator VkPipeline() const { return m_pipeline; }
 
