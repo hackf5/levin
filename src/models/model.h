@@ -10,7 +10,7 @@
 #include <vulkan/vulkan.h>
 
 #include "vertex.h"
-#include "device_components.h"
+#include "device.h"
 #include "descriptor_pool_components.h"
 #include "descriptor_set_layout.h"
 #include "descriptor_set_components.h"
@@ -107,16 +107,16 @@ namespace levin
         std::unique_ptr<BufferCPUtoGPU> m_uniform_buffer;
         std::unique_ptr<UniformBufferDescriptorSet> m_descriptor_set;
 
-        std::unique_ptr<BufferCPUtoGPU> create_uniform_buffer(const DeviceComponents &device);
+        std::unique_ptr<BufferCPUtoGPU> create_uniform_buffer(const Device &device);
 
         std::unique_ptr<UniformBufferDescriptorSet> create_descriptor_set(
-            const DeviceComponents &device,
+            const Device &device,
             const DescriptorPoolComponents &descriptor_pool,
             const DescriptorSetLayout &descriptor_set_layout);
 
     public:
         Mesh(
-            const DeviceComponents &device,
+            const Device &device,
             const DescriptorPoolComponents &descriptor_pool,
             const DescriptorSetLayout &descriptor_set_layout,
             std::vector<Primitive *> primitives);
@@ -244,7 +244,7 @@ namespace levin
     class Model
     {
     private:
-        const DeviceComponents &m_device;
+        const Device &m_device;
         const DescriptorPoolComponents &m_descriptor_pool;
         const BufferTransferQueue &m_transfer_queue;
 
@@ -258,7 +258,7 @@ namespace levin
 
     public:
         Model(
-            const DeviceComponents &device,
+            const Device &device,
             const DescriptorPoolComponents &descriptor_pool,
             const BufferTransferQueue &transfer_queue);
 

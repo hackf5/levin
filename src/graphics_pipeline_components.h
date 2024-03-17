@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include "device_components.h"
+#include "device.h"
 #include "descriptor_set_layout.h"
 #include "shader_module_components.h"
 #include "swapchain_components.h"
@@ -50,7 +50,7 @@ namespace levin
 
     public:
         GraphicsPipelineComponents(
-            const DeviceComponents &device,
+            const Device &device,
             const DescriptorSetLayout &descriptor_set_layout,
             const ShaderModuleComponents &shader_modules,
             const SwapchainComponents &swapchain,

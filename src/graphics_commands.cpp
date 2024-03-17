@@ -6,15 +6,15 @@
 
 using namespace levin;
 
-GraphicsCommands::GraphicsCommands(const DeviceComponents &device_components):
+GraphicsCommands::GraphicsCommands(const Device &device_components):
     m_device_components(device_components),
     m_command_factory(device_components),
     m_graphics_queue(device_components.graphics_queue()),
     m_command_pool(create_command_pool()),
     m_command_buffers(create_command_buffers()),
-    m_image_available(m_command_factory.create_semaphores(DeviceComponents::max_frames_in_flight)),
-    m_render_finished(m_command_factory.create_semaphores(DeviceComponents::max_frames_in_flight)),
-    m_in_flight_fences(m_command_factory.create_fences(DeviceComponents::max_frames_in_flight))
+    m_image_available(m_command_factory.create_semaphores(Device::max_frames_in_flight)),
+    m_render_finished(m_command_factory.create_semaphores(Device::max_frames_in_flight)),
+    m_in_flight_fences(m_command_factory.create_fences(Device::max_frames_in_flight))
 {
 }
 
@@ -34,7 +34,7 @@ std::vector<VkCommandBuffer> GraphicsCommands::create_command_buffers()
     allocate_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocate_info.commandPool = m_command_pool;
     allocate_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocate_info.commandBufferCount = DeviceComponents::max_frames_in_flight;
+    allocate_info.commandBufferCount = Device::max_frames_in_flight;
 
     return m_command_factory.create_command_buffers(allocate_info);
 }

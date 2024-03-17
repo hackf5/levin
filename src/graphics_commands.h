@@ -5,7 +5,7 @@
 
 #include "VkBootstrap.h"
 
-#include "device_components.h"
+#include "device.h"
 #include "swapchain_components.h"
 #include "framebuffer_components.h"
 
@@ -16,7 +16,7 @@ namespace levin
     class GraphicsCommands
     {
     private:
-        const DeviceComponents &m_device_components;
+        const Device &m_device_components;
 
         CommandFactory m_command_factory;
 
@@ -36,7 +36,7 @@ namespace levin
         VkSwapchainKHR m_swapchain = VK_NULL_HANDLE;
 
     public:
-        GraphicsCommands(const DeviceComponents &device_components);
+        GraphicsCommands(const Device &device_components);
         GraphicsCommands(const GraphicsCommands &) = delete;
 
         VkFramebuffer prepare_framebuffer(

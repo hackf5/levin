@@ -7,7 +7,7 @@
 using namespace levin;
 
 RenderPassComponents::RenderPassComponents(
-    const DeviceComponents &device_components,
+    const Device &device_components,
     const SwapchainComponents &swapchain_components):
     m_factory(device_components),
     m_render_pass(create_render_pass(swapchain_components))

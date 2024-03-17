@@ -7,7 +7,7 @@
 using namespace levin;
 
 Mesh::Mesh(
-    const DeviceComponents &device,
+    const Device &device,
     const DescriptorPoolComponents &descriptor_pool,
     const DescriptorSetLayout &descriptor_set_layout,
     std::vector<Primitive *> primitives):
@@ -18,7 +18,7 @@ Mesh::Mesh(
 {
 }
 
-std::unique_ptr<BufferCPUtoGPU> Mesh::create_uniform_buffer(const DeviceComponents &device)
+std::unique_ptr<BufferCPUtoGPU> Mesh::create_uniform_buffer(const Device &device)
 {
     auto buffer = std::make_unique<BufferCPUtoGPU>(
         device,
@@ -29,7 +29,7 @@ std::unique_ptr<BufferCPUtoGPU> Mesh::create_uniform_buffer(const DeviceComponen
 }
 
 std::unique_ptr<UniformBufferDescriptorSet> Mesh::create_descriptor_set(
-    const DeviceComponents &device,
+    const Device &device,
     const DescriptorPoolComponents &descriptor_pool,
     const DescriptorSetLayout &descriptor_set_layout)
 {
@@ -44,7 +44,7 @@ std::unique_ptr<UniformBufferDescriptorSet> Mesh::create_descriptor_set(
 }
 
 Model::Model(
-    const DeviceComponents &device,
+    const Device &device,
     const DescriptorPoolComponents &descriptor_pool,
     const BufferTransferQueue &transfer_queue):
     m_device(device),

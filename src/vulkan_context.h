@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "window_components.h"
-#include "device_components.h"
+#include "device.h"
 #include "buffer_transfer_queue.h"
 #include "graphics_commands.h"
 #include "descriptor_pool_components.h"
@@ -25,7 +25,7 @@ namespace levin
     {
     private:
         std::unique_ptr<WindowComponents> m_window;
-        std::unique_ptr<DeviceComponents> m_device;
+        std::unique_ptr<Device> m_device;
         std::unique_ptr<BufferTransferQueue> m_transfer_queue;
         std::unique_ptr<GraphicsCommands> m_graphics_commands;
         std::unique_ptr<DescriptorPoolComponents> m_descriptor_pool;
@@ -44,7 +44,7 @@ namespace levin
 
         WindowComponents &window() { return *m_window; }
 
-        const DeviceComponents &device() const { return *m_device; }
+        const Device &device() const { return *m_device; }
 
         const BufferTransferQueue &transfer_queue() const { return *m_transfer_queue; }
 

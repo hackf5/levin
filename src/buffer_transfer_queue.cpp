@@ -5,7 +5,7 @@
 using namespace levin;
 
 BufferTransferQueue::BufferTransferQueue(
-    const DeviceComponents &device,
+    const Device &device,
     size_t command_buffer_count):
     m_device(device),
     m_factory(device),

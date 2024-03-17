@@ -2,20 +2,20 @@
 
 #include <vulkan/vulkan.h>
 
-#include "device_components.h"
+#include "device.h"
 
 namespace levin
 {
     class DescriptorPoolComponents
     {
     private:
-        const DeviceComponents &m_device;
+        const Device &m_device;
         const VkDescriptorPool m_descriptor_pool;
 
         VkDescriptorPool create_descriptor_pool();
 
     public:
-        DescriptorPoolComponents(const DeviceComponents &device);
+        DescriptorPoolComponents(const Device &device);
         DescriptorPoolComponents(const DescriptorPoolComponents &) = delete;
         ~DescriptorPoolComponents();
 

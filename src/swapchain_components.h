@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "device_components.h"
+#include "device.h"
 #include "swapchain_factory.h"
 
 namespace levin
@@ -23,7 +23,7 @@ namespace levin
         VkRect2D create_scissor();
 
     public:
-        SwapchainComponents(const DeviceComponents &device_components);
+        SwapchainComponents(const Device &device_components);
         SwapchainComponents(const SwapchainComponents &) = delete;
 
         operator VkSwapchainKHR() const { return m_swapchain.swapchain; }

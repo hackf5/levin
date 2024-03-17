@@ -1,7 +1,7 @@
 #define VMA_IMPLEMENTATION
 #include <vma/vk_mem_alloc.h>
 
-#include "device_components.h"
+#include "device.h"
 
 #include "swapchain_factory.h"
 
@@ -9,7 +9,7 @@
 
 using namespace levin;
 
-DeviceComponents::DeviceComponents(
+Device::Device(
     const WindowComponents &window,
     bool enable_validation_layers)
     : m_window(window),
@@ -23,7 +23,7 @@ DeviceComponents::DeviceComponents(
 {
 }
 
-DeviceComponents::~DeviceComponents()
+Device::~Device()
 {
     spdlog::info("Destroying Vulkan Engine Components");
 
@@ -33,7 +33,7 @@ DeviceComponents::~DeviceComponents()
     vkb::destroy_instance(m_instance);
 }
 
-vkb::Instance DeviceComponents::create_instance(bool enable_validation_layers)
+vkb::Instance Device::create_instance(bool enable_validation_layers)
 {
     spdlog::info("Creating Vulkan Instance");
 
@@ -50,12 +50,12 @@ vkb::Instance DeviceComponents::create_instance(bool enable_validation_layers)
     return inst_ret.value();
 }
 
-VkSurfaceKHR DeviceComponents::create_surface()
+VkSurfaceKHR Device::create_surface()
 {
     return m_window.create_window_surface(m_instance.instance);
 }
 
-vkb::Device DeviceComponents::create_device()
+vkb::Device Device::create_device()
 {
     spdlog::info("Selecting Vulkan Physical Device");
 
@@ -81,7 +81,7 @@ vkb::Device DeviceComponents::create_device()
     return dev_ret.value();
 }
 
-VmaAllocator DeviceComponents::create_allocator()
+VmaAllocator Device::create_allocator()
 {
     spdlog::info("Creating Vulkan Memory Allocator");
 
@@ -99,7 +99,7 @@ VmaAllocator DeviceComponents::create_allocator()
     return allocator;
 }
 
-VkQueue DeviceComponents::create_queue(vkb::QueueType queue_type)
+VkQueue Device::create_queue(vkb::QueueType queue_type)
 {
     auto queue_ret = m_device.get_queue(queue_type);
     if (!queue_ret)

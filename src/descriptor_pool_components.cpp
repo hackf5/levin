@@ -6,7 +6,7 @@
 
 using namespace levin;
 
-DescriptorPoolComponents::DescriptorPoolComponents(const DeviceComponents &device):
+DescriptorPoolComponents::DescriptorPoolComponents(const Device &device):
     m_device(device),
     m_descriptor_pool(create_descriptor_pool())
 {

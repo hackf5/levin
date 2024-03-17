@@ -8,7 +8,7 @@
 using namespace levin;
 
 GraphicsPipelineComponents::GraphicsPipelineComponents(
-    const DeviceComponents &device,
+    const Device &device,
     const DescriptorSetLayout &descriptor_set_layout,
     const ShaderModuleComponents &shader_modules,
     const SwapchainComponents &swapchain,

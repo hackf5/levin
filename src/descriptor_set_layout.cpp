@@ -6,7 +6,7 @@
 
 using namespace levin;
 
-DescriptorSetLayout::DescriptorSetLayout(const DeviceComponents &device):
+DescriptorSetLayout::DescriptorSetLayout(const Device &device):
     m_device(device),
     m_descriptor_set_layout(create_descriptor_set_layout())
 {

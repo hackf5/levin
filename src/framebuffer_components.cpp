@@ -5,7 +5,7 @@
 using namespace levin;
 
 FramebufferComponents::FramebufferComponents(
-    const DeviceComponents &device_components,
+    const Device &device_components,
     const SwapchainComponents &swapchain_components,
     const RenderPassComponents &render_pass_components)
     : m_factory(device_components),

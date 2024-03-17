@@ -12,7 +12,7 @@ VulkanContextBuilder &VulkanContextBuilder::configure_window(int width, int heig
 
 VulkanContextBuilder &VulkanContextBuilder::configure_device(bool enableValidationLayers)
 {
-    m_context->m_device = std::make_unique<DeviceComponents>(*m_context->m_window, enableValidationLayers);
+    m_context->m_device = std::make_unique<Device>(*m_context->m_window, enableValidationLayers);
     return *this;
 }
 

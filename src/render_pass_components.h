@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "device_components.h"
+#include "device.h"
 #include "render_pass_factory.h"
 #include "swapchain_components.h"
 
@@ -19,7 +19,7 @@ namespace levin
 
     public:
         RenderPassComponents(
-            const DeviceComponents &device_components,
+            const Device &device_components,
             const SwapchainComponents &swapchain_components);
         RenderPassComponents(const RenderPassComponents &) = delete;
 

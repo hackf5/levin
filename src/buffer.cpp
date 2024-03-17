@@ -5,7 +5,7 @@
 using namespace levin;
 
 Buffer::Buffer(
-    const DeviceComponents &device,
+    const Device &device,
     VkDeviceSize size,
     VkBufferUsageFlags usage,
     VmaMemoryUsage memory_usage,
@@ -58,7 +58,7 @@ VkDescriptorBufferInfo Buffer::create_descriptor_info() const
 }
 
 BufferCPUtoGPU::BufferCPUtoGPU(
-    const DeviceComponents &device,
+    const Device &device,
     VkDeviceSize size,
     VkBufferUsageFlags usage):
     Buffer(
@@ -71,7 +71,7 @@ BufferCPUtoGPU::BufferCPUtoGPU(
 }
 
 BufferGPU::BufferGPU(
-    const DeviceComponents &device,
+    const Device &device,
     const BufferTransferQueue &transfer_queue,
     VkDeviceSize size,
     VkBufferUsageFlags usage):

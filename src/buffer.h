@@ -4,7 +4,7 @@
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan.h>
 
-#include "device_components.h"
+#include "device.h"
 #include "buffer_transfer_queue.h"
 
 namespace levin
@@ -34,7 +34,7 @@ namespace levin
 
     public:
         Buffer(
-            const DeviceComponents &device,
+            const Device &device,
             VkDeviceSize size,
             VkBufferUsageFlags usage,
             VmaMemoryUsage memory_usage = VMA_MEMORY_USAGE_AUTO,
@@ -58,7 +58,7 @@ namespace levin
     {
     public:
         BufferCPUtoGPU(
-            const DeviceComponents &device,
+            const Device &device,
             VkDeviceSize size,
             VkBufferUsageFlags usage);
         BufferCPUtoGPU(const BufferCPUtoGPU &) = delete;
@@ -78,12 +78,12 @@ namespace levin
     class BufferGPU: public Buffer
     {
     private:
-        const DeviceComponents &m_device;
+        const Device &m_device;
         const BufferTransferQueue &m_transfer_queue;
 
     public:
         BufferGPU(
-            const DeviceComponents &device,
+            const Device &device,
             const BufferTransferQueue &transfer_queue,
             VkDeviceSize size,
             VkBufferUsageFlags usage);

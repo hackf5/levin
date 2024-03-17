@@ -10,7 +10,7 @@
 
 namespace levin
 {
-    class DeviceComponents
+    class Device
     {
     private:
         const WindowComponents &m_window;
@@ -31,12 +31,12 @@ namespace levin
         VkQueue create_queue(vkb::QueueType queue_type);
 
     public:
-        DeviceComponents(
+        Device(
             const WindowComponents &window,
             bool enable_validation_layers);
-        DeviceComponents(const DeviceComponents &) = delete;
+        Device(const Device &) = delete;
 
-        ~DeviceComponents();
+        ~Device();
 
         static const uint32_t max_frames_in_flight = 2;
 

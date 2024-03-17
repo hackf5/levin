@@ -3,7 +3,7 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-#include "device_components.h"
+#include "device.h"
 #include "command_factory.h"
 
 
@@ -12,7 +12,7 @@ namespace levin
     class BufferTransferQueue
     {
     private:
-        const DeviceComponents &m_device;
+        const Device &m_device;
 
         CommandFactory m_factory;
 
@@ -25,7 +25,7 @@ namespace levin
 
     public:
         BufferTransferQueue(
-            const DeviceComponents &device,
+            const Device &device,
             size_t command_buffer_count = 1);
         BufferTransferQueue(const BufferTransferQueue &) = delete;
 

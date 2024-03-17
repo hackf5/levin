@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "framebuffers_factory.h"
-#include "device_components.h"
+#include "device.h"
 #include "swapchain_components.h"
 #include "render_pass_components.h"
 
@@ -24,7 +24,7 @@ namespace levin
 
     public:
         FramebufferComponents(
-            const DeviceComponents &device_components,
+            const Device &device_components,
             const SwapchainComponents &swapchain_components,
             const RenderPassComponents &render_pass_components);
         FramebufferComponents(const FramebufferComponents &) = delete;
