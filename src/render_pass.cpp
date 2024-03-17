@@ -7,13 +7,21 @@ using namespace levin;
 RenderPass::RenderPass(
     const Device &device,
     const Swapchain &swapchain):
-    m_factory(device),
+    m_device(device),
     m_render_pass(create_render_pass(swapchain))
 {
 }
 
+RenderPass::~RenderPass()
+{
+    spdlog::info("Destroying Render Pass");
+    vkDestroyRenderPass(m_device, m_render_pass, nullptr);
+}
+
 VkRenderPass RenderPass::create_render_pass(const Swapchain &swapchain)
 {
+    spdlog::info("Creating Render Pass");
+
     VkAttachmentDescription color_attachment = {};
     color_attachment.format = swapchain.image_format();
     color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -50,5 +58,11 @@ VkRenderPass RenderPass::create_render_pass(const Swapchain &swapchain)
     render_pass_info.dependencyCount = 1;
     render_pass_info.pDependencies = &dependency;
 
-    return m_factory.create_render_pass(render_pass_info);
+    VkRenderPass render_pass;
+    if (vkCreateRenderPass(m_device, &render_pass_info, nullptr, &render_pass) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create render pass");
+    }
+
+    return render_pass;
 }

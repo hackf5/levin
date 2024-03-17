@@ -1,9 +1,6 @@
 #pragma once
 
-#include <vector>
-
 #include "device.h"
-#include "render_pass_factory.h"
 #include "swapchain.h"
 
 namespace levin
@@ -11,7 +8,7 @@ namespace levin
     class RenderPass
     {
     private:
-        RenderPassFactory m_factory;
+        const Device &m_device;
 
         const VkRenderPass m_render_pass;
 
@@ -22,6 +19,7 @@ namespace levin
             const Device &device,
             const Swapchain &swapchain);
         RenderPass(const RenderPass &) = delete;
+        ~RenderPass();
 
         operator VkRenderPass() const { return m_render_pass; }
     };
