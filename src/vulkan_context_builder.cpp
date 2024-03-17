@@ -6,7 +6,7 @@ using namespace levin;
 
 VulkanContextBuilder &VulkanContextBuilder::configure_window(int width, int height, const std::string &title)
 {
-    m_context->m_window = std::make_unique<WindowComponents>(width, height, title);
+    m_context->m_window = std::make_unique<Window>(width, height, title);
     return *this;
 }
 

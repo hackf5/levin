@@ -8,7 +8,7 @@
 
 namespace levin
 {
-    class WindowComponents
+    class Window
     {
     public:
         typedef std::function<void(int, int)> framebuffer_resize_callback_t;
@@ -24,9 +24,9 @@ namespace levin
         static void framebuffer_resize_callback(GLFWwindow *window, int width, int height);
 
     public:
-        WindowComponents(int width, int height, const std::string &title);
-        WindowComponents(const WindowComponents &) = delete;
-        ~WindowComponents();
+        Window(int width, int height, const std::string &title);
+        Window(const Window &) = delete;
+        ~Window();
 
         VkSurfaceKHR create_window_surface(VkInstance instance) const;
 

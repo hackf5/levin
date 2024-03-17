@@ -10,7 +10,7 @@
 using namespace levin;
 
 Device::Device(
-    const WindowComponents &window,
+    const Window &window,
     bool enable_validation_layers)
     : m_window(window),
     m_instance(create_instance(enable_validation_layers)),

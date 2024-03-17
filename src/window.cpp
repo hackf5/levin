@@ -1,4 +1,4 @@
-#include "window_components.h"
+#include "window.h"
 
 #include <stdexcept>
 
@@ -6,7 +6,7 @@
 
 using namespace levin;
 
-WindowComponents::WindowComponents(int width, int height, const std::string &title)
+Window::Window(int width, int height, const std::string &title)
     : m_width(width), m_height(height)
 {
     spdlog::info("Creating Window Components");
@@ -23,21 +23,21 @@ WindowComponents::WindowComponents(int width, int height, const std::string &tit
     }
     catch (const std::exception &e)
     {
-        this->~WindowComponents();
+        this->~Window();
         throw;
     }
 }
 
-WindowComponents::~WindowComponents()
+Window::~Window()
 {
     spdlog::info("Destroying Window Components");
     glfwDestroyWindow(m_window);
     glfwTerminate();
 }
 
-void WindowComponents::framebuffer_resize_callback(GLFWwindow *window, int width, int height)
+void Window::framebuffer_resize_callback(GLFWwindow *window, int width, int height)
 {
-    auto app = reinterpret_cast<WindowComponents *>(glfwGetWindowUserPointer(window));
+    auto app = reinterpret_cast<Window *>(glfwGetWindowUserPointer(window));
 
     if (app->m_framebuffer_resize_callback)
     {
@@ -45,7 +45,7 @@ void WindowComponents::framebuffer_resize_callback(GLFWwindow *window, int width
     }
 }
 
-VkSurfaceKHR WindowComponents::create_window_surface(VkInstance instance) const
+VkSurfaceKHR Window::create_window_surface(VkInstance instance) const
 {
     spdlog::info("Creating Window Surface");
 
@@ -58,12 +58,12 @@ VkSurfaceKHR WindowComponents::create_window_surface(VkInstance instance) const
     return surface;
 }
 
-void WindowComponents::register_framebuffer_resize_callback(framebuffer_resize_callback_t callback)
+void Window::register_framebuffer_resize_callback(framebuffer_resize_callback_t callback)
 {
     m_framebuffer_resize_callback = callback;
 }
 
-void WindowComponents::wait_resize()
+void Window::wait_resize()
 {
     glfwGetFramebufferSize(m_window, &m_width, &m_height);
     while (m_width == 0 || m_height == 0)

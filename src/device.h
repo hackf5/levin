@@ -6,14 +6,14 @@
 
 #include "VkBootstrap.h"
 
-#include "window_components.h"
+#include "window.h"
 
 namespace levin
 {
     class Device
     {
     private:
-        const WindowComponents &m_window;
+        const Window &m_window;
 
         const vkb::Instance m_instance;
         const VkSurfaceKHR m_surface;
@@ -32,7 +32,7 @@ namespace levin
 
     public:
         Device(
-            const WindowComponents &window,
+            const Window &window,
             bool enable_validation_layers);
         Device(const Device &) = delete;
 

@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include "window_components.h"
+#include "window.h"
 #include "device.h"
 #include "buffer_transfer_queue.h"
 #include "graphics_commands.h"
@@ -24,7 +24,7 @@ namespace levin
     class VulkanContext
     {
     private:
-        std::unique_ptr<WindowComponents> m_window;
+        std::unique_ptr<Window> m_window;
         std::unique_ptr<Device> m_device;
         std::unique_ptr<BufferTransferQueue> m_transfer_queue;
         std::unique_ptr<GraphicsCommands> m_graphics_commands;
@@ -42,7 +42,7 @@ namespace levin
 
         VulkanContext(const VulkanContext &) = delete;
 
-        WindowComponents &window() { return *m_window; }
+        Window &window() { return *m_window; }
 
         const Device &device() const { return *m_device; }
 
