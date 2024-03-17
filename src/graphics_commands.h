@@ -3,13 +3,9 @@
 #include <memory>
 #include <vector>
 
-#include "VkBootstrap.h"
-
 #include "device.h"
 #include "swapchain.h"
 #include "framebuffers.h"
-
-#include "command_factory.h"
 
 namespace levin
 {
@@ -17,8 +13,6 @@ namespace levin
     {
     private:
         const Device &m_device;
-
-        CommandFactory m_command_factory;
 
         const VkQueue m_graphics_queue;
         const VkCommandPool m_command_pool;
@@ -30,6 +24,8 @@ namespace levin
 
         VkCommandPool create_command_pool();
         std::vector<VkCommandBuffer> create_command_buffers();
+        std::vector<VkSemaphore> create_semaphores();
+        std::vector<VkFence> create_fences();
 
         uint32_t m_image_index = 0;
         uint32_t m_current_frame = 0;
@@ -38,11 +34,12 @@ namespace levin
     public:
         GraphicsCommands(const Device &device);
         GraphicsCommands(const GraphicsCommands &) = delete;
+        ~GraphicsCommands();
 
         VkFramebuffer prepare_framebuffer(
             uint32_t current_frame,
-            VkSwapchainKHR swapchain,
-            const Framebuffers& framebuffers);
+            const Swapchain& swapchain,
+            const Framebuffers &framebuffers);
 
         VkCommandBuffer begin_command() const;
         void submit_command() const;
