@@ -2,26 +2,29 @@
   "version": 8,
   "configurePresets": [
     {
-      "name": "debug",
+      "name": "Debug",
       "binaryDir": "${sourceDir}/build/debug",
-      "generator": "Ninja"
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "-ggdb3 -O0"
+      }
     },
     {
-      "name": "release",
+      "name": "Release",
       "binaryDir": "${sourceDir}/build/release",
       "generator": "Ninja"
     }
   ],
   "buildPresets": [
     {
-      "name": "debug",
-      "configurePreset": "debug",
+      "name": "Debug",
+      "configurePreset": "Debug",
       "targets": "all",
       "configuration": "Debug"
     },
     {
-      "name": "release",
-      "configurePreset": "release",
+      "name": "Release",
+      "configurePreset": "Release",
       "targets": "levin",
       "configuration": "Release"
     }

@@ -4,21 +4,21 @@
       "type": "cmake",
       "label": "Configure Debug",
       "command": "configure",
-      "preset": "debug",
+      "preset": "Debug",
       "problemMatcher": [],
     },
     {
       "type": "cmake",
       "label": "Configure Release",
       "command": "configure",
-      "preset": "release",
+      "preset": "Release",
       "problemMatcher": [],
     },
     {
       "type": "cmake",
       "label": "Build Debug",
       "command": "build",
-      "preset": "debug",
+      "preset": "Debug",
       "problemMatcher": [],
       "group": {
         "kind": "build",
@@ -30,7 +30,7 @@
       "type": "cmake",
       "label": "Build Release",
       "command": "build",
-      "preset": "release",
+      "preset": "Release",
       "problemMatcher": [],
       "group": {
         "kind": "build",

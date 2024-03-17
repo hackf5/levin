@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.27)
 
+set(CMAKE_CXX_STANDARD 23)
+
 set(PROJECT_NAME levin)
 project(${PROJECT_NAME} LANGUAGES CXX)
-
-set(CMAKE_CXX_STANDARD 23)
 
 include(FetchContent)
 
