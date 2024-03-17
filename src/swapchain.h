@@ -7,7 +7,7 @@
 
 namespace levin
 {
-    class SwapchainComponents
+    class Swapchain
     {
     private:
         SwapchainFactory m_factory;
@@ -23,8 +23,8 @@ namespace levin
         VkRect2D create_scissor();
 
     public:
-        SwapchainComponents(const Device &device_components);
-        SwapchainComponents(const SwapchainComponents &) = delete;
+        Swapchain(const Device &device_components);
+        Swapchain(const Swapchain &) = delete;
 
         operator VkSwapchainKHR() const { return m_swapchain.swapchain; }
 

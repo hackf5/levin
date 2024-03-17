@@ -67,7 +67,7 @@ VulkanContextBuilder &VulkanContextBuilder::configure_swapchain()
         m_context->m_swapchain.reset();
     }
 
-    m_context->m_swapchain = std::make_unique<SwapchainComponents>(*m_context->m_device);
+    m_context->m_swapchain = std::make_unique<Swapchain>(*m_context->m_device);
 
     return *this;
 }

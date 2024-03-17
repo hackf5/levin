@@ -1,10 +1,10 @@
-#include "swapchain_components.h"
+#include "swapchain.h"
 
 #include "spdlog/spdlog.h"
 
 using namespace levin;
 
-SwapchainComponents::SwapchainComponents(const Device &device_components):
+Swapchain::Swapchain(const Device &device_components):
     m_factory(SwapchainFactory(device_components)),
     m_swapchain(m_factory.create_swapchain()),
     m_swapchain_images(m_swapchain.get_images().value()),
@@ -14,7 +14,7 @@ SwapchainComponents::SwapchainComponents(const Device &device_components):
 {
 }
 
-VkViewport SwapchainComponents::create_viewport()
+VkViewport Swapchain::create_viewport()
 {
     VkViewport viewport{};
     viewport.x = 0.0f;
@@ -27,7 +27,7 @@ VkViewport SwapchainComponents::create_viewport()
     return viewport;
 }
 
-VkRect2D SwapchainComponents::create_scissor()
+VkRect2D Swapchain::create_scissor()
 {
     VkRect2D scissor{};
     scissor.offset = {0, 0};

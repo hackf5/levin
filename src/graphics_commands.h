@@ -6,7 +6,7 @@
 #include "VkBootstrap.h"
 
 #include "device.h"
-#include "swapchain_components.h"
+#include "swapchain.h"
 #include "framebuffer.h"
 
 #include "command_factory.h"

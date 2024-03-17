@@ -4,7 +4,7 @@
 
 #include "framebuffers_factory.h"
 #include "device.h"
-#include "swapchain_components.h"
+#include "swapchain.h"
 #include "render_pass.h"
 
 namespace levin
@@ -19,13 +19,13 @@ namespace levin
         const std::vector<VkFramebuffer> m_framebuffers;
 
         std::vector<VkFramebuffer> create_framebuffers(
-            const SwapchainComponents &swapchain_components,
+            const Swapchain &swapchain,
             const RenderPass &render_pass);
 
     public:
         Framebuffer(
             const Device &device_components,
-            const SwapchainComponents &swapchain_components,
+            const Swapchain &swapchain,
             const RenderPass &render_pass);
         Framebuffer(const Framebuffer &) = delete;
 

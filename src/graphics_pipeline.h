@@ -6,7 +6,7 @@
 #include "device.h"
 #include "descriptor_set_layout.h"
 #include "shader_module.h"
-#include "swapchain_components.h"
+#include "swapchain.h"
 #include "render_pass.h"
 #include "graphics_pipeline_factory.h"
 
@@ -25,14 +25,14 @@ namespace levin
             const DescriptorSetLayout &descriptor_set_layout);
 
         VkPipeline create_pipeline(
-            const SwapchainComponents &swapchain,
+            const Swapchain &swapchain,
             const RenderPass &render_pass);
 
         std::vector<VkPipelineShaderStageCreateInfo> create_shader_stages();
 
         VkPipelineInputAssemblyStateCreateInfo create_input_assembly_state();
 
-        VkPipelineViewportStateCreateInfo create_viewport_state(const SwapchainComponents &swapchain);
+        VkPipelineViewportStateCreateInfo create_viewport_state(const Swapchain &swapchain);
 
         VkPipelineRasterizationStateCreateInfo create_rasterization_state();
 
@@ -53,7 +53,7 @@ namespace levin
             const Device &device,
             const DescriptorSetLayout &descriptor_set_layout,
             const ShaderModule &shader_modules,
-            const SwapchainComponents &swapchain,
+            const Swapchain &swapchain,
             const RenderPass &render_pass);
         GraphicsPipeline(const GraphicsPipeline &) = delete;
 

@@ -11,7 +11,7 @@ GraphicsPipeline::GraphicsPipeline(
     const Device &device,
     const DescriptorSetLayout &descriptor_set_layout,
     const ShaderModule &shader_modules,
-    const SwapchainComponents &swapchain,
+    const Swapchain &swapchain,
     const RenderPass &render_pass):
     m_factory(device),
     m_shader_modules(shader_modules),
@@ -36,7 +36,7 @@ VkPipelineLayout GraphicsPipeline::create_pipeline_layout(
 }
 
 VkPipeline GraphicsPipeline::create_pipeline(
-    const SwapchainComponents &swapchain,
+    const Swapchain &swapchain,
     const RenderPass &render_pass)
 {
     auto shader_stages = create_shader_stages();
@@ -99,7 +99,7 @@ VkPipelineInputAssemblyStateCreateInfo GraphicsPipeline::create_input_assembly_s
     return result;
 }
 
-VkPipelineViewportStateCreateInfo GraphicsPipeline::create_viewport_state(const SwapchainComponents &swapchain)
+VkPipelineViewportStateCreateInfo GraphicsPipeline::create_viewport_state(const Swapchain &swapchain)
 {
     VkPipelineViewportStateCreateInfo result = {};
     result.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;

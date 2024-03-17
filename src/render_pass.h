@@ -4,7 +4,7 @@
 
 #include "device.h"
 #include "render_pass_factory.h"
-#include "swapchain_components.h"
+#include "swapchain.h"
 
 namespace levin
 {
@@ -15,12 +15,12 @@ namespace levin
 
         const VkRenderPass m_render_pass;
 
-        VkRenderPass create_render_pass(const SwapchainComponents &swapchain);
+        VkRenderPass create_render_pass(const Swapchain &swapchain);
 
     public:
         RenderPass(
             const Device &device_components,
-            const SwapchainComponents &swapchain_components);
+            const Swapchain &swapchain);
         RenderPass(const RenderPass &) = delete;
 
         operator VkRenderPass() const { return m_render_pass; }

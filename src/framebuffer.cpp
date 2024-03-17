@@ -6,24 +6,24 @@ using namespace levin;
 
 Framebuffer::Framebuffer(
     const Device &device_components,
-    const SwapchainComponents &swapchain_components,
+    const Swapchain &swapchain,
     const RenderPass &render_pass)
     : m_factory(device_components),
-    m_framebuffers(create_framebuffers(swapchain_components, render_pass))
+    m_framebuffers(create_framebuffers(swapchain, render_pass))
 {
 }
 
 std::vector<VkFramebuffer> Framebuffer::create_framebuffers(
-    const SwapchainComponents &swapchain_components,
+    const Swapchain &swapchain,
     const RenderPass &render_pass)
 {
     std::vector<VkFramebuffer> framebuffers;
-    framebuffers.resize(swapchain_components.image_count());
+    framebuffers.resize(swapchain.image_count());
 
-    for (size_t i = 0; i < swapchain_components.image_count(); i++)
+    for (size_t i = 0; i < swapchain.image_count(); i++)
     {
         VkImageView attachments[] = {
-            swapchain_components.image_view(i)
+            swapchain.image_view(i)
         };
 
         VkFramebufferCreateInfo framebuffer_info = {};
@@ -31,8 +31,8 @@ std::vector<VkFramebuffer> Framebuffer::create_framebuffers(
         framebuffer_info.renderPass = render_pass;
         framebuffer_info.attachmentCount = 1;
         framebuffer_info.pAttachments = attachments;
-        framebuffer_info.width = swapchain_components.extent().width;
-        framebuffer_info.height = swapchain_components.extent().height;
+        framebuffer_info.width = swapchain.extent().width;
+        framebuffer_info.height = swapchain.extent().height;
         framebuffer_info.layers = 1;
 
         auto framebuffer = m_factory.create_framebuffer(framebuffer_info);

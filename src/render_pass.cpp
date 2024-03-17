@@ -8,13 +8,13 @@ using namespace levin;
 
 RenderPass::RenderPass(
     const Device &device_components,
-    const SwapchainComponents &swapchain_components):
+    const Swapchain &swapchain):
     m_factory(device_components),
-    m_render_pass(create_render_pass(swapchain_components))
+    m_render_pass(create_render_pass(swapchain))
 {
 }
 
-VkRenderPass RenderPass::create_render_pass(const SwapchainComponents &swapchain)
+VkRenderPass RenderPass::create_render_pass(const Swapchain &swapchain)
 {
     VkAttachmentDescription color_attachment = {};
     color_attachment.format = swapchain.image_format();
