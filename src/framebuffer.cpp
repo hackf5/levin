@@ -1,10 +1,10 @@
-#include "framebuffer_components.h"
+#include "framebuffer.h"
 
 #include "spdlog/spdlog.h"
 
 using namespace levin;
 
-FramebufferComponents::FramebufferComponents(
+Framebuffer::Framebuffer(
     const Device &device_components,
     const SwapchainComponents &swapchain_components,
     const RenderPassComponents &render_pass_components)
@@ -13,7 +13,7 @@ FramebufferComponents::FramebufferComponents(
 {
 }
 
-std::vector<VkFramebuffer> FramebufferComponents::create_framebuffers(
+std::vector<VkFramebuffer> Framebuffer::create_framebuffers(
     const SwapchainComponents &swapchain_components,
     const RenderPassComponents &render_pass_components)
 {

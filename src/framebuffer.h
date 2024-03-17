@@ -9,7 +9,7 @@
 
 namespace levin
 {
-    class FramebufferComponents
+    class Framebuffer
     {
     private:
         bool m_initialized = false;
@@ -23,11 +23,11 @@ namespace levin
             const RenderPassComponents &render_pass_components);
 
     public:
-        FramebufferComponents(
+        Framebuffer(
             const Device &device_components,
             const SwapchainComponents &swapchain_components,
             const RenderPassComponents &render_pass_components);
-        FramebufferComponents(const FramebufferComponents &) = delete;
+        Framebuffer(const Framebuffer &) = delete;
 
         VkFramebuffer framebuffer(uint32_t index) const { return m_framebuffers[index]; }
     };
