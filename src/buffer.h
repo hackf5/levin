@@ -27,7 +27,10 @@ namespace levin
 
         const AllocationInfo m_allocation_info;
 
+        const VkDescriptorBufferInfo m_descriptor_info;
+
         AllocationInfo create_allocation_info(VkDeviceSize size);
+        VkDescriptorBufferInfo create_descriptor_info() const;
 
     public:
         Buffer(
@@ -47,6 +50,8 @@ namespace levin
         operator VmaAllocation() const { return m_allocation_info.allocation; }
 
         operator VmaAllocationInfo() const { return m_allocation_info.info; }
+
+        const VkDescriptorBufferInfo &descriptor_info() const { return m_descriptor_info; }
     };
 
     class BufferCPUtoGPU: public Buffer

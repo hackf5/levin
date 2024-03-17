@@ -34,6 +34,12 @@ VulkanContextBuilder &VulkanContextBuilder::configure_descriptor_pool()
     return *this;
 }
 
+VulkanContextBuilder &VulkanContextBuilder::configure_descriptor_set_layout()
+{
+    m_context->m_descriptor_set_layout = std::make_unique<DescriptorSetLayout>(*m_context->m_device);
+    return *this;
+}
+
 VulkanContextBuilder &VulkanContextBuilder::configure_uniform_buffers(VkDeviceSize size)
 {
     m_context->m_uniform_buffers.resize(DeviceComponents::max_frames_in_flight);
@@ -50,17 +56,16 @@ VulkanContextBuilder &VulkanContextBuilder::configure_uniform_buffers(VkDeviceSi
 
 VulkanContextBuilder &VulkanContextBuilder::configure_uniform_buffer_descriptor_set(VkDeviceSize size)
 {
-    std::vector<VkBuffer> uniform_buffers;
+    m_context->m_uniform_buffer_descriptor_sets.resize(DeviceComponents::max_frames_in_flight);
     for (size_t i = 0; i < m_context->m_uniform_buffers.size(); i++)
     {
-        uniform_buffers.push_back(*m_context->m_uniform_buffers[i]);
+        m_context->m_uniform_buffer_descriptor_sets[i] =
+            std::make_unique<UniformBufferDescriptorSet>(
+                *m_context->m_device,
+                *m_context->m_descriptor_pool,
+                *m_context->m_descriptor_set_layout,
+                *m_context->m_uniform_buffers[i]);
     }
-
-    m_context->m_uniform_buffer_descriptor_set = std::make_unique<UniformBufferDescriptorSet>(
-        *m_context->m_device,
-        *m_context->m_descriptor_pool,
-        uniform_buffers.data(),
-        size);
 
     return *this;
 }
@@ -134,7 +139,7 @@ VulkanContextBuilder &VulkanContextBuilder::configure_graphics_pipeline()
 {
     m_context->m_graphics_pipeline = std::make_unique<GraphicsPipelineComponents>(
         *m_context->m_device,
-        *m_context->m_descriptor_pool,
+        *m_context->m_descriptor_set_layout,
         *m_context->m_shader_modules,
         *m_context->m_swapchain,
         *m_context->m_render_pass);

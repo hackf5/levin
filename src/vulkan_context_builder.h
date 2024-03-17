@@ -24,6 +24,8 @@ namespace levin
 
         VulkanContextBuilder &configure_descriptor_pool();
 
+        VulkanContextBuilder &configure_descriptor_set_layout();
+
         VulkanContextBuilder &configure_vertex_buffer(VkDeviceSize size);
 
         VulkanContextBuilder &configure_index_buffer(VkDeviceSize size);

@@ -6,13 +6,16 @@
       "binaryDir": "${sourceDir}/build/debug",
       "generator": "Ninja",
       "cacheVariables": {
-        "CMAKE_CXX_FLAGS": "-ggdb3 -O0"
+        "CMAKE_CXX_FLAGS": "-ggdb3 -Og -fmax-errors=1"
       }
     },
     {
       "name": "Release",
       "binaryDir": "${sourceDir}/build/release",
-      "generator": "Ninja"
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "-O3 -march=native"
+      }
     }
   ],
   "buildPresets": [

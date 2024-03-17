@@ -8,10 +8,11 @@ using namespace levin;
 
 DescriptorSetComponents::DescriptorSetComponents(
     const DeviceComponents &device,
-    const DescriptorPoolComponents &descriptor_pool):
+    const DescriptorPoolComponents &descriptor_pool,
+    const DescriptorSetLayout &descriptor_set_layout):
     m_device(device),
     m_descriptor_pool(descriptor_pool),
-    m_descriptor_sets(create_descriptor_sets())
+    m_descriptor_set(create_descriptor_set(descriptor_set_layout))
 {
 }
 
@@ -19,56 +20,52 @@ DescriptorSetComponents::~DescriptorSetComponents()
 {
     vkFreeDescriptorSets(
         m_device,
-        m_descriptor_pool.pool(),
-        static_cast<uint32_t>(m_descriptor_sets.size()),
-        m_descriptor_sets.data());
+        m_descriptor_pool,
+        1,
+        &m_descriptor_set);
 }
 
-std::vector<VkDescriptorSet> DescriptorSetComponents::create_descriptor_sets()
+VkDescriptorSet DescriptorSetComponents::create_descriptor_set(
+    const DescriptorSetLayout &descriptor_set_layout)
 {
-    std::vector<VkDescriptorSetLayout> layouts(
-        DeviceComponents::max_frames_in_flight,
-        m_descriptor_pool.layout());
+    std::vector<VkDescriptorSetLayout> layouts = { descriptor_set_layout };
 
-    VkDescriptorSetAllocateInfo alloc_info{};
+    VkDescriptorSetAllocateInfo alloc_info {};
     alloc_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    alloc_info.descriptorPool = m_descriptor_pool.pool();
-    alloc_info.descriptorSetCount = DeviceComponents::max_frames_in_flight;
+    alloc_info.descriptorPool = m_descriptor_pool;
+    alloc_info.descriptorSetCount = 1;
     alloc_info.pSetLayouts = layouts.data();
 
-    std::vector<VkDescriptorSet> descriptor_sets(DeviceComponents::max_frames_in_flight);
-    if (vkAllocateDescriptorSets(m_device, &alloc_info, descriptor_sets.data()) != VK_SUCCESS)
+    VkDescriptorSet descriptor_set;
+    if (vkAllocateDescriptorSets(m_device, &alloc_info, &descriptor_set) != VK_SUCCESS)
     {
-        spdlog::error("Failed to allocate descriptor sets");
-        throw std::runtime_error("Failed to allocate descriptor sets");
+        spdlog::error("Failed to allocate descriptor set");
+        throw std::runtime_error("Failed to allocate descriptor set");
     }
 
-    return descriptor_sets;
+    return descriptor_set;
 }
 
 UniformBufferDescriptorSet::UniformBufferDescriptorSet(
     const DeviceComponents &device,
     const DescriptorPoolComponents &descriptor_pool,
-    VkBuffer* uniform_buffers,
-    size_t object_size):
-    DescriptorSetComponents(device, descriptor_pool)
+    const DescriptorSetLayout &descriptor_set_layout,
+    const Buffer &uniform_buffer):
+    DescriptorSetComponents(
+    device,
+    descriptor_pool,
+    descriptor_set_layout)
 {
-    for (size_t i = 0; i < m_descriptor_sets.size(); i++)
-    {
-        VkDescriptorBufferInfo buffer_info{};
-        buffer_info.buffer = uniform_buffers[i];
-        buffer_info.offset = 0;
-        buffer_info.range = object_size;
+    auto buffer_info = uniform_buffer.descriptor_info();
 
-        VkWriteDescriptorSet descriptor_write{};
-        descriptor_write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptor_write.dstSet = m_descriptor_sets[i];
-        descriptor_write.dstBinding = 0;
-        descriptor_write.dstArrayElement = 0;
-        descriptor_write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        descriptor_write.descriptorCount = 1;
-        descriptor_write.pBufferInfo = &buffer_info;
+    VkWriteDescriptorSet descriptor_write {};
+    descriptor_write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptor_write.dstSet = m_descriptor_set;
+    descriptor_write.dstBinding = 0;
+    descriptor_write.dstArrayElement = 0;
+    descriptor_write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    descriptor_write.descriptorCount = 1;
+    descriptor_write.pBufferInfo = &buffer_info;
 
-        vkUpdateDescriptorSets(m_device, 1, &descriptor_write, 0, nullptr);
-    }
+    vkUpdateDescriptorSets(m_device, 1, &descriptor_write, 0, nullptr);
 }

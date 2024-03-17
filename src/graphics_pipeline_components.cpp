@@ -9,28 +9,30 @@ using namespace levin;
 
 GraphicsPipelineComponents::GraphicsPipelineComponents(
     const DeviceComponents &device,
-    const DescriptorPoolComponents &descriptor_pool,
+    const DescriptorSetLayout &descriptor_set_layout,
     const ShaderModuleComponents &shader_modules,
     const SwapchainComponents &swapchain,
     const RenderPassComponents &render_pass_components):
     m_factory(device),
     m_shader_modules(shader_modules),
-    m_pipeline_layout(create_pipeline_layout(descriptor_pool)),
+    m_pipeline_layout(create_pipeline_layout(descriptor_set_layout)),
     m_pipeline(create_pipeline(swapchain, render_pass_components))
 {
 }
 
 VkPipelineLayout GraphicsPipelineComponents::create_pipeline_layout(
-    const DescriptorPoolComponents &descriptor_pool)
+    const DescriptorSetLayout &descriptor_set_layout)
 {
+    VkDescriptorSetLayout descriptor_set_layouts[] = { descriptor_set_layout };
     VkPipelineLayoutCreateInfo pipeline_layout_info = {};
     pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipeline_layout_info.setLayoutCount = 1;
-    pipeline_layout_info.pSetLayouts = &descriptor_pool.layout();
+    pipeline_layout_info.pSetLayouts = descriptor_set_layouts;
     pipeline_layout_info.pushConstantRangeCount = 0;
     pipeline_layout_info.pPushConstantRanges = nullptr;
 
     return m_factory.create_pipeline_layout(pipeline_layout_info);
+
 }
 
 VkPipeline GraphicsPipelineComponents::create_pipeline(

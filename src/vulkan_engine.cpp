@@ -143,9 +143,7 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
 
     vkCmdBindIndexBuffer(command_buffer, m_context->index_buffer(), 0, Vertex::vk_index_type);
 
-    auto descriptor_set = m_context
-        ->uniform_buffer_descriptor_set()
-        .descriptor_set(m_current_frame);
+    VkDescriptorSet ds = m_context->uniform_buffer_descriptor_set(m_current_frame);
 
     vkCmdBindDescriptorSets(
         command_buffer,
@@ -153,7 +151,7 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
         m_context->graphics_pipeline().layout(),
         0,
         1,
-        &descriptor_set,
+        &ds,
         0,
         nullptr);
 
