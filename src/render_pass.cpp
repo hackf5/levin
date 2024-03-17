@@ -1,7 +1,5 @@
 #include "render_pass.h"
 
-#include "swapchain_factory.h"
-
 #include "spdlog/spdlog.h"
 
 using namespace levin;

@@ -1,6 +1,5 @@
 #include "graphics_pipeline.h"
 
-#include "swapchain_factory.h"
 #include "vertex.h"
 
 #include "spdlog/spdlog.h"

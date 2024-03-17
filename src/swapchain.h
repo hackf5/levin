@@ -3,28 +3,27 @@
 #include <vector>
 
 #include "device.h"
-#include "swapchain_factory.h"
-
 namespace levin
 {
     class Swapchain
     {
     private:
-        SwapchainFactory m_factory;
+        const Device &m_device;
 
         vkb::Swapchain m_swapchain;
+        const std::vector<VkImage> m_swapchain_images;
+        const std::vector<VkImageView> m_swapchain_image_views;
         const VkViewport m_viewport;
         const VkRect2D m_scissor;
 
-        const std::vector<VkImage> m_swapchain_images;
-        const std::vector<VkImageView> m_swapchain_image_views;
-
+        vkb::Swapchain create_swapchain();
         VkViewport create_viewport();
         VkRect2D create_scissor();
 
     public:
         Swapchain(const Device &device);
         Swapchain(const Swapchain &) = delete;
+        ~Swapchain();
 
         operator VkSwapchainKHR() const { return m_swapchain.swapchain; }
 
@@ -38,8 +37,8 @@ namespace levin
 
         const VkRect2D &scissor() const { return m_scissor; }
 
-        const VkImage &image(size_t index) const { return m_swapchain_images[index]; }
+        const VkImage &image(size_t image_index) const { return m_swapchain_images[image_index]; }
 
-        const VkImageView &image_view(size_t index) const { return m_swapchain_image_views[index]; }
+        const VkImageView &image_view(size_t image_index) const { return m_swapchain_image_views[image_index]; }
     };
 }

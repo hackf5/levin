@@ -3,8 +3,6 @@
 
 #include "device.h"
 
-#include "swapchain_factory.h"
-
 #include "spdlog/spdlog.h"
 
 using namespace levin;
