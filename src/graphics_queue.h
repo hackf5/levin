@@ -9,7 +9,7 @@
 
 namespace levin
 {
-    class GraphicsCommands
+    class GraphicsQueue
     {
     private:
         const Device &m_device;
@@ -32,9 +32,9 @@ namespace levin
         VkSwapchainKHR m_swapchain = VK_NULL_HANDLE;
 
     public:
-        GraphicsCommands(const Device &device);
-        GraphicsCommands(const GraphicsCommands &) = delete;
-        ~GraphicsCommands();
+        GraphicsQueue(const Device &device);
+        GraphicsQueue(const GraphicsQueue &) = delete;
+        ~GraphicsQueue();
 
         VkFramebuffer prepare_framebuffer(
             uint32_t current_frame,

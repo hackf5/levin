@@ -31,7 +31,7 @@ int main()
         VulkanContextBuilder builder;
         auto context = builder.configure_window(800, 600, "Levin")
             .configure_device(enableValidationLayers)
-            .configure_graphics_commands()
+            .configure_graphics_queue()
             .configure_transfer_queue()
             .configure_model()
             .configure_descriptor_pool()

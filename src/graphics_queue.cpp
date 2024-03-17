@@ -1,4 +1,4 @@
-#include "graphics_commands.h"
+#include "graphics_queue.h"
 
 #include <limits>
 
@@ -6,7 +6,7 @@
 
 using namespace levin;
 
-GraphicsCommands::GraphicsCommands(const Device &device):
+GraphicsQueue::GraphicsQueue(const Device &device):
     m_device(device),
     m_graphics_queue(device.graphics_queue()),
     m_command_pool(create_command_pool()),
@@ -17,7 +17,7 @@ GraphicsCommands::GraphicsCommands(const Device &device):
 {
 }
 
-GraphicsCommands::~GraphicsCommands()
+GraphicsQueue::~GraphicsQueue()
 {
     spdlog::info("Destroying Graphics Commands");
 
@@ -39,7 +39,7 @@ GraphicsCommands::~GraphicsCommands()
     vkDestroyCommandPool(m_device, m_command_pool, nullptr);
 }
 
-VkCommandPool GraphicsCommands::create_command_pool()
+VkCommandPool GraphicsQueue::create_command_pool()
 {
     spdlog::info("Creating Graphics Command Pool");
 
@@ -57,7 +57,7 @@ VkCommandPool GraphicsCommands::create_command_pool()
     return command_pool;
 }
 
-std::vector<VkCommandBuffer> GraphicsCommands::create_command_buffers()
+std::vector<VkCommandBuffer> GraphicsQueue::create_command_buffers()
 {
     spdlog::info("Creating Command Buffers");
 
@@ -76,7 +76,7 @@ std::vector<VkCommandBuffer> GraphicsCommands::create_command_buffers()
     return command_buffers;
 }
 
-std::vector<VkSemaphore> GraphicsCommands::create_semaphores()
+std::vector<VkSemaphore> GraphicsQueue::create_semaphores()
 {
     spdlog::info("Creating Semaphores");
 
@@ -95,7 +95,7 @@ std::vector<VkSemaphore> GraphicsCommands::create_semaphores()
     return semaphores;
 }
 
-std::vector<VkFence> GraphicsCommands::create_fences()
+std::vector<VkFence> GraphicsQueue::create_fences()
 {
     spdlog::info("Creating Fences");
 
@@ -115,7 +115,7 @@ std::vector<VkFence> GraphicsCommands::create_fences()
     return fences;
 }
 
-VkFramebuffer GraphicsCommands::prepare_framebuffer(
+VkFramebuffer GraphicsQueue::prepare_framebuffer(
     uint32_t current_frame,
     const Swapchain& swapchain,
     const Framebuffers &framebuffers)
@@ -154,7 +154,7 @@ VkFramebuffer GraphicsCommands::prepare_framebuffer(
     return framebuffers.get(m_image_index);
 }
 
-VkCommandBuffer GraphicsCommands::begin_command() const
+VkCommandBuffer GraphicsQueue::begin_command() const
 {
     assert(m_swapchain != VK_NULL_HANDLE);
 
@@ -174,7 +174,7 @@ VkCommandBuffer GraphicsCommands::begin_command() const
     return m_command_buffers[m_current_frame];
 }
 
-void GraphicsCommands::submit_command() const
+void GraphicsQueue::submit_command() const
 {
     assert(m_swapchain != VK_NULL_HANDLE);
 
@@ -210,7 +210,7 @@ void GraphicsCommands::submit_command() const
     }
 }
 
-bool GraphicsCommands::present_framebuffer()
+bool GraphicsQueue::present_framebuffer()
 {
     assert(m_swapchain != VK_NULL_HANDLE);
     auto swapchain = m_swapchain;

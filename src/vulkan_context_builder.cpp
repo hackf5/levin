@@ -22,9 +22,9 @@ VulkanContextBuilder &VulkanContextBuilder::configure_transfer_queue(size_t comm
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::configure_graphics_commands()
+VulkanContextBuilder &VulkanContextBuilder::configure_graphics_queue()
 {
-    m_context->m_graphics_commands = std::make_unique<GraphicsCommands>(*m_context->m_device);
+    m_context->m_graphics_queue = std::make_unique<GraphicsQueue>(*m_context->m_device);
     return *this;
 }
 

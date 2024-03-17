@@ -93,7 +93,7 @@ void VulkanEngine::recreate_swapchain()
 void VulkanEngine::draw_frame()
 {
     auto framebuffer = m_context
-        ->graphics_commands()
+        ->graphics_queue()
         .prepare_framebuffer(
             m_current_frame,
             m_context->swapchain(),
@@ -107,7 +107,7 @@ void VulkanEngine::draw_frame()
     update_uniform_buffer();
     render(framebuffer);
 
-    if (!m_context->graphics_commands().present_framebuffer())
+    if (!m_context->graphics_queue().present_framebuffer())
     {
         recreate_swapchain();
     }
@@ -118,7 +118,7 @@ void VulkanEngine::draw_frame()
 void VulkanEngine::render(VkFramebuffer framebuffer)
 {
     auto command_buffer = m_context
-        ->graphics_commands()
+        ->graphics_queue()
         .begin_command();
 
     auto extent = m_context->swapchain().extent();
@@ -164,7 +164,7 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
     vkCmdEndRenderPass(command_buffer);
 
     m_context
-        ->graphics_commands()
+        ->graphics_queue()
         .submit_command();
 }
 

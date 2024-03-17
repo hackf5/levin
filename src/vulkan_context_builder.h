@@ -20,7 +20,7 @@ namespace levin
 
         VulkanContextBuilder &configure_transfer_queue(size_t command_buffer_count = 1);
 
-        VulkanContextBuilder &configure_graphics_commands();
+        VulkanContextBuilder &configure_graphics_queue();
 
         VulkanContextBuilder &configure_descriptor_pool();
 
