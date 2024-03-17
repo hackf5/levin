@@ -10,7 +10,7 @@ using namespace levin;
 GraphicsPipeline::GraphicsPipeline(
     const Device &device,
     const DescriptorSetLayout &descriptor_set_layout,
-    const ShaderModuleComponents &shader_modules,
+    const ShaderModule &shader_modules,
     const SwapchainComponents &swapchain,
     const RenderPass &render_pass):
     m_factory(device),

@@ -10,7 +10,7 @@
 
 namespace levin
 {
-    class ShaderModuleComponents
+    class ShaderModule
     {
     private:
         ShaderModuleFactory m_factory;
@@ -18,8 +18,8 @@ namespace levin
         std::map<std::string, VkShaderModule> m_shader_modules;
 
     public:
-        ShaderModuleComponents(const vkb::Device &device);
-        ShaderModuleComponents(const ShaderModuleComponents &) = delete;
+        ShaderModule(const vkb::Device &device);
+        ShaderModule(const ShaderModule &) = delete;
 
         void load(const std::string &name);
 

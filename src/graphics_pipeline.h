@@ -5,7 +5,7 @@
 
 #include "device.h"
 #include "descriptor_set_layout.h"
-#include "shader_module_components.h"
+#include "shader_module.h"
 #include "swapchain_components.h"
 #include "render_pass.h"
 #include "graphics_pipeline_factory.h"
@@ -16,7 +16,7 @@ namespace levin
     {
     private:
         GraphicsPipelineFactory m_factory;
-        const ShaderModuleComponents &m_shader_modules;
+        const ShaderModule &m_shader_modules;
 
         const VkPipelineLayout m_pipeline_layout;
         const VkPipeline m_pipeline;
@@ -52,7 +52,7 @@ namespace levin
         GraphicsPipeline(
             const Device &device,
             const DescriptorSetLayout &descriptor_set_layout,
-            const ShaderModuleComponents &shader_modules,
+            const ShaderModule &shader_modules,
             const SwapchainComponents &swapchain,
             const RenderPass &render_pass);
         GraphicsPipeline(const GraphicsPipeline &) = delete;

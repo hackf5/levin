@@ -13,7 +13,7 @@
 #include "vertex.h"
 #include "model.h"
 #include "descriptor_set.h"
-#include "shader_module_components.h"
+#include "shader_module.h"
 #include "swapchain_components.h"
 #include "render_pass.h"
 #include "framebuffer.h"
@@ -31,7 +31,7 @@ namespace levin
         std::unique_ptr<DescriptorPool> m_descriptor_pool;
         std::unique_ptr<DescriptorSetLayout> m_descriptor_set_layout;
         std::unique_ptr<Model> m_model;
-        std::unique_ptr<ShaderModuleComponents> m_shader_modules;
+        std::unique_ptr<ShaderModule> m_shader_modules;
         std::unique_ptr<SwapchainComponents> m_swapchain;
         std::unique_ptr<RenderPass> m_render_pass;
         std::unique_ptr<Framebuffer> m_framebuffers;
@@ -58,7 +58,7 @@ namespace levin
         const Model &model() const { return *m_model; }
         Model &model() { return *m_model; }
 
-        const ShaderModuleComponents &shader_modules() const { return *m_shader_modules; }
+        const ShaderModule &shader_modules() const { return *m_shader_modules; }
 
         const SwapchainComponents &swapchain() const { return *m_swapchain; }
 

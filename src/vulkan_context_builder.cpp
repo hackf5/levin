@@ -51,7 +51,7 @@ VulkanContextBuilder &VulkanContextBuilder::configure_model()
 
 VulkanContextBuilder &VulkanContextBuilder::configure_shader_modules()
 {
-    m_context->m_shader_modules = std::make_unique<ShaderModuleComponents>(*m_context->m_device);
+    m_context->m_shader_modules = std::make_unique<ShaderModule>(*m_context->m_device);
     m_context->m_shader_modules->load("vert");
     m_context->m_shader_modules->load("frag");
     return *this;
