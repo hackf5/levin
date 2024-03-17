@@ -7,7 +7,7 @@
 
 namespace levin
 {
-    class BufferTransferQueue
+    class TransferQueue
     {
     private:
         const Device &m_device;
@@ -20,9 +20,9 @@ namespace levin
         VkCommandBuffer create_command_buffer();
 
     public:
-        BufferTransferQueue(const Device &device);
-        BufferTransferQueue(const BufferTransferQueue &) = delete;
-        ~BufferTransferQueue();
+        TransferQueue(const Device &device);
+        TransferQueue(const TransferQueue &) = delete;
+        ~TransferQueue();
 
         VkCommandBuffer begin() const;
 

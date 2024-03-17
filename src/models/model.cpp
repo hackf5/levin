@@ -46,7 +46,7 @@ std::unique_ptr<UniformBufferDescriptorSet> Mesh::create_descriptor_set(
 Model::Model(
     const Device &device,
     const DescriptorPool &descriptor_pool,
-    const BufferTransferQueue &transfer_queue):
+    const TransferQueue &transfer_queue):
     m_device(device),
     m_descriptor_pool(descriptor_pool),
     m_transfer_queue(transfer_queue),

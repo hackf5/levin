@@ -72,7 +72,7 @@ BufferCPUtoGPU::BufferCPUtoGPU(
 
 BufferGPU::BufferGPU(
     const Device &device,
-    const BufferTransferQueue &transfer_queue,
+    const TransferQueue &transfer_queue,
     VkDeviceSize size,
     VkBufferUsageFlags usage):
     Buffer(

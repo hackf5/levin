@@ -16,9 +16,9 @@ VulkanContextBuilder &VulkanContextBuilder::configure_device(bool enableValidati
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::configure_transfer_queue(size_t command_buffer_count)
+VulkanContextBuilder &VulkanContextBuilder::configure_transfer_queue()
 {
-    m_context->m_transfer_queue = std::make_unique<BufferTransferQueue>(*m_context->m_device);
+    m_context->m_transfer_queue = std::make_unique<TransferQueue>(*m_context->m_device);
     return *this;
 }
 

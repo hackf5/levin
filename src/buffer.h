@@ -5,7 +5,7 @@
 #include <vulkan/vulkan.h>
 
 #include "device.h"
-#include "buffer_transfer_queue.h"
+#include "transfer_queue.h"
 
 namespace levin
 {
@@ -75,12 +75,12 @@ namespace levin
     {
     private:
         const Device &m_device;
-        const BufferTransferQueue &m_transfer_queue;
+        const TransferQueue &m_transfer_queue;
 
     public:
         BufferGPU(
             const Device &device,
-            const BufferTransferQueue &transfer_queue,
+            const TransferQueue &transfer_queue,
             VkDeviceSize size,
             VkBufferUsageFlags usage);
         BufferGPU(const BufferGPU &) = delete;

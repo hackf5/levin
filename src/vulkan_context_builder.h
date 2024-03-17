@@ -18,7 +18,7 @@ namespace levin
 
         VulkanContextBuilder &configure_device(bool enable_validation_layers = true);
 
-        VulkanContextBuilder &configure_transfer_queue(size_t command_buffer_count = 1);
+        VulkanContextBuilder &configure_transfer_queue();
 
         VulkanContextBuilder &configure_graphics_queue();
 

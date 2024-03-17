@@ -5,7 +5,7 @@
 
 #include "window.h"
 #include "device.h"
-#include "buffer_transfer_queue.h"
+#include "transfer_queue.h"
 #include "graphics_queue.h"
 #include "descriptor_pool.h"
 #include "descriptor_set_layout.h"
@@ -26,7 +26,7 @@ namespace levin
     private:
         std::unique_ptr<Window> m_window;
         std::unique_ptr<Device> m_device;
-        std::unique_ptr<BufferTransferQueue> m_transfer_queue;
+        std::unique_ptr<TransferQueue> m_transfer_queue;
         std::unique_ptr<GraphicsQueue> m_graphics_queue;
         std::unique_ptr<DescriptorPool> m_descriptor_pool;
         std::unique_ptr<DescriptorSetLayout> m_descriptor_set_layout;
@@ -45,7 +45,7 @@ namespace levin
 
         const Device &device() const { return *m_device; }
 
-        const BufferTransferQueue &transfer_queue() const { return *m_transfer_queue; }
+        const TransferQueue &transfer_queue() const { return *m_transfer_queue; }
 
         GraphicsQueue &graphics_queue() { return *m_graphics_queue; }
         const GraphicsQueue &graphics_queue() const { return *m_graphics_queue; }

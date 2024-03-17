@@ -1,10 +1,10 @@
-#include "buffer_transfer_queue.h"
+#include "transfer_queue.h"
 
 #include "spdlog/spdlog.h"
 
 using namespace levin;
 
-BufferTransferQueue::BufferTransferQueue(const Device &device):
+TransferQueue::TransferQueue(const Device &device):
     m_device(device),
     m_queue(device.transfer_queue()),
     m_command_pool(create_command_pool()),
@@ -12,14 +12,14 @@ BufferTransferQueue::BufferTransferQueue(const Device &device):
 {
 }
 
-BufferTransferQueue::~BufferTransferQueue()
+TransferQueue::~TransferQueue()
 {
     spdlog::info("Destroying Buffer Transfer Queue");
     vkFreeCommandBuffers(m_device, m_command_pool, 1, &m_command_buffer);
     vkDestroyCommandPool(m_device, m_command_pool, nullptr);
 }
 
-VkCommandPool BufferTransferQueue::create_command_pool()
+VkCommandPool TransferQueue::create_command_pool()
 {
     VkCommandPoolCreateInfo pool_info = {};
     pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -35,7 +35,7 @@ VkCommandPool BufferTransferQueue::create_command_pool()
     return command_pool;
 }
 
-VkCommandBuffer BufferTransferQueue::create_command_buffer()
+VkCommandBuffer TransferQueue::create_command_buffer()
 {
     VkCommandBufferAllocateInfo alloc_info = {};
     alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -52,7 +52,7 @@ VkCommandBuffer BufferTransferQueue::create_command_buffer()
     return command_buffer;
 }
 
-VkCommandBuffer BufferTransferQueue::begin() const
+VkCommandBuffer TransferQueue::begin() const
 {
     if (vkResetCommandBuffer(m_command_buffer, 0) != VK_SUCCESS)
     {
@@ -70,7 +70,7 @@ VkCommandBuffer BufferTransferQueue::begin() const
     return m_command_buffer;
 }
 
-void BufferTransferQueue::submit_and_wait() const
+void TransferQueue::submit_and_wait() const
 {
     auto command_buffer = m_command_buffer;
 

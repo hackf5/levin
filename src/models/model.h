@@ -15,7 +15,7 @@
 #include "descriptor_set_layout.h"
 #include "descriptor_set.h"
 #include "buffer.h"
-#include "buffer_transfer_queue.h"
+#include "transfer_queue.h"
 
 namespace levin
 {
@@ -246,7 +246,7 @@ namespace levin
     private:
         const Device &m_device;
         const DescriptorPool &m_descriptor_pool;
-        const BufferTransferQueue &m_transfer_queue;
+        const TransferQueue &m_transfer_queue;
 
         std::unique_ptr<BufferGPU> m_vertex_buffer;
 
@@ -260,7 +260,7 @@ namespace levin
         Model(
             const Device &device,
             const DescriptorPool &descriptor_pool,
-            const BufferTransferQueue &transfer_queue);
+            const TransferQueue &transfer_queue);
 
         Model(const Model &) = delete;
 
