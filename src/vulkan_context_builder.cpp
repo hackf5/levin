@@ -70,26 +70,12 @@ VulkanContextBuilder &VulkanContextBuilder::configure_uniform_buffer_descriptor_
     return *this;
 }
 
-
-VulkanContextBuilder &VulkanContextBuilder::configure_vertex_buffer(VkDeviceSize size)
+VulkanContextBuilder &VulkanContextBuilder::configure_model()
 {
-    m_context->m_vertex_buffer = std::make_unique<BufferGPU>(
+    m_context->m_model = std::make_unique<Model>(
         *m_context->m_device,
-        *m_context->m_transfer_queue,
-        size,
-        VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-
-    return *this;
-}
-
-VulkanContextBuilder &VulkanContextBuilder::configure_index_buffer(VkDeviceSize size)
-{
-    m_context->m_index_buffer = std::make_unique<BufferGPU>(
-        *m_context->m_device,
-        *m_context->m_transfer_queue,
-        size,
-        VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
-
+        *m_context->m_descriptor_pool,
+        *m_context->m_transfer_queue);
     return *this;
 }
 

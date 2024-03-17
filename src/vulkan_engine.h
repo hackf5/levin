@@ -14,9 +14,7 @@ namespace levin
 
         uint32_t m_current_frame = 0;
 
-        void load_vertexes();
-        void load_indexes();
-
+        void load_model();
         void draw_frame();
         void recreate_swapchain();
         void update_uniform_buffer();

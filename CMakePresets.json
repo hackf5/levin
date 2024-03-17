@@ -6,7 +6,8 @@
       "binaryDir": "${sourceDir}/build/debug",
       "generator": "Ninja",
       "cacheVariables": {
-        "CMAKE_CXX_FLAGS": "-ggdb3 -Og -fmax-errors=1"
+        "CMAKE_CXX_FLAGS": "-ggdb3 -Og -fmax-errors=1",
+        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
@@ -14,7 +15,8 @@
       "binaryDir": "${sourceDir}/build/release",
       "generator": "Ninja",
       "cacheVariables": {
-        "CMAKE_CXX_FLAGS": "-O3 -march=native"
+        "CMAKE_CXX_FLAGS": "-O3 -march=native",
+        "CMAKE_BUILD_TYPE": "Release"
       }
     }
   ],

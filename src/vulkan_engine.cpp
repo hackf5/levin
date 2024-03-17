@@ -11,14 +11,14 @@
 
 using namespace levin;
 
-const std::vector<Vertex> vertexes = {
+const std::vector<levin::Vertex> vertexes = {
     {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
     {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
     {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
     {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
 };
 
-const std::vector<Vertex::index_t> indexes = {
+const std::vector<levin::Vertex::index_t> indexes = {
     0, 1, 2, 2, 3, 0
 };
 
@@ -32,8 +32,7 @@ void VulkanEngine::run()
 {
     spdlog::info("Vulkan Engine is running");
 
-    load_vertexes();
-    load_indexes();
+    load_model();
 
     while (!m_context->window().should_close())
     {
@@ -44,14 +43,31 @@ void VulkanEngine::run()
     m_context->device().wait_idle();
 }
 
-void VulkanEngine::load_vertexes()
+void VulkanEngine::load_model()
 {
-    m_context->vertex_buffer().copy_from(vertexes);
-}
+    m_context->model().load_vertexes(vertexes);
+    m_context->model().load_indexes(indexes);
 
-void VulkanEngine::load_indexes()
-{
-    m_context->index_buffer().copy_from(indexes);
+    std::vector<std::unique_ptr<Primitive>> primitives;
+    primitives.push_back(std::make_unique<Primitive>(0, indexes.size()));
+    m_context->model().load_primitives(primitives);
+
+    std::vector<Primitive*> mesh_primitives;
+    for (auto &primitive : m_context->model().primitives())
+    {
+        mesh_primitives.push_back(primitive);
+    }
+
+    auto mesh = std::make_unique<Mesh>(
+        m_context->device(),
+        m_context->descriptor_pool(),
+        m_context->descriptor_set_layout(),
+        mesh_primitives);
+
+    m_context->model().root_node(
+        std::make_unique<Node>(
+            nullptr,
+            std::move(mesh)));
 }
 
 void VulkanEngine::recreate_swapchain()
@@ -137,11 +153,7 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
     scissor.extent = extent;
     vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 
-    VkBuffer vertex_buffers[] = { m_context->vertex_buffer() };
-    VkDeviceSize offsets[] = { 0 };
-    vkCmdBindVertexBuffers(command_buffer, 0, 1, vertex_buffers, offsets);
-
-    vkCmdBindIndexBuffer(command_buffer, m_context->index_buffer(), 0, Vertex::vk_index_type);
+    m_context->model().bind(command_buffer);
 
     VkDescriptorSet ds = m_context->uniform_buffer_descriptor_set(m_current_frame);
 
@@ -155,7 +167,7 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
         0,
         nullptr);
 
-    vkCmdDrawIndexed(command_buffer, static_cast<uint32_t>(indexes.size()), 1, 0, 0, 0);
+    m_context->model().draw(command_buffer, m_context->graphics_pipeline(), m_current_frame);
 
     vkCmdEndRenderPass(command_buffer);
 
@@ -185,4 +197,7 @@ void VulkanEngine::update_uniform_buffer()
     ubo.proj[1][1] *= -1;
 
     m_context->uniform_buffer(m_current_frame).copy_from(&ubo, sizeof(ubo));
+    // auto node = m_context->model().root_node();
+    // node->rotation() = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    // node->update(m_current_frame);
 }
