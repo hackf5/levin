@@ -11,7 +11,7 @@
 
 namespace levin
 {
-    class DescriptorSetComponents
+    class DescriptorSet
     {
     private:
         VkDescriptorSet create_descriptor_set(const DescriptorSetLayout &descriptor_set_layout);
@@ -22,17 +22,17 @@ namespace levin
         const VkDescriptorSet m_descriptor_set;
 
     public:
-        DescriptorSetComponents(
+        DescriptorSet(
             const Device &device,
             const DescriptorPool &descriptor_pool,
             const DescriptorSetLayout &descriptor_set_layout);
-        DescriptorSetComponents(const DescriptorSetComponents &) = delete;
-        ~DescriptorSetComponents();
+        DescriptorSet(const DescriptorSet &) = delete;
+        ~DescriptorSet();
 
         operator VkDescriptorSet() const { return m_descriptor_set; }
     };
 
-    class UniformBufferDescriptorSet: public DescriptorSetComponents
+    class UniformBufferDescriptorSet: public DescriptorSet
     {
     public:
         UniformBufferDescriptorSet(

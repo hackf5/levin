@@ -12,7 +12,7 @@
 #include "buffer.h"
 #include "vertex.h"
 #include "model.h"
-#include "descriptor_set_components.h"
+#include "descriptor_set.h"
 #include "shader_module_components.h"
 #include "swapchain_components.h"
 #include "render_pass_components.h"

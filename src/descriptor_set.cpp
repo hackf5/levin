@@ -1,4 +1,4 @@
-#include "descriptor_set_components.h"
+#include "descriptor_set.h"
 
 #include <stdexcept>
 
@@ -6,7 +6,7 @@
 
 using namespace levin;
 
-DescriptorSetComponents::DescriptorSetComponents(
+DescriptorSet::DescriptorSet(
     const Device &device,
     const DescriptorPool &descriptor_pool,
     const DescriptorSetLayout &descriptor_set_layout):
@@ -16,7 +16,7 @@ DescriptorSetComponents::DescriptorSetComponents(
 {
 }
 
-DescriptorSetComponents::~DescriptorSetComponents()
+DescriptorSet::~DescriptorSet()
 {
     vkFreeDescriptorSets(
         m_device,
@@ -25,7 +25,7 @@ DescriptorSetComponents::~DescriptorSetComponents()
         &m_descriptor_set);
 }
 
-VkDescriptorSet DescriptorSetComponents::create_descriptor_set(
+VkDescriptorSet DescriptorSet::create_descriptor_set(
     const DescriptorSetLayout &descriptor_set_layout)
 {
     std::vector<VkDescriptorSetLayout> layouts = { descriptor_set_layout };
@@ -51,7 +51,7 @@ UniformBufferDescriptorSet::UniformBufferDescriptorSet(
     const DescriptorPool &descriptor_pool,
     const DescriptorSetLayout &descriptor_set_layout,
     const Buffer &uniform_buffer):
-    DescriptorSetComponents(
+    DescriptorSet(
     device,
     descriptor_pool,
     descriptor_set_layout)

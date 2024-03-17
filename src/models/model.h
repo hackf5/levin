@@ -13,7 +13,7 @@
 #include "device.h"
 #include "descriptor_pool.h"
 #include "descriptor_set_layout.h"
-#include "descriptor_set_components.h"
+#include "descriptor_set.h"
 #include "buffer.h"
 #include "buffer_transfer_queue.h"
 
