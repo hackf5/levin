@@ -42,18 +42,26 @@ namespace levin
 
         glm::mat4 matrix() const { return m_projection * m_view; }
 
+        static glm::mat4 default_proj()
+        {
+            auto m = glm::perspective(
+                glm::radians(45.0f),
+                800.0f / 600.0f,
+                0.1f,
+                10.0f);
+            m[1][1] *= -1;
+
+            return m;
+        }
+
         static Camera &default_camera()
         {
             static Camera camera(
                 glm::lookAt(
-                glm::vec3(2.0f, 2.0f, 2.0f),
-                glm::vec3(0.0f, 0.0f, 0.0f),
-                glm::vec3(0.0f, 0.0f, 1.0f)),
-                glm::perspective(
-                glm::radians(45.0f),
-                800.0f / 600.0f,
-                0.1f,
-                10.0f));
+                    glm::vec3(2.0f, 2.0f, 2.0f),
+                    glm::vec3(0.0f, 0.0f, 0.0f),
+                    glm::vec3(0.0f, 0.0f, 1.0f)),
+                default_proj());
 
             return camera;
         }
@@ -118,9 +126,8 @@ namespace levin
         const glm::mat4 &model() const { return m_uniform_block.model; }
         glm::mat4 &model() { return m_uniform_block.model; }
 
-        void flush(int current_frame) const
+        void flush(int current_frame)
         {
-            // the camera should be sent to the uniform buffer
             UniformBlock block {
                 m_uniform_block.model,
                 Camera::default_camera().view(),
@@ -134,7 +141,7 @@ namespace levin
             const GraphicsPipelineComponents &pipeline,
             size_t current_frame) const
         {
-            // m_descriptor_sets[current_frame]->bind(command_buffer, pipeline, current_frame);
+            m_descriptor_sets[current_frame]->bind(command_buffer, pipeline);
             for (auto &primitive : m_primitives)
             {
                 primitive->draw(command_buffer);
@@ -181,8 +188,7 @@ namespace levin
         {
             if (m_matrix_dirty)
             {
-                m_matrix =
-                    glm::translate(glm::mat4(1.0f), m_translation) *
+                m_matrix = glm::translate(glm::mat4(1.0f), m_translation) *
                     glm::mat4_cast(m_rotation) *
                     glm::scale(glm::mat4(1.0f), m_scale);
                 m_matrix_dirty = false;

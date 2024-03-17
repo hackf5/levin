@@ -45,8 +45,7 @@ namespace levin
 
         void bind(
             VkCommandBuffer command_buffer,
-            const GraphicsPipelineComponents &pipeline,
-            size_t current_frame) const
+            const GraphicsPipelineComponents &pipeline) const
         {
             vkCmdBindDescriptorSets(
                 command_buffer,

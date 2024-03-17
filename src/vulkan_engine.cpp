@@ -155,17 +155,7 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
 
     m_context->model().bind(command_buffer);
 
-    VkDescriptorSet ds = m_context->uniform_buffer_descriptor_set(m_current_frame);
-
-    vkCmdBindDescriptorSets(
-        command_buffer,
-        VK_PIPELINE_BIND_POINT_GRAPHICS,
-        m_context->graphics_pipeline().layout(),
-        0,
-        1,
-        &ds,
-        0,
-        nullptr);
+    // m_context->uniform_buffer_descriptor_set(m_current_frame).bind(command_buffer, m_context->graphics_pipeline());
 
     m_context->model().draw(command_buffer, m_context->graphics_pipeline(), m_current_frame);
 
@@ -197,7 +187,7 @@ void VulkanEngine::update_uniform_buffer()
     ubo.proj[1][1] *= -1;
 
     m_context->uniform_buffer(m_current_frame).copy_from(&ubo, sizeof(ubo));
-    // auto node = m_context->model().root_node();
-    // node->rotation() = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    // node->update(m_current_frame);
+    auto node = m_context->model().root_node();
+    node->rotation() = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    node->update(m_current_frame);
 }
