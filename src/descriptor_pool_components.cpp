@@ -7,31 +7,22 @@
 using namespace levin;
 
 DescriptorPoolComponents::DescriptorPoolComponents(const DeviceComponents &device):
-    m_factory(device),
-    m_descriptor_set_layout(create_descriptor_set_layout()),
+    m_device(device),
     m_descriptor_pool(create_descriptor_pool())
 {
 }
 
-VkDescriptorSetLayout DescriptorPoolComponents::create_descriptor_set_layout()
+DescriptorPoolComponents::~DescriptorPoolComponents()
 {
-    VkDescriptorSetLayoutBinding ubo_layout_binding = {};
-    ubo_layout_binding.binding = 0;
-    ubo_layout_binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    ubo_layout_binding.descriptorCount = 1;
-    ubo_layout_binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-    ubo_layout_binding.pImmutableSamplers = nullptr;
-
-    VkDescriptorSetLayoutCreateInfo layout_info = {};
-    layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    layout_info.bindingCount = 1;
-    layout_info.pBindings = &ubo_layout_binding;
-
-    return m_factory.create_descriptor_set_layout(layout_info);
+    spdlog::info("Destroying descriptor pool");
+    vkDestroyDescriptorPool(m_device, m_descriptor_pool, nullptr);
 }
 
 VkDescriptorPool DescriptorPoolComponents::create_descriptor_pool()
 {
+    // currently specific to uniform buffer
+    spdlog::info("Creating descriptor pool");
+
     VkDescriptorPoolSize pool_size = {};
     pool_size.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     pool_size.descriptorCount = static_cast<uint32_t>(DeviceComponents::max_frames_in_flight);
@@ -43,5 +34,11 @@ VkDescriptorPool DescriptorPoolComponents::create_descriptor_pool()
     pool_info.pPoolSizes = &pool_size;
     pool_info.maxSets = static_cast<uint32_t>(DeviceComponents::max_frames_in_flight);
 
-    return m_factory.create_descriptor_pool(pool_info);
+    VkDescriptorPool descriptor_pool;
+    if (vkCreateDescriptorPool(m_device, &pool_info, nullptr, &descriptor_pool) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create descriptor pool");
+    }
+
+    return descriptor_pool;
 }

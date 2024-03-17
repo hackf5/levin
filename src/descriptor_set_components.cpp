@@ -8,9 +8,11 @@ using namespace levin;
 
 DescriptorSetComponents::DescriptorSetComponents(
     const DeviceComponents &device,
-    const DescriptorPoolComponents &descriptor_pool):
+    const DescriptorPoolComponents &descriptor_pool,
+    const DescriptorSetLayout &descriptor_set_layout):
     m_device(device),
     m_descriptor_pool(descriptor_pool),
+    m_descriptor_set_layout(descriptor_set_layout),
     m_descriptor_sets(create_descriptor_sets())
 {
 }
@@ -19,7 +21,7 @@ DescriptorSetComponents::~DescriptorSetComponents()
 {
     vkFreeDescriptorSets(
         m_device,
-        m_descriptor_pool.pool(),
+        m_descriptor_pool,
         static_cast<uint32_t>(m_descriptor_sets.size()),
         m_descriptor_sets.data());
 }
@@ -28,11 +30,11 @@ std::vector<VkDescriptorSet> DescriptorSetComponents::create_descriptor_sets()
 {
     std::vector<VkDescriptorSetLayout> layouts(
         DeviceComponents::max_frames_in_flight,
-        m_descriptor_pool.layout());
+        m_descriptor_set_layout);
 
-    VkDescriptorSetAllocateInfo alloc_info{};
+    VkDescriptorSetAllocateInfo alloc_info {};
     alloc_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    alloc_info.descriptorPool = m_descriptor_pool.pool();
+    alloc_info.descriptorPool = m_descriptor_pool;
     alloc_info.descriptorSetCount = DeviceComponents::max_frames_in_flight;
     alloc_info.pSetLayouts = layouts.data();
 
@@ -49,18 +51,18 @@ std::vector<VkDescriptorSet> DescriptorSetComponents::create_descriptor_sets()
 UniformBufferDescriptorSet::UniformBufferDescriptorSet(
     const DeviceComponents &device,
     const DescriptorPoolComponents &descriptor_pool,
-    VkBuffer* uniform_buffers,
-    size_t object_size):
-    DescriptorSetComponents(device, descriptor_pool)
+    const DescriptorSetLayout &descriptor_set_layout,
+    std::vector<Buffer*> &uniform_buffers):
+    DescriptorSetComponents(
+    device,
+    descriptor_pool,
+    descriptor_set_layout)
 {
     for (size_t i = 0; i < m_descriptor_sets.size(); i++)
     {
-        VkDescriptorBufferInfo buffer_info{};
-        buffer_info.buffer = uniform_buffers[i];
-        buffer_info.offset = 0;
-        buffer_info.range = object_size;
+        auto buffer_info = uniform_buffers[i]->descriptor_info();
 
-        VkWriteDescriptorSet descriptor_write{};
+        VkWriteDescriptorSet descriptor_write {};
         descriptor_write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptor_write.dstSet = m_descriptor_sets[i];
         descriptor_write.dstBinding = 0;

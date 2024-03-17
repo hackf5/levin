@@ -4,6 +4,7 @@ set(PROJECT_NAME levin)
 project(${PROJECT_NAME} LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
+add_compile_options("-g3")
 
 include(FetchContent)
 
@@ -35,7 +36,12 @@ file(GLOB_RECURSE SOURCES
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE src inc)
+target_include_directories(
+    ${PROJECT_NAME}
+    PRIVATE
+    src
+    src/models
+    inc)
 
 target_link_libraries(
     ${PROJECT_NAME}

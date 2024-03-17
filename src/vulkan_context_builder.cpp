@@ -34,57 +34,18 @@ VulkanContextBuilder &VulkanContextBuilder::configure_descriptor_pool()
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::configure_uniform_buffers(VkDeviceSize size)
+VulkanContextBuilder &VulkanContextBuilder::configure_descriptor_set_layout()
 {
-    m_context->m_uniform_buffers.resize(DeviceComponents::max_frames_in_flight);
-    for (size_t i = 0; i < DeviceComponents::max_frames_in_flight; i++)
-    {
-        m_context->m_uniform_buffers[i] = std::make_unique<BufferCPUtoGPU>(
-            *m_context->m_device,
-            size,
-            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-    }
-
+    m_context->m_descriptor_set_layout = std::make_unique<DescriptorSetLayout>(*m_context->m_device);
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::configure_uniform_buffer_descriptor_set(VkDeviceSize size)
+VulkanContextBuilder &VulkanContextBuilder::configure_model()
 {
-    std::vector<VkBuffer> uniform_buffers;
-    for (size_t i = 0; i < m_context->m_uniform_buffers.size(); i++)
-    {
-        uniform_buffers.push_back(*m_context->m_uniform_buffers[i]);
-    }
-
-    m_context->m_uniform_buffer_descriptor_set = std::make_unique<UniformBufferDescriptorSet>(
+    m_context->m_model = std::make_unique<Model>(
         *m_context->m_device,
         *m_context->m_descriptor_pool,
-        uniform_buffers.data(),
-        size);
-
-    return *this;
-}
-
-
-VulkanContextBuilder &VulkanContextBuilder::configure_vertex_buffer(VkDeviceSize size)
-{
-    m_context->m_vertex_buffer = std::make_unique<BufferGPU>(
-        *m_context->m_device,
-        *m_context->m_transfer_queue,
-        size,
-        VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-
-    return *this;
-}
-
-VulkanContextBuilder &VulkanContextBuilder::configure_index_buffer(VkDeviceSize size)
-{
-    m_context->m_index_buffer = std::make_unique<BufferGPU>(
-        *m_context->m_device,
-        *m_context->m_transfer_queue,
-        size,
-        VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
-
+        *m_context->m_transfer_queue);
     return *this;
 }
 
@@ -135,6 +96,7 @@ VulkanContextBuilder &VulkanContextBuilder::configure_graphics_pipeline()
     m_context->m_graphics_pipeline = std::make_unique<GraphicsPipelineComponents>(
         *m_context->m_device,
         *m_context->m_descriptor_pool,
+        *m_context->m_descriptor_set_layout,
         *m_context->m_shader_modules,
         *m_context->m_swapchain,
         *m_context->m_render_pass);

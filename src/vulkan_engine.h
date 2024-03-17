@@ -14,8 +14,7 @@ namespace levin
 
         uint32_t m_current_frame = 0;
 
-        void load_vertexes();
-        void load_indexes();
+        void load_model();
 
         void draw_frame();
         void recreate_swapchain();
@@ -31,6 +30,9 @@ namespace levin
     public:
         VulkanEngine(std::unique_ptr<VulkanContext> context);
         VulkanEngine(const VulkanEngine &) = delete;
+
+        std::unique_ptr<BufferGPU> m_vertex_buffer;
+        std::unique_ptr<BufferGPU> m_index_buffer;
 
         void run();
     };

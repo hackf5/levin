@@ -5,6 +5,9 @@
 
 #include "device_components.h"
 #include "descriptor_pool_components.h"
+#include "descriptor_set_layout.h"
+#include "graphics_pipeline_components.h"
+#include "buffer.h"
 
 namespace levin
 {
@@ -16,17 +19,22 @@ namespace levin
     protected:
         const DeviceComponents &m_device;
         const DescriptorPoolComponents &m_descriptor_pool;
+        const DescriptorSetLayout &m_descriptor_set_layout;
         const std::vector<VkDescriptorSet> m_descriptor_sets;
 
     public:
         DescriptorSetComponents(
             const DeviceComponents &device,
-            const DescriptorPoolComponents &descriptor_pool);
+            const DescriptorPoolComponents &descriptor_pool,
+            const DescriptorSetLayout &descriptor_set_layout);
         DescriptorSetComponents(const DescriptorSetComponents &) = delete;
 
         ~DescriptorSetComponents();
 
-        VkDescriptorSet descriptor_set(size_t index) const { return m_descriptor_sets[index]; }
+        VkDescriptorSet descriptor_set(size_t current_frame) const
+        {
+            return m_descriptor_sets[current_frame];
+        }
     };
 
     class UniformBufferDescriptorSet: public DescriptorSetComponents
@@ -35,7 +43,25 @@ namespace levin
         UniformBufferDescriptorSet(
             const DeviceComponents &device,
             const DescriptorPoolComponents &descriptor_pool,
-            VkBuffer *uniform_buffers,
-            size_t object_size);
+            const DescriptorSetLayout &descriptor_set_layout,
+            std::vector<Buffer*> &uniform_buffers);
+
+        UniformBufferDescriptorSet(const UniformBufferDescriptorSet &) = delete;
+
+        void bind(
+            VkCommandBuffer command_buffer,
+            const GraphicsPipelineComponents &pipeline,
+            size_t current_frame) const
+        {
+            vkCmdBindDescriptorSets(
+                command_buffer,
+                VK_PIPELINE_BIND_POINT_GRAPHICS,
+                pipeline.layout(),
+                0,
+                1,
+                &m_descriptor_sets[current_frame],
+                0,
+                nullptr);
+        }
     };
 }
