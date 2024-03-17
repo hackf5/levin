@@ -31,8 +31,6 @@ namespace levin
         std::unique_ptr<DescriptorPoolComponents> m_descriptor_pool;
         std::unique_ptr<DescriptorSetLayout> m_descriptor_set_layout;
         std::unique_ptr<Model> m_model;
-        std::vector<std::unique_ptr<BufferCPUtoGPU>> m_uniform_buffers;
-        std::vector<std::unique_ptr<UniformBufferDescriptorSet>> m_uniform_buffer_descriptor_sets;
         std::unique_ptr<ShaderModuleComponents> m_shader_modules;
         std::unique_ptr<SwapchainComponents> m_swapchain;
         std::unique_ptr<RenderPassComponents> m_render_pass;
@@ -59,14 +57,6 @@ namespace levin
 
         const Model &model() const { return *m_model; }
         Model &model() { return *m_model; }
-
-        const BufferCPUtoGPU &uniform_buffer(uint32_t index) const { return *m_uniform_buffers[index]; }
-        BufferCPUtoGPU &uniform_buffer(uint32_t index) { return *m_uniform_buffers[index]; }
-
-        const UniformBufferDescriptorSet &uniform_buffer_descriptor_set(uint32_t index) const
-        {
-            return *m_uniform_buffer_descriptor_sets[index];
-        }
 
         const ShaderModuleComponents &shader_modules() const { return *m_shader_modules; }
 

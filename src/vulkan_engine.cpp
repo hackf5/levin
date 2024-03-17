@@ -5,7 +5,6 @@
 
 #include "vulkan_context_builder.h"
 #include "vulkan_engine.h"
-#include "uniform_buffer_object.h"
 
 #include "spdlog/spdlog.h"
 
@@ -58,16 +57,22 @@ void VulkanEngine::load_model()
         mesh_primitives.push_back(primitive);
     }
 
-    auto mesh = std::make_unique<Mesh>(
+    auto& root_node = m_context->model().root_node();
+    auto mesh1 = std::make_unique<Mesh>(
         m_context->device(),
         m_context->descriptor_pool(),
         m_context->descriptor_set_layout(),
         mesh_primitives);
+    auto& child1 = root_node.add_child(std::move(mesh1));
+    child1.translation() = glm::vec3(-0.5f, 0.0f, 0.0f);
 
-    m_context->model().root_node(
-        std::make_unique<Node>(
-            nullptr,
-            std::move(mesh)));
+    auto mesh2 = std::make_unique<Mesh>(
+        m_context->device(),
+        m_context->descriptor_pool(),
+        m_context->descriptor_set_layout(),
+        mesh_primitives);
+    auto& child2 = root_node.add_child(std::move(mesh2));
+    child2.translation() = glm::vec3(0.5f, 0.0f, 0.0f);
 }
 
 void VulkanEngine::recreate_swapchain()
@@ -154,10 +159,7 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
     vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 
     m_context->model().bind(command_buffer);
-
-    // m_context->uniform_buffer_descriptor_set(m_current_frame).bind(command_buffer, m_context->graphics_pipeline());
-
-    m_context->model().draw(command_buffer, m_context->graphics_pipeline(), m_current_frame);
+    m_context->model().draw(command_buffer, m_context->graphics_pipeline());
 
     vkCmdEndRenderPass(command_buffer);
 
@@ -173,21 +175,16 @@ void VulkanEngine::update_uniform_buffer()
     auto current_time = std::chrono::high_resolution_clock::now();
     auto time = std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
 
-    UniformBufferObject ubo {};
-    ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    ubo.view = glm::lookAt(
-        glm::vec3(2.0f, 2.0f, 2.0f),
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 0.0f, 1.0f));
-    ubo.proj = glm::perspective(
-        glm::radians(45.0f),
-        m_context->swapchain().extent().width / (float)m_context->swapchain().extent().height,
-        0.1f,
-        10.0f);
-    ubo.proj[1][1] *= -1;
+    auto rotation = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
-    m_context->uniform_buffer(m_current_frame).copy_from(&ubo, sizeof(ubo));
-    auto node = m_context->model().root_node();
-    node->rotation() = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    node->update(m_current_frame);
+    auto& node = m_context->model().root_node();
+
+    node.rotation() = glm::quat_cast(rotation);
+
+    for (auto &child : node.children())
+    {
+        child->rotation() = glm::quat_cast(rotation);
+    }
+
+    m_context->model().update();
 }

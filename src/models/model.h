@@ -104,12 +104,12 @@ namespace levin
         std::vector<Primitive *> m_primitives;
 
         // one for each frame in flight
-        std::vector<std::unique_ptr<BufferCPUtoGPU>> m_uniform_buffers;
-        std::vector<std::unique_ptr<UniformBufferDescriptorSet>> m_descriptor_sets;
+        std::unique_ptr<BufferCPUtoGPU> m_uniform_buffer;
+        std::unique_ptr<UniformBufferDescriptorSet> m_descriptor_set;
 
-        std::vector<std::unique_ptr<BufferCPUtoGPU>> create_uniform_buffers(const DeviceComponents &device);
+        std::unique_ptr<BufferCPUtoGPU> create_uniform_buffer(const DeviceComponents &device);
 
-        std::vector<std::unique_ptr<UniformBufferDescriptorSet>> create_descriptor_sets(
+        std::unique_ptr<UniformBufferDescriptorSet> create_descriptor_set(
             const DeviceComponents &device,
             const DescriptorPoolComponents &descriptor_pool,
             const DescriptorSetLayout &descriptor_set_layout);
@@ -126,22 +126,21 @@ namespace levin
         const glm::mat4 &model() const { return m_uniform_block.model; }
         glm::mat4 &model() { return m_uniform_block.model; }
 
-        void flush(int current_frame)
+        void flush()
         {
             UniformBlock block {
                 m_uniform_block.model,
                 Camera::default_camera().view(),
                 Camera::default_camera().projection()
             };
-            m_uniform_buffers[current_frame]->copy_from(&block, sizeof(m_uniform_block));
+            m_uniform_buffer->copy_from(&block, sizeof(m_uniform_block));
         }
 
         void draw(
             VkCommandBuffer command_buffer,
-            const GraphicsPipelineComponents &pipeline,
-            size_t current_frame) const
+            const GraphicsPipelineComponents &pipeline) const
         {
-            m_descriptor_sets[current_frame]->bind(command_buffer, pipeline);
+            m_descriptor_set->bind(command_buffer, pipeline);
             for (auto &primitive : m_primitives)
             {
                 primitive->draw(command_buffer);
@@ -175,6 +174,16 @@ namespace levin
 
         Node *parent() const { return m_parent; }
 
+        std::vector<std::unique_ptr<Node>> &children() { return m_children; }
+
+        Node& add_child(std::unique_ptr<Mesh> mesh = nullptr)
+        {
+            auto& child = m_children.emplace_back(
+                std::make_unique<Node>(this, std::move(mesh)));
+
+            return *child;
+        }
+
         const glm::vec3 &translation() const { return m_translation; }
         glm::vec3 &translation() { m_matrix_dirty = true; return m_translation; }
 
@@ -202,12 +211,12 @@ namespace levin
             return m_parent ? m_parent->global_matrix() * local_matrix() : local_matrix();
         }
 
-        void update(int current_frame = 0)
+        void update()
         {
             if (m_mesh)
             {
                 m_mesh->model() = global_matrix();
-                m_mesh->flush(current_frame);
+                m_mesh->flush();
             }
 
             for (auto &child : m_children)
@@ -218,17 +227,16 @@ namespace levin
 
         void draw(
             VkCommandBuffer command_buffer,
-            const GraphicsPipelineComponents &pipeline,
-            size_t current_frame) const
+            const GraphicsPipelineComponents &pipeline) const
         {
             if (m_mesh)
             {
-                m_mesh->draw(command_buffer, pipeline, current_frame);
+                m_mesh->draw(command_buffer, pipeline);
             }
 
             for (auto &child : m_children)
             {
-                child->draw(command_buffer, pipeline, current_frame);
+                child->draw(command_buffer, pipeline);
             }
         }
     };
@@ -240,10 +248,8 @@ namespace levin
         const DescriptorPoolComponents &m_descriptor_pool;
         const BufferTransferQueue &m_transfer_queue;
 
-        size_t m_vertex_count;
         std::unique_ptr<BufferGPU> m_vertex_buffer;
 
-        size_t m_index_count;
         std::unique_ptr<BufferGPU> m_index_buffer;
 
         std::vector<std::unique_ptr<Primitive>> m_primitives;
@@ -273,8 +279,7 @@ namespace levin
             return primitives;
         }
 
-        void root_node(std::unique_ptr<Node> root_node) { m_root_node = std::move(root_node); }
-        Node *root_node() { return m_root_node.get(); }
+        Node& root_node() { return *m_root_node; }
 
         void bind(VkCommandBuffer command_buffer) const
         {
@@ -286,10 +291,14 @@ namespace levin
 
         void draw(
             VkCommandBuffer command_buffer,
-            const GraphicsPipelineComponents &pipeline,
-            size_t current_frame) const
+            const GraphicsPipelineComponents &pipeline) const
         {
-            m_root_node->draw(command_buffer, pipeline, current_frame);
+            m_root_node->draw(command_buffer, pipeline);
+        }
+
+        void update()
+        {
+            m_root_node->update();
         }
     };
 }

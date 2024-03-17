@@ -4,7 +4,6 @@
 
 #include "vulkan_context_builder.h"
 #include "vertex.h"
-#include "uniform_buffer_object.h"
 #include "vulkan_engine.h"
 
 #include "spdlog/spdlog.h"
@@ -37,8 +36,6 @@ int main()
             .configure_model()
             .configure_descriptor_pool()
             .configure_descriptor_set_layout()
-            .configure_uniform_buffers(sizeof(UniformBufferObject))
-            .configure_uniform_buffer_descriptor_set(sizeof(UniformBufferObject))
             .configure_shader_modules()
             .configure_swapchain()
             .configure_render_pass()

@@ -28,10 +28,6 @@ namespace levin
 
         VulkanContextBuilder &configure_model();
 
-        VulkanContextBuilder &configure_uniform_buffers(VkDeviceSize size);
-
-        VulkanContextBuilder &configure_uniform_buffer_descriptor_set(VkDeviceSize size);
-
         VulkanContextBuilder &configure_shader_modules();
 
         VulkanContextBuilder &configure_swapchain();

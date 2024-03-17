@@ -40,36 +40,6 @@ VulkanContextBuilder &VulkanContextBuilder::configure_descriptor_set_layout()
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::configure_uniform_buffers(VkDeviceSize size)
-{
-    m_context->m_uniform_buffers.resize(DeviceComponents::max_frames_in_flight);
-    for (size_t i = 0; i < DeviceComponents::max_frames_in_flight; i++)
-    {
-        m_context->m_uniform_buffers[i] = std::make_unique<BufferCPUtoGPU>(
-            *m_context->m_device,
-            size,
-            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-    }
-
-    return *this;
-}
-
-VulkanContextBuilder &VulkanContextBuilder::configure_uniform_buffer_descriptor_set(VkDeviceSize size)
-{
-    m_context->m_uniform_buffer_descriptor_sets.resize(DeviceComponents::max_frames_in_flight);
-    for (size_t i = 0; i < m_context->m_uniform_buffers.size(); i++)
-    {
-        m_context->m_uniform_buffer_descriptor_sets[i] =
-            std::make_unique<UniformBufferDescriptorSet>(
-                *m_context->m_device,
-                *m_context->m_descriptor_pool,
-                *m_context->m_descriptor_set_layout,
-                *m_context->m_uniform_buffers[i]);
-    }
-
-    return *this;
-}
-
 VulkanContextBuilder &VulkanContextBuilder::configure_model()
 {
     m_context->m_model = std::make_unique<Model>(
