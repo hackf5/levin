@@ -12,11 +12,11 @@ GraphicsPipeline::GraphicsPipeline(
     const DescriptorSetLayout &descriptor_set_layout,
     const ShaderModuleComponents &shader_modules,
     const SwapchainComponents &swapchain,
-    const RenderPassComponents &render_pass_components):
+    const RenderPass &render_pass):
     m_factory(device),
     m_shader_modules(shader_modules),
     m_pipeline_layout(create_pipeline_layout(descriptor_set_layout)),
-    m_pipeline(create_pipeline(swapchain, render_pass_components))
+    m_pipeline(create_pipeline(swapchain, render_pass))
 {
 }
 
@@ -37,7 +37,7 @@ VkPipelineLayout GraphicsPipeline::create_pipeline_layout(
 
 VkPipeline GraphicsPipeline::create_pipeline(
     const SwapchainComponents &swapchain,
-    const RenderPassComponents &render_pass)
+    const RenderPass &render_pass)
 {
     auto shader_stages = create_shader_stages();
 

@@ -15,7 +15,7 @@
 #include "descriptor_set.h"
 #include "shader_module_components.h"
 #include "swapchain_components.h"
-#include "render_pass_components.h"
+#include "render_pass.h"
 #include "framebuffer.h"
 #include "graphics_pipeline.h"
 
@@ -33,7 +33,7 @@ namespace levin
         std::unique_ptr<Model> m_model;
         std::unique_ptr<ShaderModuleComponents> m_shader_modules;
         std::unique_ptr<SwapchainComponents> m_swapchain;
-        std::unique_ptr<RenderPassComponents> m_render_pass;
+        std::unique_ptr<RenderPass> m_render_pass;
         std::unique_ptr<Framebuffer> m_framebuffers;
         std::unique_ptr<GraphicsPipeline> m_graphics_pipeline;
 
@@ -62,7 +62,7 @@ namespace levin
 
         const SwapchainComponents &swapchain() const { return *m_swapchain; }
 
-        const RenderPassComponents &render_pass() const { return *m_render_pass; }
+        const RenderPass &render_pass() const { return *m_render_pass; }
 
         const Framebuffer &framebuffers() const { return *m_framebuffers; }
 

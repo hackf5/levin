@@ -74,7 +74,7 @@ VulkanContextBuilder &VulkanContextBuilder::configure_swapchain()
 
 VulkanContextBuilder &VulkanContextBuilder::configure_render_pass()
 {
-    m_context->m_render_pass = std::make_unique<RenderPassComponents>(
+    m_context->m_render_pass = std::make_unique<RenderPass>(
         *m_context->m_device,
         *m_context->m_swapchain);
 

@@ -7,15 +7,15 @@ using namespace levin;
 Framebuffer::Framebuffer(
     const Device &device_components,
     const SwapchainComponents &swapchain_components,
-    const RenderPassComponents &render_pass_components)
+    const RenderPass &render_pass)
     : m_factory(device_components),
-    m_framebuffers(create_framebuffers(swapchain_components, render_pass_components))
+    m_framebuffers(create_framebuffers(swapchain_components, render_pass))
 {
 }
 
 std::vector<VkFramebuffer> Framebuffer::create_framebuffers(
     const SwapchainComponents &swapchain_components,
-    const RenderPassComponents &render_pass_components)
+    const RenderPass &render_pass)
 {
     std::vector<VkFramebuffer> framebuffers;
     framebuffers.resize(swapchain_components.image_count());
@@ -28,7 +28,7 @@ std::vector<VkFramebuffer> Framebuffer::create_framebuffers(
 
         VkFramebufferCreateInfo framebuffer_info = {};
         framebuffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebuffer_info.renderPass = render_pass_components;
+        framebuffer_info.renderPass = render_pass;
         framebuffer_info.attachmentCount = 1;
         framebuffer_info.pAttachments = attachments;
         framebuffer_info.width = swapchain_components.extent().width;

@@ -7,7 +7,7 @@
 #include "descriptor_set_layout.h"
 #include "shader_module_components.h"
 #include "swapchain_components.h"
-#include "render_pass_components.h"
+#include "render_pass.h"
 #include "graphics_pipeline_factory.h"
 
 namespace levin
@@ -26,7 +26,7 @@ namespace levin
 
         VkPipeline create_pipeline(
             const SwapchainComponents &swapchain,
-            const RenderPassComponents &render_pass);
+            const RenderPass &render_pass);
 
         std::vector<VkPipelineShaderStageCreateInfo> create_shader_stages();
 
@@ -54,7 +54,7 @@ namespace levin
             const DescriptorSetLayout &descriptor_set_layout,
             const ShaderModuleComponents &shader_modules,
             const SwapchainComponents &swapchain,
-            const RenderPassComponents &render_pass);
+            const RenderPass &render_pass);
         GraphicsPipeline(const GraphicsPipeline &) = delete;
 
         operator VkPipeline() const { return m_pipeline; }

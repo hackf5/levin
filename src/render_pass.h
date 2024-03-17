@@ -8,7 +8,7 @@
 
 namespace levin
 {
-    class RenderPassComponents
+    class RenderPass
     {
     private:
         RenderPassFactory m_factory;
@@ -18,10 +18,10 @@ namespace levin
         VkRenderPass create_render_pass(const SwapchainComponents &swapchain);
 
     public:
-        RenderPassComponents(
+        RenderPass(
             const Device &device_components,
             const SwapchainComponents &swapchain_components);
-        RenderPassComponents(const RenderPassComponents &) = delete;
+        RenderPass(const RenderPass &) = delete;
 
         operator VkRenderPass() const { return m_render_pass; }
     };
