@@ -12,16 +12,25 @@ GraphicsPipeline::GraphicsPipeline(
     const ShaderModule &shader_modules,
     const Swapchain &swapchain,
     const RenderPass &render_pass):
-    m_factory(device),
+    m_device(device),
     m_shader_modules(shader_modules),
     m_pipeline_layout(create_pipeline_layout(descriptor_set_layout)),
     m_pipeline(create_pipeline(swapchain, render_pass))
 {
 }
 
+GraphicsPipeline::~GraphicsPipeline()
+{
+    spdlog::info("Destroying Graphics Pipeline");
+    vkDestroyPipeline(m_device, m_pipeline, nullptr);
+    vkDestroyPipelineLayout(m_device, m_pipeline_layout, nullptr);
+}
+
 VkPipelineLayout GraphicsPipeline::create_pipeline_layout(
     const DescriptorSetLayout &descriptor_set_layout)
 {
+    spdlog::info("Creating Graphics Pipeline Layout");
+
     VkDescriptorSetLayout descriptor_set_layouts[] = { descriptor_set_layout };
     VkPipelineLayoutCreateInfo pipeline_layout_info = {};
     pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -30,14 +39,21 @@ VkPipelineLayout GraphicsPipeline::create_pipeline_layout(
     pipeline_layout_info.pushConstantRangeCount = 0;
     pipeline_layout_info.pPushConstantRanges = nullptr;
 
-    return m_factory.create_pipeline_layout(pipeline_layout_info);
+    VkPipelineLayout pipeline_layout;
+    if (vkCreatePipelineLayout(m_device, &pipeline_layout_info, nullptr, &pipeline_layout) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create pipeline layout");
+    }
 
+    return pipeline_layout;
 }
 
 VkPipeline GraphicsPipeline::create_pipeline(
     const Swapchain &swapchain,
     const RenderPass &render_pass)
 {
+    spdlog::info("Creating Graphics Pipeline");
+
     auto shader_stages = create_shader_stages();
 
     VertexInputState vertex_input_state(0, { VertexComponent::Position, VertexComponent::Color });
@@ -67,7 +83,12 @@ VkPipeline GraphicsPipeline::create_pipeline(
     pipeline_info.subpass = 0;
     pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
 
-    auto pipeline = m_factory.create_pipeline(pipeline_info);
+    VkPipeline pipeline;
+    if (vkCreateGraphicsPipelines(m_device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create pipeline");
+    }
+
     return pipeline;
 }
 
