@@ -83,7 +83,7 @@ VulkanContextBuilder &VulkanContextBuilder::configure_render_pass()
 
 VulkanContextBuilder &VulkanContextBuilder::configure_framebuffers()
 {
-    m_context->m_framebuffers = std::make_unique<Framebuffer>(
+    m_context->m_framebuffers = std::make_unique<Framebuffers>(
         *m_context->m_device,
         *m_context->m_swapchain,
         *m_context->m_render_pass);

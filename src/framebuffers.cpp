@@ -1,19 +1,27 @@
-#include "framebuffer.h"
+#include "framebuffers.h"
 
 #include "spdlog/spdlog.h"
 
 using namespace levin;
 
-Framebuffer::Framebuffer(
+Framebuffers::Framebuffers(
     const Device &device,
     const Swapchain &swapchain,
     const RenderPass &render_pass):
-    m_factory(device),
+    m_device(device),
     m_framebuffers(create_framebuffers(swapchain, render_pass))
 {
 }
 
-std::vector<VkFramebuffer> Framebuffer::create_framebuffers(
+Framebuffers::~Framebuffers()
+{
+    for (auto framebuffer : m_framebuffers)
+    {
+        vkDestroyFramebuffer(m_device, framebuffer, nullptr);
+    }
+}
+
+std::vector<VkFramebuffer> Framebuffers::create_framebuffers(
     const Swapchain &swapchain,
     const RenderPass &render_pass)
 {
@@ -35,7 +43,12 @@ std::vector<VkFramebuffer> Framebuffer::create_framebuffers(
         framebuffer_info.height = swapchain.extent().height;
         framebuffer_info.layers = 1;
 
-        auto framebuffer = m_factory.create_framebuffer(framebuffer_info);
+        VkFramebuffer framebuffer;
+        if (vkCreateFramebuffer(m_device, &framebuffer_info, nullptr, &framebuffer) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to create framebuffer");
+        }
+
         framebuffers[i] = framebuffer;
     }
 

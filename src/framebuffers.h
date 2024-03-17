@@ -2,17 +2,16 @@
 
 #include <vector>
 
-#include "framebuffers_factory.h"
 #include "device.h"
 #include "swapchain.h"
 #include "render_pass.h"
 
 namespace levin
 {
-    class Framebuffer
+    class Framebuffers
     {
     private:
-        FramebuffersFactory m_factory;
+        const Device &m_device;
 
         const std::vector<VkFramebuffer> m_framebuffers;
 
@@ -21,11 +20,12 @@ namespace levin
             const RenderPass &render_pass);
 
     public:
-        Framebuffer(
+        Framebuffers(
             const Device &device,
             const Swapchain &swapchain,
             const RenderPass &render_pass);
-        Framebuffer(const Framebuffer &) = delete;
+        Framebuffers(const Framebuffers &) = delete;
+        ~Framebuffers();
 
         VkFramebuffer framebuffer(uint32_t image_index) const { return m_framebuffers[image_index]; }
     };

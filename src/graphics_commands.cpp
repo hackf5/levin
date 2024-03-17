@@ -42,7 +42,7 @@ std::vector<VkCommandBuffer> GraphicsCommands::create_command_buffers()
 VkFramebuffer GraphicsCommands::prepare_framebuffer(
     uint32_t current_frame,
     VkSwapchainKHR swapchain,
-    const Framebuffer &framebuffers)
+    const Framebuffers &framebuffers)
 {
     assert(m_swapchain == VK_NULL_HANDLE);
 

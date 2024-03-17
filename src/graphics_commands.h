@@ -7,7 +7,7 @@
 
 #include "device.h"
 #include "swapchain.h"
-#include "framebuffer.h"
+#include "framebuffers.h"
 
 #include "command_factory.h"
 
@@ -42,7 +42,7 @@ namespace levin
         VkFramebuffer prepare_framebuffer(
             uint32_t current_frame,
             VkSwapchainKHR swapchain,
-            const Framebuffer& framebuffers);
+            const Framebuffers& framebuffers);
 
         VkCommandBuffer begin_command() const;
         void submit_command() const;
