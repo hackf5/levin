@@ -7,7 +7,7 @@
 #include "device.h"
 #include "buffer_transfer_queue.h"
 #include "graphics_commands.h"
-#include "descriptor_pool_components.h"
+#include "descriptor_pool.h"
 #include "descriptor_set_layout.h"
 #include "buffer.h"
 #include "vertex.h"
@@ -28,7 +28,7 @@ namespace levin
         std::unique_ptr<Device> m_device;
         std::unique_ptr<BufferTransferQueue> m_transfer_queue;
         std::unique_ptr<GraphicsCommands> m_graphics_commands;
-        std::unique_ptr<DescriptorPoolComponents> m_descriptor_pool;
+        std::unique_ptr<DescriptorPool> m_descriptor_pool;
         std::unique_ptr<DescriptorSetLayout> m_descriptor_set_layout;
         std::unique_ptr<Model> m_model;
         std::unique_ptr<ShaderModuleComponents> m_shader_modules;
@@ -51,7 +51,7 @@ namespace levin
         GraphicsCommands &graphics_commands() { return *m_graphics_commands; }
         const GraphicsCommands &graphics_commands() const { return *m_graphics_commands; }
 
-        const DescriptorPoolComponents &descriptor_pool() const { return *m_descriptor_pool; }
+        const DescriptorPool &descriptor_pool() const { return *m_descriptor_pool; }
 
         const DescriptorSetLayout &descriptor_set_layout() const { return *m_descriptor_set_layout; }
 

@@ -1,4 +1,4 @@
-#include "descriptor_pool_components.h"
+#include "descriptor_pool.h"
 
 #include <stdexcept>
 
@@ -6,19 +6,19 @@
 
 using namespace levin;
 
-DescriptorPoolComponents::DescriptorPoolComponents(const Device &device):
+DescriptorPool::DescriptorPool(const Device &device):
     m_device(device),
     m_descriptor_pool(create_descriptor_pool())
 {
 }
 
-DescriptorPoolComponents::~DescriptorPoolComponents()
+DescriptorPool::~DescriptorPool()
 {
     spdlog::info("Destroying descriptor pool");
     vkDestroyDescriptorPool(m_device, m_descriptor_pool, nullptr);
 }
 
-VkDescriptorPool DescriptorPoolComponents::create_descriptor_pool()
+VkDescriptorPool DescriptorPool::create_descriptor_pool()
 {
     // currently specific to uniform buffer
     spdlog::info("Creating descriptor pool");

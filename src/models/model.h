@@ -11,7 +11,7 @@
 
 #include "vertex.h"
 #include "device.h"
-#include "descriptor_pool_components.h"
+#include "descriptor_pool.h"
 #include "descriptor_set_layout.h"
 #include "descriptor_set_components.h"
 #include "buffer.h"
@@ -111,13 +111,13 @@ namespace levin
 
         std::unique_ptr<UniformBufferDescriptorSet> create_descriptor_set(
             const Device &device,
-            const DescriptorPoolComponents &descriptor_pool,
+            const DescriptorPool &descriptor_pool,
             const DescriptorSetLayout &descriptor_set_layout);
 
     public:
         Mesh(
             const Device &device,
-            const DescriptorPoolComponents &descriptor_pool,
+            const DescriptorPool &descriptor_pool,
             const DescriptorSetLayout &descriptor_set_layout,
             std::vector<Primitive *> primitives);
 
@@ -245,7 +245,7 @@ namespace levin
     {
     private:
         const Device &m_device;
-        const DescriptorPoolComponents &m_descriptor_pool;
+        const DescriptorPool &m_descriptor_pool;
         const BufferTransferQueue &m_transfer_queue;
 
         std::unique_ptr<BufferGPU> m_vertex_buffer;
@@ -259,7 +259,7 @@ namespace levin
     public:
         Model(
             const Device &device,
-            const DescriptorPoolComponents &descriptor_pool,
+            const DescriptorPool &descriptor_pool,
             const BufferTransferQueue &transfer_queue);
 
         Model(const Model &) = delete;

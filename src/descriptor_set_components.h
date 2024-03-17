@@ -4,7 +4,7 @@
 #include <vulkan/vulkan.h>
 
 #include "device.h"
-#include "descriptor_pool_components.h"
+#include "descriptor_pool.h"
 #include "descriptor_set_layout.h"
 #include "graphics_pipeline_components.h"
 #include "buffer.h"
@@ -18,13 +18,13 @@ namespace levin
 
     protected:
         const Device &m_device;
-        const DescriptorPoolComponents &m_descriptor_pool;
+        const DescriptorPool &m_descriptor_pool;
         const VkDescriptorSet m_descriptor_set;
 
     public:
         DescriptorSetComponents(
             const Device &device,
-            const DescriptorPoolComponents &descriptor_pool,
+            const DescriptorPool &descriptor_pool,
             const DescriptorSetLayout &descriptor_set_layout);
         DescriptorSetComponents(const DescriptorSetComponents &) = delete;
         ~DescriptorSetComponents();
@@ -37,7 +37,7 @@ namespace levin
     public:
         UniformBufferDescriptorSet(
             const Device &device,
-            const DescriptorPoolComponents &descriptor_pool,
+            const DescriptorPool &descriptor_pool,
             const DescriptorSetLayout &descriptor_set_layout,
             const Buffer &uniform_buffer);
 

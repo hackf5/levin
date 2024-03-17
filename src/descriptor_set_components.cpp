@@ -8,7 +8,7 @@ using namespace levin;
 
 DescriptorSetComponents::DescriptorSetComponents(
     const Device &device,
-    const DescriptorPoolComponents &descriptor_pool,
+    const DescriptorPool &descriptor_pool,
     const DescriptorSetLayout &descriptor_set_layout):
     m_device(device),
     m_descriptor_pool(descriptor_pool),
@@ -48,7 +48,7 @@ VkDescriptorSet DescriptorSetComponents::create_descriptor_set(
 
 UniformBufferDescriptorSet::UniformBufferDescriptorSet(
     const Device &device,
-    const DescriptorPoolComponents &descriptor_pool,
+    const DescriptorPool &descriptor_pool,
     const DescriptorSetLayout &descriptor_set_layout,
     const Buffer &uniform_buffer):
     DescriptorSetComponents(

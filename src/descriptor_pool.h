@@ -6,7 +6,7 @@
 
 namespace levin
 {
-    class DescriptorPoolComponents
+    class DescriptorPool
     {
     private:
         const Device &m_device;
@@ -15,9 +15,9 @@ namespace levin
         VkDescriptorPool create_descriptor_pool();
 
     public:
-        DescriptorPoolComponents(const Device &device);
-        DescriptorPoolComponents(const DescriptorPoolComponents &) = delete;
-        ~DescriptorPoolComponents();
+        DescriptorPool(const Device &device);
+        DescriptorPool(const DescriptorPool &) = delete;
+        ~DescriptorPool();
 
         operator VkDescriptorPool() const { return m_descriptor_pool; }
     };
