@@ -5,21 +5,34 @@
 using namespace levin;
 
 BufferTransferQueue::BufferTransferQueue(const Device &device):
-    m_factory(device),
+    m_device(device),
     m_queue(device.transfer_queue()),
-    m_command_pool(create_command_pool(device)),
+    m_command_pool(create_command_pool()),
     m_command_buffer(create_command_buffer())
 {
 }
 
-VkCommandPool BufferTransferQueue::create_command_pool(const Device &device)
+BufferTransferQueue::~BufferTransferQueue()
+{
+    spdlog::info("Destroying Buffer Transfer Queue");
+    vkFreeCommandBuffers(m_device, m_command_pool, 1, &m_command_buffer);
+    vkDestroyCommandPool(m_device, m_command_pool, nullptr);
+}
+
+VkCommandPool BufferTransferQueue::create_command_pool()
 {
     VkCommandPoolCreateInfo pool_info = {};
     pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    pool_info.queueFamilyIndex = device.transfer_queue_index();
+    pool_info.queueFamilyIndex = m_device.transfer_queue_index();
     pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-    return m_factory.create_command_pool(pool_info);
+    VkCommandPool command_pool;
+    if (vkCreateCommandPool(m_device, &pool_info, nullptr, &command_pool) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create buffer transfer queue command pool");
+    }
+
+    return command_pool;
 }
 
 VkCommandBuffer BufferTransferQueue::create_command_buffer()
@@ -30,7 +43,13 @@ VkCommandBuffer BufferTransferQueue::create_command_buffer()
     alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     alloc_info.commandBufferCount = 1;
 
-    return m_factory.create_command_buffers(alloc_info)[0];
+    VkCommandBuffer command_buffer;
+    if (vkAllocateCommandBuffers(m_device, &alloc_info, &command_buffer) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to allocate command buffers");
+    }
+
+    return command_buffer;
 }
 
 VkCommandBuffer BufferTransferQueue::begin() const
