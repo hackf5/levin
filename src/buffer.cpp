@@ -15,13 +15,13 @@ Buffer::Buffer(
     m_memory_usage(memory_usage),
     m_allocation_flags(allocation_flags),
     m_allocation_info(create_allocation_info(size)),
-    m_descriptor_info(create_descriptor_info())
+    m_descriptor(create_descriptor_info())
 {
 }
 
 Buffer::~Buffer()
 {
-    vmaDestroyBuffer(m_allocator, *this, *this);
+    vmaDestroyBuffer(m_allocator, m_allocation_info.buffer, m_allocation_info.allocation);
 }
 
 Buffer::AllocationInfo Buffer::create_allocation_info(VkDeviceSize size)

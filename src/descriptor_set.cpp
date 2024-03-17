@@ -56,7 +56,7 @@ UniformBufferDescriptorSet::UniformBufferDescriptorSet(
     descriptor_pool,
     descriptor_set_layout)
 {
-    auto buffer_info = uniform_buffer.descriptor_info();
+    auto buffer_info = uniform_buffer.descriptor();
 
     VkWriteDescriptorSet descriptor_write {};
     descriptor_write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
