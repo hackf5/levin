@@ -1,32 +1,62 @@
 #include "shader_module.h"
 
+#include <fstream>
+
 #include "spdlog/spdlog.h"
 
 using namespace levin;
 
-ShaderModule::ShaderModule(const vkb::Device &device):
-    m_factory(device)
+ShaderModule::ShaderModule(
+    const Device &device,
+    const std::string &name):
+    m_device(device),
+    m_name(name),
+    m_shader_module(create_shader_module())
 {
 }
 
-void ShaderModule::load(const std::string &name)
+ShaderModule::~ShaderModule()
 {
-    if (m_shader_modules.find(name) != m_shader_modules.end())
-    {
-        spdlog::warn("Shader Module already loaded: {}", name);
-        return;
-    }
-
-    m_shader_modules[name] = m_factory.create_shader_module(name);
+    spdlog::info("Destroying Shader Module: {}", m_name);
+    vkDestroyShaderModule(m_device, m_shader_module, nullptr);
 }
 
-VkShaderModule ShaderModule::get(const std::string &name) const
+std::vector<char> ShaderModule::read_file(const std::string &name)
 {
-    auto it = m_shader_modules.find(name);
-    if (it == m_shader_modules.end())
+    auto file_name = "shaders/" + name + ".spv";
+    std::ifstream file(file_name, std::ios::ate | std::ios::binary);
+
+    if (!file.is_open())
     {
-        throw std::runtime_error("Shader Module " + name + " not found");
+        spdlog::error("Failed to open file: {} ({})", name, file_name);
+        throw std::runtime_error("Failed to open file");
     }
 
-    return it->second;
+    size_t file_size = (size_t)file.tellg();
+    std::vector<char> buffer(file_size);
+
+    file.seekg(0);
+    file.read(buffer.data(), static_cast<std::streamsize>(file_size));
+
+    return buffer;
+}
+
+VkShaderModule ShaderModule::create_shader_module()
+{
+    spdlog::info("Creating Shader Module: {}", m_name);
+
+    auto code = read_file(m_name);
+
+    VkShaderModuleCreateInfo shader_module_info {};
+    shader_module_info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    shader_module_info.codeSize = code.size();
+    shader_module_info.pCode = reinterpret_cast<const uint32_t *>(code.data());
+
+    VkShaderModule shader_module;
+    if (vkCreateShaderModule(m_device, &shader_module_info, nullptr, &shader_module) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create shader module for " + m_name + " shader");
+    }
+
+    return shader_module;
 }

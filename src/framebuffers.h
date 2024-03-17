@@ -27,6 +27,6 @@ namespace levin
         Framebuffers(const Framebuffers &) = delete;
         ~Framebuffers();
 
-        VkFramebuffer framebuffer(uint32_t image_index) const { return m_framebuffers[image_index]; }
+        VkFramebuffer get(uint32_t image_index) const { return m_framebuffers[image_index]; }
     };
 }

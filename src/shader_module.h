@@ -1,28 +1,33 @@
 #pragma once
 
-#include <map>
 #include <string>
-#include <vulkan/vulkan.h>
 
-#include "VkBootstrap.h"
-
-#include "shader_module_factory.h"
+#include "device.h"
 
 namespace levin
 {
     class ShaderModule
     {
     private:
-        ShaderModuleFactory m_factory;
+        const Device &m_device;
 
-        std::map<std::string, VkShaderModule> m_shader_modules;
+        const std::string m_name;
+
+        VkShaderModule m_shader_module;
+
+        static std::vector<char> read_file(const std::string &name);
+
+        VkShaderModule create_shader_module();
 
     public:
-        ShaderModule(const vkb::Device &device);
+        ShaderModule(
+            const Device &device,
+            const std::string &name);
         ShaderModule(const ShaderModule &) = delete;
+        ~ShaderModule();
 
-        void load(const std::string &name);
+        const std::string &name() const { return m_name; }
 
-        VkShaderModule get(const std::string &name) const;
+        operator VkShaderModule() const { return m_shader_module; }
     };
 }

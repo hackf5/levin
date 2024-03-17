@@ -49,14 +49,6 @@ VulkanContextBuilder &VulkanContextBuilder::configure_model()
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::configure_shader_modules()
-{
-    m_context->m_shader_modules = std::make_unique<ShaderModule>(*m_context->m_device);
-    m_context->m_shader_modules->load("vert");
-    m_context->m_shader_modules->load("frag");
-    return *this;
-}
-
 VulkanContextBuilder &VulkanContextBuilder::configure_swapchain()
 {
     if (m_context->m_swapchain.get() != nullptr)
@@ -96,7 +88,6 @@ VulkanContextBuilder &VulkanContextBuilder::configure_graphics_pipeline()
     m_context->m_graphics_pipeline = std::make_unique<GraphicsPipeline>(
         *m_context->m_device,
         *m_context->m_descriptor_set_layout,
-        *m_context->m_shader_modules,
         *m_context->m_swapchain,
         *m_context->m_render_pass);
 

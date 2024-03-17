@@ -75,7 +75,7 @@ VkFramebuffer GraphicsCommands::prepare_framebuffer(
         throw std::runtime_error("Failed to acquire swap chain image");
     }
 
-    return framebuffers.framebuffer(m_image_index);
+    return framebuffers.get(m_image_index);
 }
 
 VkCommandBuffer GraphicsCommands::begin_command() const

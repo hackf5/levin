@@ -28,8 +28,6 @@ namespace levin
 
         VulkanContextBuilder &configure_model();
 
-        VulkanContextBuilder &configure_shader_modules();
-
         VulkanContextBuilder &configure_swapchain();
 
         VulkanContextBuilder &configure_render_pass();

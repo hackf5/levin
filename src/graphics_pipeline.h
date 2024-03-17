@@ -16,8 +16,6 @@ namespace levin
     private:
         const Device &m_device;
 
-        const ShaderModule &m_shader_modules;
-
         const VkPipelineLayout m_pipeline_layout;
         const VkPipeline m_pipeline;
 
@@ -28,7 +26,9 @@ namespace levin
             const Swapchain &swapchain,
             const RenderPass &render_pass);
 
-        std::vector<VkPipelineShaderStageCreateInfo> create_shader_stages();
+        std::vector<VkPipelineShaderStageCreateInfo> create_shader_stages(
+            const ShaderModule &vertex_shader,
+            const ShaderModule &fragment_shader);
 
         VkPipelineInputAssemblyStateCreateInfo create_input_assembly_state();
 
@@ -52,7 +52,6 @@ namespace levin
         GraphicsPipeline(
             const Device &device,
             const DescriptorSetLayout &descriptor_set_layout,
-            const ShaderModule &shader_modules,
             const Swapchain &swapchain,
             const RenderPass &render_pass);
         GraphicsPipeline(const GraphicsPipeline &) = delete;

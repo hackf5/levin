@@ -9,11 +9,9 @@ using namespace levin;
 GraphicsPipeline::GraphicsPipeline(
     const Device &device,
     const DescriptorSetLayout &descriptor_set_layout,
-    const ShaderModule &shader_modules,
     const Swapchain &swapchain,
     const RenderPass &render_pass):
     m_device(device),
-    m_shader_modules(shader_modules),
     m_pipeline_layout(create_pipeline_layout(descriptor_set_layout)),
     m_pipeline(create_pipeline(swapchain, render_pass))
 {
@@ -54,9 +52,11 @@ VkPipeline GraphicsPipeline::create_pipeline(
 {
     spdlog::info("Creating Graphics Pipeline");
 
-    auto shader_stages = create_shader_stages();
+    auto vertex_input_state = VertexInputState(0, { VertexComponent::Position, VertexComponent::Color });
 
-    VertexInputState vertex_input_state(0, { VertexComponent::Position, VertexComponent::Color });
+    auto vertex_shader = ShaderModule(m_device, "vert");
+    auto fragment_shader = ShaderModule(m_device, "frag");
+    auto shader_stages = create_shader_stages(vertex_shader, fragment_shader);
 
     auto input_assembly_state = create_input_assembly_state();
     auto viewport_state = create_viewport_state(swapchain);
@@ -92,18 +92,20 @@ VkPipeline GraphicsPipeline::create_pipeline(
     return pipeline;
 }
 
-std::vector<VkPipelineShaderStageCreateInfo> GraphicsPipeline::create_shader_stages()
+std::vector<VkPipelineShaderStageCreateInfo> GraphicsPipeline::create_shader_stages(
+    const ShaderModule &vertex_shader,
+    const ShaderModule &fragment_shader)
 {
     VkPipelineShaderStageCreateInfo vert_stage_info = {};
     vert_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     vert_stage_info.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    vert_stage_info.module = m_shader_modules.get("vert");
+    vert_stage_info.module = vertex_shader;
     vert_stage_info.pName = "main";
 
     VkPipelineShaderStageCreateInfo frag_stage_info = {};
     frag_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     frag_stage_info.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    frag_stage_info.module = m_shader_modules.get("frag");
+    frag_stage_info.module = fragment_shader;
     frag_stage_info.pName = "main";
 
     return { vert_stage_info, frag_stage_info };
