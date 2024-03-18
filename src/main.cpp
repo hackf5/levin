@@ -29,18 +29,19 @@ int main()
     try
     {
         VulkanContextBuilder builder;
-        auto context = builder.configure_window(800, 600, "Levin")
-            .configure_device(enableValidationLayers)
-            .configure_graphics_queue()
-            .configure_transfer_queue()
-            .configure_descriptor_pool()
-            .configure_descriptor_set_layout()
-            .configure_model()
-            .configure_camera()
-            .configure_swapchain()
-            .configure_render_pass()
-            .configure_framebuffers()
-            .configure_graphics_pipeline()
+        auto context = builder
+            .add_window(800, 600, "Levin")
+            .add_device(enableValidationLayers)
+            .add_graphics_queue()
+            .add_transfer_queue()
+            .add_descriptor_pool()
+            .add_descriptor_set_layout()
+            .add_model()
+            .add_camera()
+            .add_swapchain()
+            .add_render_pass()
+            .add_framebuffers()
+            .add_graphics_pipeline()
             .build();
 
         VulkanEngine engine(std::move(context));

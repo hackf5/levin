@@ -90,10 +90,10 @@ void VulkanEngine::recreate_swapchain()
 
     VulkanContextBuilder builder(std::move(m_context));
     auto context = builder
-        .configure_swapchain()
-        .configure_render_pass()
-        .configure_framebuffers()
-        .configure_graphics_pipeline()
+        .add_swapchain()
+        .add_render_pass()
+        .add_framebuffers()
+        .add_graphics_pipeline()
         .build();
     m_context = std::move(context);
 
@@ -130,38 +130,13 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
 {
     auto command_buffer = m_context->graphics_queue().begin_command();
 
-    VkRenderPassBeginInfo render_pass_info {};
-    render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    render_pass_info.renderPass = m_context->render_pass();
-    render_pass_info.framebuffer = framebuffer;
-    render_pass_info.renderArea.offset = { 0, 0 };
-    render_pass_info.renderArea.extent = m_context->swapchain().extent();;
-
-    VkClearValue clear_color = { 0.0f, 0.0f, 0.0f, 1.0f };
-    render_pass_info.clearValueCount = 1;
-    render_pass_info.pClearValues = &clear_color;
-
-    vkCmdBeginRenderPass(
-        command_buffer,
-        &render_pass_info,
-        VK_SUBPASS_CONTENTS_INLINE);
-
-    vkCmdBindPipeline(
-        command_buffer,
-        VK_PIPELINE_BIND_POINT_GRAPHICS,
-        m_context->graphics_pipeline());
-
-    VkViewport viewport = m_context->swapchain().viewport();
-    vkCmdSetViewport(command_buffer, 0, 1, &viewport);
-
-    VkRect2D scissor = m_context->swapchain().scissor();
-    vkCmdSetScissor(command_buffer, 0, 1, &scissor);
-
+    m_context->render_pass().begin(command_buffer, framebuffer);
+    m_context->graphics_pipeline().bind(command_buffer);
+    m_context->swapchain().clip(command_buffer);
     m_context->model().bind(command_buffer);
     m_context->camera().bind(command_buffer, m_context->graphics_pipeline());
     m_context->model().draw(command_buffer, m_context->graphics_pipeline());
-
-    vkCmdEndRenderPass(command_buffer);
+    m_context->render_pass().end(command_buffer);
 
     m_context->graphics_queue().submit_command();
 }

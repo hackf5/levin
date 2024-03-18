@@ -8,7 +8,8 @@ RenderPass::RenderPass(
     const Device &device,
     const Swapchain &swapchain):
     m_device(device),
-    m_render_pass(create_render_pass(swapchain))
+    m_swapchain(swapchain),
+    m_render_pass(create_render_pass())
 {
 }
 
@@ -18,12 +19,12 @@ RenderPass::~RenderPass()
     vkDestroyRenderPass(m_device, m_render_pass, nullptr);
 }
 
-VkRenderPass RenderPass::create_render_pass(const Swapchain &swapchain)
+VkRenderPass RenderPass::create_render_pass()
 {
     spdlog::info("Creating Render Pass");
 
     VkAttachmentDescription color_attachment = {};
-    color_attachment.format = swapchain.image_format();
+    color_attachment.format = m_swapchain.image_format();
     color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
     color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -66,3 +67,23 @@ VkRenderPass RenderPass::create_render_pass(const Swapchain &swapchain)
 
     return render_pass;
 }
+
+void RenderPass::begin(VkCommandBuffer command_buffer, VkFramebuffer framebuffer) const
+{
+    VkRenderPassBeginInfo render_pass_info = {};
+    render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    render_pass_info.renderPass = m_render_pass;
+    render_pass_info.framebuffer = framebuffer;
+    render_pass_info.renderArea.offset = { 0, 0 };
+    render_pass_info.renderArea.extent = m_swapchain.extent();
+
+    VkClearValue clear_color = { 0.0f, 0.0f, 0.0f, 1.0f };
+    render_pass_info.clearValueCount = 1;
+    render_pass_info.pClearValues = &clear_color;
+
+    vkCmdBeginRenderPass(
+        command_buffer,
+        &render_pass_info,
+        VK_SUBPASS_CONTENTS_INLINE);
+};
+

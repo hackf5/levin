@@ -14,29 +14,29 @@ namespace levin
 
         VulkanContextBuilder(std::unique_ptr<VulkanContext> context): m_context(std::move(context)) {}
 
-        VulkanContextBuilder &configure_window(int width, int height, const std::string &title);
+        VulkanContextBuilder &add_window(int width, int height, const std::string &title);
 
-        VulkanContextBuilder &configure_device(bool enable_validation_layers = true);
+        VulkanContextBuilder &add_device(bool enable_validation_layers = true);
 
-        VulkanContextBuilder &configure_transfer_queue();
+        VulkanContextBuilder &add_transfer_queue();
 
-        VulkanContextBuilder &configure_graphics_queue();
+        VulkanContextBuilder &add_graphics_queue();
 
-        VulkanContextBuilder &configure_descriptor_pool();
+        VulkanContextBuilder &add_descriptor_pool();
 
-        VulkanContextBuilder &configure_descriptor_set_layout();
+        VulkanContextBuilder &add_descriptor_set_layout();
 
-        VulkanContextBuilder &configure_model();
+        VulkanContextBuilder &add_model();
 
-        VulkanContextBuilder &configure_camera();
+        VulkanContextBuilder &add_camera();
 
-        VulkanContextBuilder &configure_swapchain();
+        VulkanContextBuilder &add_swapchain();
 
-        VulkanContextBuilder &configure_render_pass();
+        VulkanContextBuilder &add_render_pass();
 
-        VulkanContextBuilder &configure_framebuffers();
+        VulkanContextBuilder &add_framebuffers();
 
-        VulkanContextBuilder &configure_graphics_pipeline();
+        VulkanContextBuilder &add_graphics_pipeline();
 
         std::unique_ptr<VulkanContext> build();
     };

@@ -46,5 +46,11 @@ namespace levin
         const VkImage &image(size_t image_index) const { return m_swapchain_images[image_index]; }
 
         const VkImageView &image_view(size_t image_index) const { return m_swapchain_image_views[image_index]; }
+
+        void clip(VkCommandBuffer command_buffer) const
+        {
+            vkCmdSetViewport(command_buffer, 0, 1, &m_viewport);
+            vkCmdSetScissor(command_buffer, 0, 1, &m_scissor);
+        }
     };
 }

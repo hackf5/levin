@@ -9,10 +9,11 @@ namespace levin
     {
     private:
         const Device &m_device;
+        const Swapchain &m_swapchain;
 
         const VkRenderPass m_render_pass;
 
-        VkRenderPass create_render_pass(const Swapchain &swapchain);
+        VkRenderPass create_render_pass();
 
     public:
         RenderPass(
@@ -22,5 +23,9 @@ namespace levin
         ~RenderPass();
 
         operator VkRenderPass() const { return m_render_pass; }
+
+        void begin(VkCommandBuffer command_buffer, VkFramebuffer framebuffer) const;
+
+        void end(VkCommandBuffer command_buffer) const { vkCmdEndRenderPass(command_buffer); }
     };
 }

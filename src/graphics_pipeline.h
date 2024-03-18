@@ -60,5 +60,10 @@ namespace levin
         operator VkPipeline() const { return m_pipeline; }
 
         VkPipelineLayout layout() const { return m_pipeline_layout; }
+
+        void bind(VkCommandBuffer command_buffer) const
+        {
+            vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
+        }
     };
 }
