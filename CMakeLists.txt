@@ -30,17 +30,32 @@ set(
     "bin")
 
 # MAIN PROJECT
-file(GLOB_RECURSE SOURCES
+file(
+    GLOB_RECURSE
+    SOURCES
     "src/*.cpp")
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+file(
+    GLOB
+    IMGUI_SOURCES
+    "inc/imgui/*.cpp"
+    "inc/imgui/*.h"
+    "inc/imgui/misc/cpp/imgui_stdlib.*"
+    "inc/imgui/backends/imgui_impl_glfw.*"
+    "inc/imgui/backends/imgui_impl_vulkan.*")
+
+add_executable(
+    ${PROJECT_NAME}
+    ${SOURCES}
+    ${IMGUI_SOURCES})
 
 target_include_directories(
     ${PROJECT_NAME}
     PRIVATE
     src
     src/models
-    inc)
+    inc
+    inc/imgui)
 
 target_link_libraries(
     ${PROJECT_NAME}
