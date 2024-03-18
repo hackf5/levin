@@ -39,7 +39,7 @@ void VulkanEngine::run()
     camera.clip_far() = 10.0f;
     camera.clip_near() = 0.1f;
     camera.fov() = 45.0f;
-    camera.aspect_ratio() = m_context->swapchain().extent().width / (float)m_context->swapchain().extent().height;
+    camera.aspect_ratio() = m_context->swapchain().aspect_ratio();
 
     while (!m_context->window().should_close())
     {
@@ -98,18 +98,17 @@ void VulkanEngine::recreate_swapchain()
     m_context = std::move(context);
 
     auto &camera = m_context->camera();
-    camera.aspect_ratio() = m_context->swapchain().extent().width / (float)m_context->swapchain().extent().height;
-    m_context->camera().flush();
+    camera.aspect_ratio() = m_context->swapchain().aspect_ratio();
+    camera.flush();
 }
 
 void VulkanEngine::draw_frame()
 {
-    auto framebuffer = m_context
-        ->graphics_queue()
-        .prepare_framebuffer(
+    auto framebuffer = m_context->graphics_queue().prepare_framebuffer(
         m_current_frame,
         m_context->swapchain(),
         m_context->framebuffers());
+
     if (!framebuffer)
     {
         recreate_swapchain();
@@ -129,18 +128,14 @@ void VulkanEngine::draw_frame()
 
 void VulkanEngine::render(VkFramebuffer framebuffer)
 {
-    auto command_buffer = m_context
-        ->graphics_queue()
-        .begin_command();
-
-    auto extent = m_context->swapchain().extent();
+    auto command_buffer = m_context->graphics_queue().begin_command();
 
     VkRenderPassBeginInfo render_pass_info {};
     render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     render_pass_info.renderPass = m_context->render_pass();
     render_pass_info.framebuffer = framebuffer;
     render_pass_info.renderArea.offset = { 0, 0 };
-    render_pass_info.renderArea.extent = extent;
+    render_pass_info.renderArea.extent = m_context->swapchain().extent();;
 
     VkClearValue clear_color = { 0.0f, 0.0f, 0.0f, 1.0f };
     render_pass_info.clearValueCount = 1;
@@ -156,18 +151,10 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
         VK_PIPELINE_BIND_POINT_GRAPHICS,
         m_context->graphics_pipeline());
 
-    VkViewport viewport {};
-    viewport.x = 0.0f;
-    viewport.y = 0.0f;
-    viewport.width = (float)extent.width;
-    viewport.height = (float)extent.height;
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
+    VkViewport viewport = m_context->swapchain().viewport();
     vkCmdSetViewport(command_buffer, 0, 1, &viewport);
 
-    VkRect2D scissor {};
-    scissor.offset = { 0, 0 };
-    scissor.extent = extent;
+    VkRect2D scissor = m_context->swapchain().scissor();
     vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 
     m_context->model().bind(command_buffer);
@@ -176,9 +163,7 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
 
     vkCmdEndRenderPass(command_buffer);
 
-    m_context
-        ->graphics_queue()
-        .submit_command();
+    m_context->graphics_queue().submit_command();
 }
 
 void VulkanEngine::update_uniform_buffer()

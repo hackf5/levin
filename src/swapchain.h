@@ -29,6 +29,12 @@ namespace levin
 
         VkExtent2D extent() const { return m_swapchain.extent; }
 
+        float aspect_ratio() const
+        {
+            return static_cast<float>(m_swapchain.extent.width) /
+                static_cast<float>(m_swapchain.extent.height);
+        }
+
         uint32_t image_count() const { return m_swapchain.image_count; }
 
         VkFormat image_format() const { return m_swapchain.image_format; }
