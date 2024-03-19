@@ -30,6 +30,8 @@ namespace levin
 
         VkSurfaceKHR create_window_surface(VkInstance instance) const;
 
+        operator GLFWwindow *() const { return m_window; }
+
         void register_framebuffer_resize_callback(framebuffer_resize_callback_t callback);
 
         bool should_close() const { return glfwWindowShouldClose(m_window); }

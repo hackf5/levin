@@ -54,8 +54,10 @@ target_include_directories(
     PRIVATE
     src
     src/models
+    src/gui
     inc
-    inc/imgui)
+    inc/imgui
+    inc/imgui/backends)
 
 target_link_libraries(
     ${PROJECT_NAME}

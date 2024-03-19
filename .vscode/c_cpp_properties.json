@@ -4,6 +4,8 @@
             "name": "Windows",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/inc/imgui",
+                "${workspaceFolder}/inc/imgui/backends",
                 "${VULKAN_SDK}/include/"
             ],
             "defines": [],

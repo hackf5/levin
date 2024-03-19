@@ -88,12 +88,12 @@ void VulkanEngine::recreate_swapchain()
     m_context->window().wait_resize();
     m_context->device().wait_idle();
 
-    VulkanContextBuilder builder(std::move(m_context));
-    auto context = builder
+    auto context = VulkanContextBuilder(std::move(m_context))
         .add_swapchain()
         .add_render_pass()
         .add_framebuffers()
         .add_graphics_pipeline()
+        .add_gui()
         .build();
     m_context = std::move(context);
 
@@ -104,6 +104,8 @@ void VulkanEngine::recreate_swapchain()
 
 void VulkanEngine::draw_frame()
 {
+    m_context->gui().begin_frame();
+
     auto framebuffer = m_context->graphics_queue().prepare_framebuffer(
         m_current_frame,
         m_context->swapchain(),
@@ -135,7 +137,8 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
     m_context->swapchain().clip(command_buffer);
     m_context->model().bind(command_buffer);
     m_context->camera().bind(command_buffer, m_context->graphics_pipeline());
-    m_context->model().draw(command_buffer, m_context->graphics_pipeline());
+    m_context->model().render(command_buffer, m_context->graphics_pipeline());
+    m_context->gui().render(command_buffer);
     m_context->render_pass().end(command_buffer);
 
     m_context->graphics_queue().submit_command();

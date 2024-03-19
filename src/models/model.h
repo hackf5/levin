@@ -34,7 +34,7 @@ namespace levin
         uint32_t index_offset() const { return m_index_offset; }
         uint32_t index_count() const { return m_index_count; }
 
-        void draw(VkCommandBuffer command_buffer) const
+        void render(VkCommandBuffer command_buffer) const
         {
             vkCmdDrawIndexed(command_buffer, m_index_count, 1, m_index_offset, 0, 0);
         }
@@ -71,14 +71,14 @@ namespace levin
             m_uniform_buffer.copy_from(&m_uniform_block, sizeof(m_uniform_block));
         }
 
-        void draw(
+        void render(
             VkCommandBuffer command_buffer,
             const GraphicsPipeline &pipeline) const
         {
             m_uniform_buffer.bind(command_buffer, pipeline);
             for (auto &primitive : m_primitives)
             {
-                primitive->draw(command_buffer);
+                primitive->render(command_buffer);
             }
         }
     };
@@ -160,18 +160,18 @@ namespace levin
             }
         }
 
-        void draw(
+        void render(
             VkCommandBuffer command_buffer,
             const GraphicsPipeline &pipeline) const
         {
             if (m_mesh)
             {
-                m_mesh->draw(command_buffer, pipeline);
+                m_mesh->render(command_buffer, pipeline);
             }
 
             for (auto &child : m_children)
             {
-                child->draw(command_buffer, pipeline);
+                child->render(command_buffer, pipeline);
             }
         }
     };
@@ -224,11 +224,11 @@ namespace levin
             vkCmdBindIndexBuffer(command_buffer, *m_index_buffer, 0, Vertex::vk_index_type);
         }
 
-        void draw(
+        void render(
             VkCommandBuffer command_buffer,
             const GraphicsPipeline &pipeline) const
         {
-            m_root_node->draw(command_buffer, pipeline);
+            m_root_node->render(command_buffer, pipeline);
         }
 
         void flush()

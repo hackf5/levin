@@ -62,6 +62,7 @@ VulkanContextBuilder &VulkanContextBuilder::add_swapchain()
 {
     if (m_context->m_swapchain.get() != nullptr)
     {
+        m_context->m_gui.reset();
         m_context->m_graphics_pipeline.reset();
         m_context->m_framebuffers.reset();
         m_context->m_render_pass.reset();
@@ -98,6 +99,16 @@ VulkanContextBuilder &VulkanContextBuilder::add_graphics_pipeline()
         *m_context->m_device,
         *m_context->m_descriptor_set_layout,
         *m_context->m_swapchain,
+        *m_context->m_render_pass);
+
+    return *this;
+}
+
+VulkanContextBuilder &VulkanContextBuilder::add_gui()
+{
+    m_context->m_gui = std::make_unique<Gui>(
+        *m_context->m_window,
+        *m_context->m_device,
         *m_context->m_render_pass);
 
     return *this;

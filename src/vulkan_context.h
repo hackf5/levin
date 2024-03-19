@@ -19,6 +19,7 @@
 #include "render_pass.h"
 #include "framebuffers.h"
 #include "graphics_pipeline.h"
+#include "gui.h"
 
 namespace levin
 {
@@ -37,6 +38,7 @@ namespace levin
         std::unique_ptr<RenderPass> m_render_pass;
         std::unique_ptr<Framebuffers> m_framebuffers;
         std::unique_ptr<GraphicsPipeline> m_graphics_pipeline;
+        std::unique_ptr<Gui> m_gui;
 
     public:
         VulkanContext() = default;
@@ -69,6 +71,8 @@ namespace levin
         const Framebuffers &framebuffers() const { return *m_framebuffers; }
 
         const GraphicsPipeline &graphics_pipeline() const { return *m_graphics_pipeline; }
+
+        const Gui &gui() const { return *m_gui; }
 
         friend class VulkanContextBuilder;
     };

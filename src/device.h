@@ -44,6 +44,10 @@ namespace levin
 
         operator VkDevice() const { return m_device.device; }
 
+        VkInstance instance() const { return m_instance.instance; }
+
+        VkPhysicalDevice physical_device() const { return m_device.physical_device; }
+
         VkQueue graphics_queue() const { return m_graphics_queue; }
         uint32_t graphics_queue_index() const { return m_device.get_queue_index(vkb::QueueType::graphics).value(); }
 

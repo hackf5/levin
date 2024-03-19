@@ -38,6 +38,8 @@ namespace levin
 
         VulkanContextBuilder &add_graphics_pipeline();
 
+        VulkanContextBuilder &add_gui();
+
         std::unique_ptr<VulkanContext> build();
     };
 }
