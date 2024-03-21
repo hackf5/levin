@@ -55,22 +55,15 @@ void VulkanEngine::load_model()
     m_context->model().load_vertexes(vertexes);
     m_context->model().load_indexes(indexes);
 
-    std::vector<std::unique_ptr<Primitive>> primitives;
-    primitives.push_back(std::make_unique<Primitive>(0, indexes.size()));
-    m_context->model().load_primitives(primitives);
-
-    std::vector<Primitive *> mesh_primitives;
-    for (auto &primitive : m_context->model().primitives())
-    {
-        mesh_primitives.push_back(primitive);
-    }
+    std::vector<Primitive> primitives;
+    primitives.emplace_back(0, indexes.size());
 
     auto &root_node = m_context->model().root_node();
     auto mesh1 = std::make_unique<Mesh>(
         m_context->device(),
         m_context->descriptor_pool(),
         m_context->descriptor_set_layout(),
-        mesh_primitives);
+        primitives);
     auto &child1 = root_node.add_child(std::move(mesh1));
     child1.translation() = glm::vec3(-0.5f, 0.0f, 0.0f);
 
@@ -78,7 +71,7 @@ void VulkanEngine::load_model()
         m_context->device(),
         m_context->descriptor_pool(),
         m_context->descriptor_set_layout(),
-        mesh_primitives);
+        primitives);
     auto &child2 = root_node.add_child(std::move(mesh2));
     child2.translation() = glm::vec3(0.5f, 0.0f, 0.0f);
 }

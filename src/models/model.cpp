@@ -10,7 +10,7 @@ Mesh::Mesh(
     const Device &device,
     const DescriptorPool &descriptor_pool,
     const DescriptorSetLayout &descriptor_set_layout,
-    std::vector<Primitive *> primitives):
+    const std::vector<Primitive>& primitives):
     m_uniform_block {},
     m_primitives(primitives),
     m_uniform_buffer(
@@ -60,14 +60,4 @@ void Model::load_indexes(const std::vector<uint32_t> &indexes)
         VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 
     m_index_buffer->copy_from(indexes);
-}
-
-void Model::load_primitives(std::vector<std::unique_ptr<Primitive>> &primitives)
-{
-    m_primitives.clear();
-    m_primitives.reserve(primitives.size());
-    for (int i = 0; i < primitives.size(); i++)
-    {
-        m_primitives.push_back(std::move(primitives[i]));
-    }
 }

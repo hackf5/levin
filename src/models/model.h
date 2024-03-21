@@ -48,9 +48,7 @@ namespace levin
             glm::mat4 model;
         } m_uniform_block;
 
-        // although raw pointers are bad juju, shared pointers are worse.
-        // primitives will be shared between meshes.
-        std::vector<Primitive *> m_primitives;
+        std::vector<Primitive> m_primitives;
 
         UniformBuffer m_uniform_buffer;
 
@@ -59,7 +57,7 @@ namespace levin
             const Device &device,
             const DescriptorPool &descriptor_pool,
             const DescriptorSetLayout &descriptor_set_layout,
-            std::vector<Primitive *> primitives);
+            const std::vector<Primitive>& primitives);
 
         Mesh(const Mesh &) = delete;
 
@@ -78,7 +76,7 @@ namespace levin
             m_uniform_buffer.bind(command_buffer, pipeline);
             for (auto &primitive : m_primitives)
             {
-                primitive->render(command_buffer);
+                primitive.render(command_buffer);
             }
         }
     };
@@ -201,18 +199,6 @@ namespace levin
 
         void load_vertexes(const std::vector<levin::Vertex> &vertexes);
         void load_indexes(const std::vector<Vertex::index_t> &indexes);
-        void load_primitives(std::vector<std::unique_ptr<Primitive>> &primitives);
-
-        std::vector<Primitive *> primitives() const
-        {
-            std::vector<Primitive *> primitives;
-            for (auto &primitive : m_primitives)
-            {
-                primitives.push_back(primitive.get());
-            }
-
-            return primitives;
-        }
 
         Node &root_node() { return *m_root_node; }
 
