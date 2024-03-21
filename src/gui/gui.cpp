@@ -13,7 +13,8 @@ Gui::Gui(
     const Device &device,
     const RenderPass &render_pass):
     m_device(device),
-    m_descriptor_pool(create_descriptor_pool())
+    m_descriptor_pool(create_descriptor_pool()),
+    m_framerate()
 {
     spdlog::info("Creating GUI");
 
@@ -92,12 +93,17 @@ void Gui::check_vk_result(VkResult result)
     }
 }
 
-void Gui::begin_frame() const
+void Gui::begin_frame()
 {
+    m_framerate.next_frame();
+
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
-    ImGui::ShowDemoWindow();
+
+    ImGui::Begin("Info", nullptr, ImGuiWindowFlags_None);
+    ImGui::Text("FPS: %d", m_framerate.fps());
+    ImGui::End();
 }
 
 void Gui::render(VkCommandBuffer command_buffer) const

@@ -73,6 +73,7 @@ namespace levin
         const GraphicsPipeline &graphics_pipeline() const { return *m_graphics_pipeline; }
 
         const Gui &gui() const { return *m_gui; }
+        Gui &gui() { return *m_gui; }
 
         friend class VulkanContextBuilder;
     };

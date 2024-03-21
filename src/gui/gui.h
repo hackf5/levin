@@ -8,6 +8,7 @@
 #include "device.h"
 #include "swapchain.h"
 #include "render_pass.h"
+#include "framerate.h"
 
 namespace levin
 {
@@ -16,6 +17,7 @@ namespace levin
     private:
         const Device &m_device;
         VkDescriptorPool m_descriptor_pool;
+        Framerate<> m_framerate;
 
         VkDescriptorPool create_descriptor_pool();
 
@@ -28,7 +30,7 @@ namespace levin
             const RenderPass &render_pass);
         ~Gui();
 
-        void begin_frame() const;
+        void begin_frame();
         void render(VkCommandBuffer command_buffer) const;
     };
 } //
