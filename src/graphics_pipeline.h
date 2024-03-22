@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+#include "util/no_default_ctors.h"
 #include "device.h"
 #include "descriptor_set_layout.h"
 #include "swapchain.h"
@@ -11,7 +12,7 @@
 
 namespace levin
 {
-    class GraphicsPipeline
+    class GraphicsPipeline : NoCopyOrMove
     {
     private:
         const Device &m_device;
@@ -54,7 +55,6 @@ namespace levin
             const DescriptorSetLayout &descriptor_set_layout,
             const Swapchain &swapchain,
             const RenderPass &render_pass);
-        GraphicsPipeline(const GraphicsPipeline &) = delete;
         ~GraphicsPipeline();
 
         operator VkPipeline() const { return m_pipeline; }

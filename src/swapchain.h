@@ -2,10 +2,12 @@
 
 #include <vector>
 
+#include "util/no_default_ctors.h"
 #include "device.h"
+
 namespace levin
 {
-    class Swapchain
+    class Swapchain : NoCopyOrMove
     {
     private:
         const Device &m_device;
@@ -22,7 +24,6 @@ namespace levin
 
     public:
         Swapchain(const Device &device);
-        Swapchain(const Swapchain &) = delete;
         ~Swapchain();
 
         operator VkSwapchainKHR() const { return m_swapchain.swapchain; }

@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+#include "util/no_default_ctors.h"
 #include "window.h"
 #include "device.h"
 #include "transfer_queue.h"
@@ -23,7 +24,7 @@
 
 namespace levin
 {
-    class VulkanContext
+    class VulkanContext : NoCopyOrMove
     {
     private:
         std::unique_ptr<Window> m_window;
@@ -42,8 +43,6 @@ namespace levin
 
     public:
         VulkanContext() = default;
-
-        VulkanContext(const VulkanContext &) = delete;
 
         Window &window() { return *m_window; }
 

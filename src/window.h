@@ -6,9 +6,11 @@
 #include <functional>
 #include <string>
 
+#include "util/no_default_ctors.h"
+
 namespace levin
 {
-    class Window
+    class Window : NoCopyOrMove
     {
     public:
         typedef std::function<void(int, int)> framebuffer_resize_callback_t;
@@ -25,7 +27,6 @@ namespace levin
 
     public:
         Window(int width, int height, const std::string &title);
-        Window(const Window &) = delete;
         ~Window();
 
         VkSurfaceKHR create_window_surface(VkInstance instance) const;

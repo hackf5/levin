@@ -2,11 +2,12 @@
 
 #include <string>
 
+#include "util/no_default_ctors.h"
 #include "device.h"
 
 namespace levin
 {
-    class ShaderModule
+    class ShaderModule : NoCopyOrMove
     {
     private:
         const Device &m_device;
@@ -23,7 +24,6 @@ namespace levin
         ShaderModule(
             const Device &device,
             const std::string &name);
-        ShaderModule(const ShaderModule &) = delete;
         ~ShaderModule();
 
         const std::string &name() const { return m_name; }

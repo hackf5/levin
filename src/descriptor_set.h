@@ -11,7 +11,7 @@
 
 namespace levin
 {
-    class DescriptorSet
+    class DescriptorSet : NoCopyOrMove
     {
     private:
         VkDescriptorSet create_descriptor_set(const DescriptorSetLayout &descriptor_set_layout);
@@ -26,7 +26,6 @@ namespace levin
             const Device &device,
             const DescriptorPool &descriptor_pool,
             const DescriptorSetLayout &descriptor_set_layout);
-        DescriptorSet(const DescriptorSet &) = delete;
         ~DescriptorSet();
 
         operator VkDescriptorSet() const { return m_descriptor_set; }

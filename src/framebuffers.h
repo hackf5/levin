@@ -2,13 +2,14 @@
 
 #include <vector>
 
+#include "util/no_default_ctors.h"
 #include "device.h"
 #include "swapchain.h"
 #include "render_pass.h"
 
 namespace levin
 {
-    class Framebuffers
+    class Framebuffers : NoCopyOrMove
     {
     private:
         const Device &m_device;

@@ -105,6 +105,7 @@ namespace levin
 
         Node(const Node &) = delete;
 
+
         Node *parent() const { return m_parent; }
 
         std::vector<std::unique_ptr<Node>> &children() { return m_children; }

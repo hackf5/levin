@@ -2,11 +2,12 @@
 
 #include <vulkan/vulkan.h>
 
+#include "util/no_default_ctors.h"
 #include "device.h"
 
 namespace levin
 {
-    class DescriptorSetLayout
+    class DescriptorSetLayout : NoCopyOrMove
     {
     private:
         const Device &m_device;

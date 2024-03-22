@@ -3,11 +3,12 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
+#include "util/no_default_ctors.h"
 #include "device.h"
 
 namespace levin
 {
-    class TransferQueue
+    class TransferQueue : NoCopyOrMove
     {
     private:
         const Device &m_device;

@@ -1,10 +1,11 @@
 #pragma once
 
+#include "util/no_default_ctors.h"
 #include "vulkan_context.h"
 
 namespace levin
 {
-    class VulkanContextBuilder
+    class VulkanContextBuilder : NoCopyOrMove
     {
     private:
         std::unique_ptr<VulkanContext> m_context;

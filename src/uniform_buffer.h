@@ -25,7 +25,6 @@ namespace levin
             const DescriptorSetLayout &descriptor_set_layout,
             VkDeviceSize size,
             Usage usage);
-        UniformBuffer(const UniformBuffer &) = delete;
 
         void bind(VkCommandBuffer command_buffer, const GraphicsPipeline &pipeline) const;
     };

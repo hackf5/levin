@@ -4,12 +4,13 @@
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan.h>
 
+#include "util/no_default_ctors.h"
 #include "device.h"
 #include "transfer_queue.h"
 
 namespace levin
 {
-    class Buffer
+    class Buffer : NoCopyOrMove
     {
     protected:
         struct AllocationInfo
@@ -39,8 +40,6 @@ namespace levin
             VkBufferUsageFlags usage,
             VmaMemoryUsage memory_usage = VMA_MEMORY_USAGE_AUTO,
             VmaAllocationCreateFlags allocation_flags = 0);
-        Buffer(const Buffer &) = delete;
-
         ~Buffer();
 
         VkDeviceSize size() const { return m_allocation_info.info.size; }

@@ -6,8 +6,9 @@
 
 using namespace levin;
 
-Window::Window(int width, int height, const std::string &title)
-    : m_width(width), m_height(height)
+Window::Window(int width, int height, const std::string &title) :
+    m_width(width),
+    m_height(height)
 {
     spdlog::info("Creating Window Components");
 

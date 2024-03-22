@@ -1,11 +1,12 @@
 #pragma once
 
+#include "util/no_default_ctors.h"
 #include "device.h"
 #include "swapchain.h"
 
 namespace levin
 {
-    class RenderPass
+    class RenderPass : NoCopyOrMove
     {
     private:
         const Device &m_device;
@@ -19,7 +20,6 @@ namespace levin
         RenderPass(
             const Device &device,
             const Swapchain &swapchain);
-        RenderPass(const RenderPass &) = delete;
         ~RenderPass();
 
         operator VkRenderPass() const { return m_render_pass; }

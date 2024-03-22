@@ -3,13 +3,14 @@
 #include <memory>
 #include <vector>
 
+#include "util/no_default_ctors.h"
 #include "device.h"
 #include "swapchain.h"
 #include "framebuffers.h"
 
 namespace levin
 {
-    class GraphicsQueue
+    class GraphicsQueue : NoCopyOrMove
     {
     private:
         const Device &m_device;
@@ -33,7 +34,6 @@ namespace levin
 
     public:
         GraphicsQueue(const Device &device);
-        GraphicsQueue(const GraphicsQueue &) = delete;
         ~GraphicsQueue();
 
         VkFramebuffer prepare_framebuffer(

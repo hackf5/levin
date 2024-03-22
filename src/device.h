@@ -6,11 +6,12 @@
 
 #include "VkBootstrap.h"
 
+#include "util/no_default_ctors.h"
 #include "window.h"
 
 namespace levin
 {
-    class Device
+    class Device : NoCopyOrMove
     {
     private:
         const Window &m_window;
@@ -34,7 +35,6 @@ namespace levin
         Device(
             const Window &window,
             bool enable_validation_layers);
-        Device(const Device &) = delete;
 
         ~Device();
 

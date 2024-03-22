@@ -2,11 +2,12 @@
 
 #include <vulkan/vulkan.h>
 
+#include "util/no_default_ctors.h"
 #include "device.h"
 
 namespace levin
 {
-    class DescriptorPool
+    class DescriptorPool : NoCopyOrMove
     {
     private:
         const Device &m_device;
@@ -16,7 +17,6 @@ namespace levin
 
     public:
         DescriptorPool(const Device &device);
-        DescriptorPool(const DescriptorPool &) = delete;
         ~DescriptorPool();
 
         operator VkDescriptorPool() const { return m_descriptor_pool; }
