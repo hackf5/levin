@@ -2,11 +2,11 @@
 
 #include <memory>
 
+#include "spdlog/spdlog.h"
+
 #include "vulkan_context_builder.h"
-#include "vertex.h"
 #include "vulkan_engine.h"
 
-#include "spdlog/spdlog.h"
 
 using namespace levin;
 

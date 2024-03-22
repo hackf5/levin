@@ -11,16 +11,18 @@
 #include "descriptor_pool.h"
 #include "descriptor_set_layout.h"
 #include "buffer.h"
-#include "vertex.h"
-#include "model.h"
-#include "camera.h"
 #include "descriptor_set.h"
 #include "shader_module.h"
 #include "swapchain.h"
 #include "render_pass.h"
 #include "framebuffers.h"
 #include "graphics_pipeline.h"
-#include "gui.h"
+
+#include "model/vertex.h"
+#include "model/model.h"
+#include "model/camera.h"
+
+#include "gui/gui.h"
 
 namespace levin
 {
