@@ -2,8 +2,6 @@ find_package(OpenGL REQUIRED)
 find_package(Vulkan REQUIRED)
 find_package(glfw3 REQUIRED)
 
-set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/inc/imgui)
-
 file(
     GLOB
     IMGUI_SOURCES
@@ -16,4 +14,4 @@ file(
 add_library(imgui STATIC ${IMGUI_SOURCES})
 
 target_link_libraries(imgui PUBLIC glfw Vulkan::Vulkan OpenGL::GL)
-target_include_directories(imgui PUBLIC ${IMGUI_DIR})
+target_include_directories(imgui PUBLIC imgui)

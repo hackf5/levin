@@ -17,6 +17,7 @@ FetchContent_MakeAvailable(fetch_vk_bootstrap)
 find_package(OpenGL REQUIRED)
 find_package(Vulkan REQUIRED)
 find_package(glfw3 REQUIRED)
+find_package(spdlog REQUIRED)
 
 # MAIN PROJECT
 file(
@@ -32,8 +33,7 @@ target_include_directories(
     ${PROJECT_NAME}
     PRIVATE
     .
-    ${CMAKE_SOURCE_DIR}/inc
-    ${CMAKE_SOURCE_DIR}/inc/imgui)
+    ${INCLUDE_DIRECTORY})
 
 target_link_libraries(
     ${PROJECT_NAME}
@@ -44,4 +44,5 @@ target_link_libraries(
     glfw
     vk-bootstrap::vk-bootstrap
     imgui
+    spdlog::spdlog
     ${CMAKE_DL_LIBS})

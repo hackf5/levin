@@ -9,6 +9,10 @@ set(
     CMAKE_RUNTIME_OUTPUT_DIRECTORY
     ${CMAKE_SOURCE_DIR}/bin/$<CONFIG>)
 
+set(
+    INCLUDE_DIRECTORY
+    ${CMAKE_SOURCE_DIR}/inc)
+
 add_subdirectory(inc)
 add_subdirectory(src)
 add_subdirectory(shaders)
