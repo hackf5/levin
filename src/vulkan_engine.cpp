@@ -56,7 +56,7 @@ void VulkanEngine::load_model()
     m_context->graphics_buffers().load_indexes(indexes);
 
     std::vector<Primitive> primitives = {
-        {0, indexes.size()}
+        {0, static_cast<uint32_t>(indexes.size())}
     };
 
     auto &root_node = m_context->model().root_node();

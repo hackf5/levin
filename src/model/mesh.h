@@ -11,7 +11,7 @@
 #include "vulkan/descriptor_pool.h"
 #include "vulkan/descriptor_set_layout.h"
 #include "vulkan/graphics_pipeline.h"
-#include "vulkan/uniform_buffer.h"
+#include "vulkan/buffer/uniform_buffer.h"
 
 namespace levin
 {

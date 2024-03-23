@@ -12,7 +12,7 @@ UniformBuffer::UniformBuffer(
     const DescriptorSetLayout &descriptor_set_layout,
     VkDeviceSize size,
     Usage usage):
-    BufferCPUtoGPU(device, size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT),
+    BufferHost(device, size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT),
     m_descriptor_set(
         device,
         descriptor_pool,

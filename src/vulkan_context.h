@@ -4,7 +4,7 @@
 
 #include "util/no_copy_or_move.h"
 
-#include "vulkan/buffer.h"
+#include "vulkan/buffer/buffer.h"
 #include "vulkan/descriptor_pool.h"
 #include "vulkan/descriptor_set.h"
 #include "vulkan/descriptor_set_layout.h"

@@ -1,11 +1,18 @@
 #pragma once
 
-#include "buffer.h"
-#include "descriptor_set.h"
+#include <vulkan/vulkan.h>
+
+#include "buffer_host.h"
+
+#include "vulkan/device.h"
+#include "vulkan/descriptor_pool.h"
+#include "vulkan/descriptor_set.h"
+#include "vulkan/descriptor_set_layout.h"
+#include "vulkan/graphics_pipeline.h"
 
 namespace levin
 {
-    class UniformBuffer: public BufferCPUtoGPU
+    class UniformBuffer: public BufferHost
     {
     public:
         typedef enum

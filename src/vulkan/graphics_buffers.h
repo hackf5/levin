@@ -5,7 +5,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include "buffer.h"
+#include "buffer/buffer_gpu.h"
 #include "device.h"
 #include "descriptor_pool.h"
 #include "transfer_queue.h"
