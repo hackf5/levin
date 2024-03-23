@@ -3,26 +3,31 @@
 #include <memory>
 #include <vector>
 
-#include "window.h"
-#include "device.h"
-#include "transfer_queue.h"
-#include "graphics_queue.h"
-#include "descriptor_pool.h"
-#include "descriptor_set_layout.h"
-#include "buffer.h"
-#include "vertex.h"
-#include "model.h"
-#include "camera.h"
-#include "descriptor_set.h"
-#include "shader_module.h"
-#include "swapchain.h"
-#include "render_pass.h"
-#include "framebuffers.h"
-#include "graphics_pipeline.h"
+#include "util/no_copy_or_move.h"
+
+#include "vulkan/window.h"
+#include "vulkan/device.h"
+#include "vulkan/transfer_queue.h"
+#include "vulkan/graphics_queue.h"
+#include "vulkan/descriptor_pool.h"
+#include "vulkan/descriptor_set_layout.h"
+#include "vulkan/buffer.h"
+#include "vulkan/descriptor_set.h"
+#include "vulkan/shader_module.h"
+#include "vulkan/swapchain.h"
+#include "vulkan/render_pass.h"
+#include "vulkan/framebuffers.h"
+#include "vulkan/graphics_pipeline.h"
+
+#include "model/vertex.h"
+#include "model/model.h"
+#include "model/camera.h"
+
+#include "gui/gui.h"
 
 namespace levin
 {
-    class VulkanContext
+    class VulkanContext : NoCopyOrMove
     {
     private:
         std::unique_ptr<Window> m_window;
@@ -37,11 +42,10 @@ namespace levin
         std::unique_ptr<RenderPass> m_render_pass;
         std::unique_ptr<Framebuffers> m_framebuffers;
         std::unique_ptr<GraphicsPipeline> m_graphics_pipeline;
+        std::unique_ptr<Gui> m_gui;
 
     public:
         VulkanContext() = default;
-
-        VulkanContext(const VulkanContext &) = delete;
 
         Window &window() { return *m_window; }
 
@@ -69,6 +73,9 @@ namespace levin
         const Framebuffers &framebuffers() const { return *m_framebuffers; }
 
         const GraphicsPipeline &graphics_pipeline() const { return *m_graphics_pipeline; }
+
+        const Gui &gui() const { return *m_gui; }
+        Gui &gui() { return *m_gui; }
 
         friend class VulkanContextBuilder;
     };

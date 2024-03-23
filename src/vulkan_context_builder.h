@@ -1,10 +1,11 @@
 #pragma once
 
+#include "util/no_copy_or_move.h"
 #include "vulkan_context.h"
 
 namespace levin
 {
-    class VulkanContextBuilder
+    class VulkanContextBuilder : NoCopyOrMove
     {
     private:
         std::unique_ptr<VulkanContext> m_context;
@@ -37,6 +38,8 @@ namespace levin
         VulkanContextBuilder &add_framebuffers();
 
         VulkanContextBuilder &add_graphics_pipeline();
+
+        VulkanContextBuilder &add_gui();
 
         std::unique_ptr<VulkanContext> build();
     };

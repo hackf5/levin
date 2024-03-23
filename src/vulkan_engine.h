@@ -3,11 +3,12 @@
 #include <memory>
 #include <vulkan/vulkan.h>
 
+#include "util/no_copy_or_move.h"
 #include "vulkan_context.h"
 
 namespace levin
 {
-    class VulkanEngine
+    class VulkanEngine : NoCopyOrMove
     {
     private:
         std::unique_ptr<VulkanContext> m_context;
@@ -28,7 +29,6 @@ namespace levin
 
     public:
         VulkanEngine(std::unique_ptr<VulkanContext> context);
-        VulkanEngine(const VulkanEngine &) = delete;
 
         void run();
     };

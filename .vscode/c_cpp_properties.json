@@ -3,7 +3,9 @@
         {
             "name": "Windows",
             "includePath": [
-                "${workspaceFolder}/**",
+                "${workspaceFolder}/build/**",
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/submodules/imgui",
                 "${VULKAN_SDK}/include/"
             ],
             "defines": [],

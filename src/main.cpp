@@ -2,11 +2,11 @@
 
 #include <memory>
 
+#include "spdlog/spdlog.h"
+
 #include "vulkan_context_builder.h"
-#include "vertex.h"
 #include "vulkan_engine.h"
 
-#include "spdlog/spdlog.h"
 
 using namespace levin;
 
@@ -28,8 +28,7 @@ int main()
 
     try
     {
-        VulkanContextBuilder builder;
-        auto context = builder
+        auto context = VulkanContextBuilder()
             .add_window(800, 600, "Levin")
             .add_device(enableValidationLayers)
             .add_graphics_queue()
@@ -42,6 +41,7 @@ int main()
             .add_render_pass()
             .add_framebuffers()
             .add_graphics_pipeline()
+            .add_gui()
             .build();
 
         VulkanEngine engine(std::move(context));
