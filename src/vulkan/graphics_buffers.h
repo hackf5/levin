@@ -8,7 +8,7 @@
 #include "buffer/buffer_gpu.h"
 #include "device.h"
 #include "descriptor_pool.h"
-#include "transfer_queue.h"
+#include "adhoc_queues.h"
 #include "vertex.h"
 
 #include "util/no_copy_or_move.h"
@@ -19,7 +19,7 @@ namespace levin
     {
     private:
         const Device &m_device;
-        const TransferQueue &m_transfer_queue;
+        const AdhocQueues &m_adhoc_queues;
 
         std::unique_ptr<BufferGPU> m_vertex_buffer;
         std::unique_ptr<BufferGPU> m_index_buffer;
@@ -29,7 +29,7 @@ namespace levin
     public:
         GraphicsBuffers(
             const Device &device,
-            const TransferQueue &transfer_queue);
+            const AdhocQueues &adhoc_queues);
 
         void load_vertexes(const std::vector<levin::Vertex> &vertexes);
         void load_indexes(const std::vector<Vertex::index_t> &indexes);

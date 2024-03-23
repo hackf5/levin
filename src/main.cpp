@@ -7,6 +7,7 @@
 #include "vulkan_context_builder.h"
 #include "vulkan_engine.h"
 
+#include "stb_image.h"
 
 using namespace levin;
 
@@ -25,14 +26,13 @@ int main()
 #else
     spdlog::set_level(spdlog::level::debug);
 #endif
-
     try
     {
         auto context = VulkanContextBuilder()
             .add_window(800, 600, "Levin")
             .add_device(enableValidationLayers)
             .add_graphics_queue()
-            .add_transfer_queue()
+            .add_adhoc_queues()
             .add_descriptor_set_layout()
             .add_graphics_buffers()
             .add_uniform_buffer_factory()

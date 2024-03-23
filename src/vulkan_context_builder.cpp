@@ -16,9 +16,9 @@ VulkanContextBuilder &VulkanContextBuilder::add_device(bool enableValidationLaye
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::add_transfer_queue()
+VulkanContextBuilder &VulkanContextBuilder::add_adhoc_queues()
 {
-    m_context->m_transfer_queue = std::make_unique<TransferQueue>(*m_context->m_device);
+    m_context->m_adhoc_queues = std::make_unique<AdhocQueues>(*m_context->m_device);
     return *this;
 }
 
@@ -38,7 +38,7 @@ VulkanContextBuilder &VulkanContextBuilder::add_graphics_buffers()
 {
     m_context->m_graphics_buffers = std::make_unique<GraphicsBuffers>(
         *m_context->m_device,
-        *m_context->m_transfer_queue);
+        *m_context->m_adhoc_queues);
     return *this;
 }
 

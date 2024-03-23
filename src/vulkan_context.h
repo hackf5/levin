@@ -12,7 +12,7 @@
 #include "vulkan/framebuffers.h"
 #include "vulkan/graphics_buffers.h"
 #include "vulkan/graphics_pipeline.h"
-#include "vulkan/transfer_queue.h"
+#include "vulkan/adhoc_queues.h"
 #include "vulkan/graphics_queue.h"
 #include "vulkan/render_pass.h"
 #include "vulkan/shader_module.h"
@@ -31,7 +31,7 @@ namespace levin
     private:
         std::unique_ptr<Window> m_window;
         std::unique_ptr<Device> m_device;
-        std::unique_ptr<TransferQueue> m_transfer_queue;
+        std::unique_ptr<AdhocQueues> m_adhoc_queues;
         std::unique_ptr<GraphicsQueue> m_graphics_queue;
         std::unique_ptr<DescriptorSetLayout> m_descriptor_set_layout;
         std::unique_ptr<GraphicsBuffers> m_graphics_buffers;
@@ -50,7 +50,7 @@ namespace levin
 
         const Device &device() const { return *m_device; }
 
-        const TransferQueue &transfer_queue() const { return *m_transfer_queue; }
+        const AdhocQueues &adhoc_queues() const { return *m_adhoc_queues; }
 
         GraphicsQueue &graphics_queue() { return *m_graphics_queue; }
         const GraphicsQueue &graphics_queue() const { return *m_graphics_queue; }

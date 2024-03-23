@@ -6,9 +6,9 @@ const VkDeviceSize vertex_offsets[] = { 0 };
 
 GraphicsBuffers::GraphicsBuffers(
     const Device &device,
-    const TransferQueue &transfer_queue):
+    const AdhocQueues &adhoc_queues):
     m_device(device),
-    m_transfer_queue(transfer_queue),
+    m_adhoc_queues(adhoc_queues),
     m_vertex_buffer(nullptr),
     m_index_buffer(nullptr),
     m_vertex_buffers()
@@ -21,7 +21,7 @@ void GraphicsBuffers::load_vertexes(const std::vector<Vertex> &vertexes)
 
     m_vertex_buffer = std::make_unique<BufferGPU>(
         m_device,
-        m_transfer_queue,
+        m_adhoc_queues,
         sizeof(vertexes[0]) * vertexes.size(),
         VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
     m_vertex_buffers[0] = *m_vertex_buffer;
@@ -35,7 +35,7 @@ void GraphicsBuffers::load_indexes(const std::vector<Vertex::index_t> &indexes)
 
     m_index_buffer = std::make_unique<BufferGPU>(
         m_device,
-        m_transfer_queue,
+        m_adhoc_queues,
         sizeof(indexes[0]) * indexes.size(),
         VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 

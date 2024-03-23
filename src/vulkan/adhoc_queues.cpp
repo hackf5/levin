@@ -1,29 +1,61 @@
-#include "transfer_queue.h"
+#include "adhoc_queues.h"
 
 #include "spdlog/spdlog.h"
 
 using namespace levin;
 
-TransferQueue::TransferQueue(const Device &device):
+AdhocQueue::AdhocQueue(
+    const Device &device,
+    QueueFamily family):
     m_device(device),
-    m_queue(device.transfer_queue()),
-    m_command_pool(create_command_pool()),
+    m_queue(get_queue(family)),
+    m_command_pool(create_command_pool(family)),
     m_command_buffer(create_command_buffer())
 {
 }
 
-TransferQueue::~TransferQueue()
+AdhocQueue::~AdhocQueue()
 {
     spdlog::info("Destroying Buffer Transfer Queue");
     vkFreeCommandBuffers(m_device, m_command_pool, 1, &m_command_buffer);
     vkDestroyCommandPool(m_device, m_command_pool, nullptr);
 }
 
-VkCommandPool TransferQueue::create_command_pool()
+VkQueue AdhocQueue::get_queue(QueueFamily family) const
+{
+    switch (family)
+    {
+    case graphics:
+        return m_device.graphics_queue();
+    case present:
+        return m_device.present_queue();
+    case transfer:
+        return m_device.transfer_queue();
+    default:
+        throw std::runtime_error("Invalid queue family");
+    }
+}
+
+uint32_t AdhocQueue::get_queue_index(QueueFamily family) const
+{
+    switch (family)
+    {
+    case graphics:
+        return m_device.graphics_queue_index();
+    case present:
+        return m_device.present_queue_index();
+    case transfer:
+        return m_device.transfer_queue_index();
+    default:
+        throw std::runtime_error("Invalid queue family");
+    }
+}
+
+VkCommandPool AdhocQueue::create_command_pool(QueueFamily family)
 {
     VkCommandPoolCreateInfo pool_info = {};
     pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    pool_info.queueFamilyIndex = m_device.transfer_queue_index();
+    pool_info.queueFamilyIndex = get_queue_index(family);
     pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
     VkCommandPool command_pool;
@@ -35,7 +67,7 @@ VkCommandPool TransferQueue::create_command_pool()
     return command_pool;
 }
 
-VkCommandBuffer TransferQueue::create_command_buffer()
+VkCommandBuffer AdhocQueue::create_command_buffer()
 {
     VkCommandBufferAllocateInfo alloc_info = {};
     alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -52,7 +84,7 @@ VkCommandBuffer TransferQueue::create_command_buffer()
     return command_buffer;
 }
 
-VkCommandBuffer TransferQueue::begin() const
+VkCommandBuffer AdhocQueue::begin() const
 {
     if (vkResetCommandBuffer(m_command_buffer, 0) != VK_SUCCESS)
     {
@@ -70,7 +102,7 @@ VkCommandBuffer TransferQueue::begin() const
     return m_command_buffer;
 }
 
-void TransferQueue::submit_and_wait() const
+void AdhocQueue::submit_and_wait() const
 {
     auto command_buffer = m_command_buffer;
 

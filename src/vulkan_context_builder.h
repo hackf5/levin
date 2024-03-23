@@ -19,7 +19,7 @@ namespace levin
 
         VulkanContextBuilder &add_device(bool enable_validation_layers = true);
 
-        VulkanContextBuilder &add_transfer_queue();
+        VulkanContextBuilder &add_adhoc_queues();
 
         VulkanContextBuilder &add_graphics_queue();
 

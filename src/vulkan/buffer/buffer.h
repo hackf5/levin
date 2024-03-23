@@ -6,7 +6,6 @@
 
 #include "util/no_copy_or_move.h"
 #include "vulkan/device.h"
-#include "vulkan/transfer_queue.h"
 
 namespace levin
 {
