@@ -51,10 +51,12 @@ void VulkanEngine::run()
 
     load_scene();
 
-    auto image = std::make_unique<Image>(
+    m_image = std::make_unique<Image>(
         m_context->device(),
+        m_context->sampler(),
         m_context->adhoc_queues(),
-        m_context->swapchain(),
+        m_context->uniform_buffer_factory().pool(),
+        m_context->descriptor_set_layout(),
         "george.png");
 
     while (!m_context->window().should_close())
@@ -150,6 +152,7 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
     m_context->graphics_pipeline().bind(command_buffer);
     m_context->swapchain().clip(command_buffer);
     m_context->graphics_buffers().bind(command_buffer);
+    m_image->bind(command_buffer, m_context->graphics_pipeline());
     m_context->scene().bind(command_buffer, m_context->graphics_pipeline());
     m_context->scene().render(command_buffer, m_context->graphics_pipeline());
     m_context->gui().render(command_buffer);

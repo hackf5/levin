@@ -13,7 +13,7 @@
 
 namespace levin
 {
-    class UniformBufferFactory
+    class UniformBufferFactory : NoCopyOrMove
     {
     private:
         const Device &m_device;
@@ -29,5 +29,7 @@ namespace levin
             const DescriptorSetLayout &descriptor_set_layout);
 
         std::unique_ptr<UniformBuffer> create(VkDeviceSize size, UniformBuffer::Usage usage);
+
+        const DescriptorPool &pool() const { return *m_descriptor_pools.back(); }
     };
 }

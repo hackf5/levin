@@ -29,6 +29,8 @@ namespace levin
 
         VulkanContextBuilder &add_uniform_buffer_factory();
 
+        VulkanContextBuilder &add_sampler();
+
         VulkanContextBuilder &add_scene();
 
         VulkanContextBuilder &add_swapchain();

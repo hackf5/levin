@@ -57,10 +57,14 @@ vkb::Device Device::create_device()
 {
     spdlog::info("Selecting Vulkan Physical Device");
 
+    VkPhysicalDeviceFeatures required_features = {};
+    required_features.samplerAnisotropy = VK_TRUE;
+
     vkb::PhysicalDeviceSelector selector { m_instance };
     auto phys_ret = selector.set_surface(m_surface)
         .set_minimum_version(1, 3)
         .require_dedicated_transfer_queue()
+        .set_required_features(required_features)
         .select();
     if (!phys_ret)
     {

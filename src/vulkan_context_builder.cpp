@@ -50,6 +50,12 @@ VulkanContextBuilder &VulkanContextBuilder::add_uniform_buffer_factory()
     return *this;
 }
 
+VulkanContextBuilder &VulkanContextBuilder::add_sampler()
+{
+    m_context->m_sampler = std::make_unique<Sampler>(*m_context->m_device);
+    return *this;
+}
+
 VulkanContextBuilder &VulkanContextBuilder::add_scene()
 {
     m_context->m_scene = std::make_unique<Scene>(*m_context->m_uniform_buffer_factory);

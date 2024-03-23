@@ -11,7 +11,7 @@
 
 namespace levin
 {
-    class Device : NoCopyOrMove
+    class Device: NoCopyOrMove
     {
     private:
         const Window &m_window;
@@ -43,6 +43,11 @@ namespace levin
         operator const vkb::Device &() const { return m_device; }
 
         operator VkDevice() const { return m_device.device; }
+
+        VkPhysicalDeviceProperties  properties() const
+        {
+            return m_device.physical_device.properties;
+        }
 
         VkInstance instance() const { return m_instance.instance; }
 

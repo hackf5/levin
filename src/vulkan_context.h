@@ -15,6 +15,7 @@
 #include "vulkan/adhoc_queues.h"
 #include "vulkan/graphics_queue.h"
 #include "vulkan/render_pass.h"
+#include "vulkan/sampler.h"
 #include "vulkan/shader_module.h"
 #include "vulkan/swapchain.h"
 #include "vulkan/window.h"
@@ -36,6 +37,7 @@ namespace levin
         std::unique_ptr<DescriptorSetLayout> m_descriptor_set_layout;
         std::unique_ptr<GraphicsBuffers> m_graphics_buffers;
         std::unique_ptr<UniformBufferFactory> m_uniform_buffer_factory;
+        std::unique_ptr<Sampler> m_sampler;
         std::unique_ptr<Scene> m_scene;
         std::unique_ptr<Swapchain> m_swapchain;
         std::unique_ptr<RenderPass> m_render_pass;
@@ -62,6 +64,8 @@ namespace levin
 
         const UniformBufferFactory &uniform_buffer_factory() const { return *m_uniform_buffer_factory; }
         UniformBufferFactory &uniform_buffer_factory() { return *m_uniform_buffer_factory; }
+
+        const Sampler &sampler() const { return *m_sampler; }
 
         const Scene &scene() const { return *m_scene; }
         Scene &scene() { return *m_scene; }

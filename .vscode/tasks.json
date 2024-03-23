@@ -41,11 +41,11 @@
     {
       "type": "shell",
       "label": "Run Levin",
-      "command": "${workspaceFolder}/build/release/bin/levin",
+      "command": "${workspaceFolder}/bin/release/levin",
       "args": [],
       "problemMatcher": [],
       "options": {
-        "cwd": "${workspaceFolder}/build/release/bin",
+        "cwd": "${workspaceFolder}/bin/release",
       },
       "dependsOn": "Build Release"
     }

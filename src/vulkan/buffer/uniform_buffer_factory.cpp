@@ -31,7 +31,7 @@ std::unique_ptr<UniformBuffer> UniformBufferFactory::create_internal(VkDeviceSiz
     return std::make_unique<UniformBuffer>(
         m_device,
         m_descriptor_set_layout,
-        *m_descriptor_pools.back(),
+        pool(),
         size,
         usage);
 }

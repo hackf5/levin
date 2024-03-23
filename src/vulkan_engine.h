@@ -5,6 +5,7 @@
 
 #include "util/no_copy_or_move.h"
 #include "vulkan_context.h"
+#include "vulkan/image.h"
 
 namespace levin
 {
@@ -12,6 +13,8 @@ namespace levin
     {
     private:
         std::unique_ptr<VulkanContext> m_context;
+
+        std::unique_ptr<Image> m_image;
 
         uint32_t m_current_frame = 0;
 

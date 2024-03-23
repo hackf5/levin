@@ -8,24 +8,39 @@ using namespace levin;
 
 Image::Image(
     const Device &device,
+    const Sampler &sampler,
     const AdhocQueues &adhoc_queues,
-    const Swapchain &swapchain,
+    const DescriptorPool &descriptor_pool,
+    const DescriptorSetLayout &descriptor_set_layout,
     const std::string &name):
     m_device(device),
     m_image_info(create_image_info(name)),
     m_allocation_info(create_allocation_info()),
-    m_image_views(create_image_views(adhoc_queues, swapchain))
+    m_image_view(create_image_view(adhoc_queues)),
+    m_descriptor_set(device, descriptor_pool, descriptor_set_layout)
 {
+    VkDescriptorImageInfo image_info = {};
+    image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    image_info.imageView = m_image_view;
+    image_info.sampler = sampler;
+
+    VkWriteDescriptorSet descriptor_write {};
+    descriptor_write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptor_write.dstSet = m_descriptor_set;
+    descriptor_write.dstBinding = 0;
+    descriptor_write.dstArrayElement = 0;
+    descriptor_write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    descriptor_write.descriptorCount = 1;
+    descriptor_write.pImageInfo = &image_info;
+
+    vkUpdateDescriptorSets(device, 1, &descriptor_write, 0, nullptr);
 }
 
 Image::~Image()
 {
-    spdlog::info("Destroying image: {}" , m_image_info.name);
+    spdlog::info("Destroying image: {}", m_image_info.name);
 
-    for (auto view : m_image_views)
-    {
-        vkDestroyImageView(m_device, view, nullptr);
-    }
+    vkDestroyImageView(m_device, m_image_view, nullptr);
 
     vmaDestroyImage(
         m_device.allocator(),
@@ -203,9 +218,23 @@ void Image::copy_staging_buffer_to_image(const AdhocQueues &adhoc_queues)
     adhoc_queues.transfer().submit_and_wait();
 }
 
-VkImageView Image::create_image_view()
+VkImageView Image::create_image_view(const AdhocQueues &adhoc_queues)
 {
     spdlog::info("Creating image view for: {}", m_image_info.name);
+
+    transition_image_layout(
+        adhoc_queues,
+        VK_IMAGE_LAYOUT_UNDEFINED,
+        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+    copy_staging_buffer_to_image(adhoc_queues);
+
+    transition_image_layout(
+        adhoc_queues,
+        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    m_image_info.staging_buffer.reset();
 
     VkImageViewCreateInfo view_info = {};
     view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -225,33 +254,4 @@ VkImageView Image::create_image_view()
     }
 
     return view;
-}
-
-std::vector<VkImageView> Image::create_image_views(
-    const AdhocQueues &adhoc_queues,
-    const Swapchain &swapchain)
-{
-    spdlog::info("Creating image views for: {}" , m_image_info.name);
-
-    transition_image_layout(
-        adhoc_queues,
-        VK_IMAGE_LAYOUT_UNDEFINED,
-        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-
-    copy_staging_buffer_to_image(adhoc_queues);
-
-    transition_image_layout(
-        adhoc_queues,
-        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-    m_image_info.staging_buffer.reset();
-
-    std::vector<VkImageView> views;
-    for (auto i = 0; i < swapchain.image_count(); i++)
-    {
-        views.push_back(create_image_view());
-    }
-
-    return views;
 }

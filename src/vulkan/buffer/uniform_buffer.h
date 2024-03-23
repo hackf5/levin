@@ -17,8 +17,8 @@ namespace levin
     public:
         typedef enum
         {
-            CAMERA = 0,
-            MESH = 1,
+            CAMERA = 1,
+            MESH = 2,
         } Usage;
 
     private:

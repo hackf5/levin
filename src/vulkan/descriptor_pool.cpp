@@ -1,5 +1,6 @@
 #include "descriptor_pool.h"
 
+#include <array>
 #include <stdexcept>
 
 #include "spdlog/spdlog.h"
@@ -24,17 +25,23 @@ VkDescriptorPool DescriptorPool::create_descriptor_pool()
 
     VkDescriptorPoolSize uniform_buffer_size = {};
     uniform_buffer_size.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    // the number of descriptors of that type to allocate
     uniform_buffer_size.descriptorCount = 1000;
+
+    VkDescriptorPoolSize sampler_size = {};
+    sampler_size.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    sampler_size.descriptorCount = 1000;
+
+    std::array<VkDescriptorPoolSize, 2> pool_sizes = { uniform_buffer_size, sampler_size };
 
     VkDescriptorPoolCreateInfo pool_info = {};
     pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-    pool_info.poolSizeCount = 1;
-    pool_info.pPoolSizes = &uniform_buffer_size;
+    // the maximum number of descriptor sets that can be bound to the pipeline at once
+    pool_info.maxSets = 4;
 
-    // this is the maximum number of descriptor sets that can be allocated from the pool
-    // once it is necessary to allocate more sets than this a new pool must be created
-    pool_info.maxSets = 1000;
+    pool_info.poolSizeCount = static_cast<uint32_t>(pool_sizes.size());
+    pool_info.pPoolSizes = pool_sizes.data();
 
     VkDescriptorPool descriptor_pool;
     if (vkCreateDescriptorPool(m_device, &pool_info, nullptr, &descriptor_pool) != VK_SUCCESS)

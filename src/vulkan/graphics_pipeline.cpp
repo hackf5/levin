@@ -31,9 +31,15 @@ VkPipelineLayout GraphicsPipeline::create_pipeline_layout(
 {
     spdlog::info("Creating Graphics Pipeline Layout");
 
-    // Set 0 = Camera UBO
-    // Set 1 = Model UBO
-    const std::array<VkDescriptorSetLayout, 2> set_layouts = { descriptor_set_layout, descriptor_set_layout };
+    // Set 0 = Sampler
+    // Set 1 = Camera UBO
+    // Set 2 = Model UBO
+    const std::array<VkDescriptorSetLayout, 3> set_layouts =
+    {
+        descriptor_set_layout,
+        descriptor_set_layout,
+        descriptor_set_layout,
+    };
 
     VkPipelineLayoutCreateInfo pipeline_layout_info = {};
     pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
