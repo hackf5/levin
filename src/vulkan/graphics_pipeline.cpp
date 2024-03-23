@@ -2,7 +2,7 @@
 
 #include <array>
 
-#include "model/vertex.h"
+#include "vertex.h"
 
 #include "spdlog/spdlog.h"
 

@@ -40,12 +40,18 @@ VulkanContextBuilder &VulkanContextBuilder::add_descriptor_set_layout()
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::add_model()
+VulkanContextBuilder &VulkanContextBuilder::add_graphics_buffers()
 {
-    m_context->m_model = std::make_unique<Model>(
+    m_context->m_graphics_buffers = std::make_unique<GraphicsBuffers>(
         *m_context->m_device,
         *m_context->m_descriptor_pool,
         *m_context->m_transfer_queue);
+    return *this;
+}
+
+VulkanContextBuilder &VulkanContextBuilder::add_model()
+{
+    m_context->m_model = std::make_unique<Model>();
     return *this;
 }
 

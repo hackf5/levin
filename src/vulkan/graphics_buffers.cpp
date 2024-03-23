@@ -1,28 +1,10 @@
-#include "model.h"
-
-#include <stdexcept>
-
-#include "spdlog/spdlog.h"
+#include "graphics_buffers.h"
 
 using namespace levin;
 
-Mesh::Mesh(
-    const Device &device,
-    const DescriptorPool &descriptor_pool,
-    const DescriptorSetLayout &descriptor_set_layout,
-    const std::vector<Primitive>& primitives):
-    m_uniform_block {},
-    m_primitives(primitives),
-    m_uniform_buffer(
-        device,
-        descriptor_pool,
-        descriptor_set_layout,
-        sizeof(m_uniform_block),
-        UniformBuffer::MESH)
-{
-}
+const VkDeviceSize vertex_offsets[] = { 0 };
 
-Model::Model(
+GraphicsBuffers::GraphicsBuffers(
     const Device &device,
     const DescriptorPool &descriptor_pool,
     const TransferQueue &transfer_queue):
@@ -31,12 +13,11 @@ Model::Model(
     m_transfer_queue(transfer_queue),
     m_vertex_buffer(nullptr),
     m_index_buffer(nullptr),
-    m_primitives(),
-    m_root_node(std::make_unique<Node>(nullptr, nullptr))
+    m_vertex_buffers()
 {
 }
 
-void Model::load_vertexes(const std::vector<levin::Vertex> &vertexes)
+void GraphicsBuffers::load_vertexes(const std::vector<Vertex> &vertexes)
 {
     m_vertex_buffer.reset();
 
@@ -45,11 +26,12 @@ void Model::load_vertexes(const std::vector<levin::Vertex> &vertexes)
         m_transfer_queue,
         sizeof(vertexes[0]) * vertexes.size(),
         VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+    m_vertex_buffers[0] = *m_vertex_buffer;
 
     m_vertex_buffer->copy_from(vertexes);
 }
 
-void Model::load_indexes(const std::vector<uint32_t> &indexes)
+void GraphicsBuffers::load_indexes(const std::vector<Vertex::index_t> &indexes)
 {
     m_index_buffer.reset();
 
@@ -60,4 +42,10 @@ void Model::load_indexes(const std::vector<uint32_t> &indexes)
         VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 
     m_index_buffer->copy_from(indexes);
+}
+
+void GraphicsBuffers::bind(VkCommandBuffer command_buffer) const
+{
+    vkCmdBindVertexBuffers(command_buffer, 0, 1, m_vertex_buffers.data(), vertex_offsets);
+    vkCmdBindIndexBuffer(command_buffer, *m_index_buffer, 0, Vertex::vk_index_type);
 }

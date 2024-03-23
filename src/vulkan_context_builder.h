@@ -27,6 +27,8 @@ namespace levin
 
         VulkanContextBuilder &add_descriptor_set_layout();
 
+        VulkanContextBuilder &add_graphics_buffers();
+
         VulkanContextBuilder &add_model();
 
         VulkanContextBuilder &add_camera();

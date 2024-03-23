@@ -1,25 +1,25 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 
 #include "util/no_copy_or_move.h"
 
-#include "vulkan/window.h"
+#include "vulkan/buffer.h"
+#include "vulkan/descriptor_pool.h"
+#include "vulkan/descriptor_set.h"
+#include "vulkan/descriptor_set_layout.h"
 #include "vulkan/device.h"
+#include "vulkan/framebuffers.h"
+#include "vulkan/graphics_buffers.h"
+#include "vulkan/graphics_pipeline.h"
 #include "vulkan/transfer_queue.h"
 #include "vulkan/graphics_queue.h"
-#include "vulkan/descriptor_pool.h"
-#include "vulkan/descriptor_set_layout.h"
-#include "vulkan/buffer.h"
-#include "vulkan/descriptor_set.h"
+#include "vulkan/render_pass.h"
 #include "vulkan/shader_module.h"
 #include "vulkan/swapchain.h"
-#include "vulkan/render_pass.h"
-#include "vulkan/framebuffers.h"
-#include "vulkan/graphics_pipeline.h"
+#include "vulkan/window.h"
+#include "vulkan/vertex.h"
 
-#include "model/vertex.h"
 #include "model/model.h"
 #include "model/camera.h"
 
@@ -36,6 +36,7 @@ namespace levin
         std::unique_ptr<GraphicsQueue> m_graphics_queue;
         std::unique_ptr<DescriptorPool> m_descriptor_pool;
         std::unique_ptr<DescriptorSetLayout> m_descriptor_set_layout;
+        std::unique_ptr<GraphicsBuffers> m_graphics_buffers;
         std::unique_ptr<Model> m_model;
         std::unique_ptr<Camera> m_camera;
         std::unique_ptr<Swapchain> m_swapchain;
@@ -59,6 +60,9 @@ namespace levin
         const DescriptorPool &descriptor_pool() const { return *m_descriptor_pool; }
 
         const DescriptorSetLayout &descriptor_set_layout() const { return *m_descriptor_set_layout; }
+
+        const GraphicsBuffers &graphics_buffers() const { return *m_graphics_buffers; }
+        GraphicsBuffers &graphics_buffers() { return *m_graphics_buffers; }
 
         const Model &model() const { return *m_model; }
         Model &model() { return *m_model; }

@@ -52,11 +52,12 @@ void VulkanEngine::run()
 
 void VulkanEngine::load_model()
 {
-    m_context->model().load_vertexes(vertexes);
-    m_context->model().load_indexes(indexes);
+    m_context->graphics_buffers().load_vertexes(vertexes);
+    m_context->graphics_buffers().load_indexes(indexes);
 
-    std::vector<Primitive> primitives;
-    primitives.emplace_back(0, indexes.size());
+    std::vector<Primitive> primitives = {
+        {0, indexes.size()}
+    };
 
     auto &root_node = m_context->model().root_node();
     auto mesh1 = std::make_unique<Mesh>(
@@ -126,12 +127,14 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
     auto command_buffer = m_context->graphics_queue().begin_command();
 
     m_context->render_pass().begin(command_buffer, framebuffer);
+
     m_context->graphics_pipeline().bind(command_buffer);
     m_context->swapchain().clip(command_buffer);
-    m_context->model().bind(command_buffer);
+    m_context->graphics_buffers().bind(command_buffer);
     m_context->camera().bind(command_buffer, m_context->graphics_pipeline());
     m_context->model().render(command_buffer, m_context->graphics_pipeline());
     m_context->gui().render(command_buffer);
+
     m_context->render_pass().end(command_buffer);
 
     m_context->graphics_queue().submit_command();
