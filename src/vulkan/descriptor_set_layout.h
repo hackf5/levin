@@ -17,7 +17,6 @@ namespace levin
 
     public:
         DescriptorSetLayout(const Device &device);
-        DescriptorSetLayout(const DescriptorSetLayout &) = delete;
         ~DescriptorSetLayout();
 
         operator VkDescriptorSetLayout () const { return m_descriptor_set_layout; }

@@ -33,7 +33,7 @@ void VulkanEngine::run()
 
     load_model();
 
-    auto &camera = m_context->camera();
+    auto &camera = m_context->scene().camera();
     camera.position() = glm::vec3(2.0f, 2.0f, 2.0f);
     camera.target() = glm::vec3(0.0f, 0.0f, 0.0f);
     camera.clip_far() = 10.0f;
@@ -59,19 +59,15 @@ void VulkanEngine::load_model()
         {0, static_cast<uint32_t>(indexes.size())}
     };
 
-    auto &root_node = m_context->model().root_node();
+    auto &root_node = m_context->scene().model().root_node();
     auto mesh1 = std::make_unique<Mesh>(
-        m_context->device(),
-        m_context->descriptor_pool(),
-        m_context->descriptor_set_layout(),
+        m_context->uniform_buffer_factory(),
         primitives);
     auto &child1 = root_node.add_child(std::move(mesh1));
     child1.translation() = glm::vec3(-0.5f, 0.0f, 0.0f);
 
     auto mesh2 = std::make_unique<Mesh>(
-        m_context->device(),
-        m_context->descriptor_pool(),
-        m_context->descriptor_set_layout(),
+        m_context->uniform_buffer_factory(),
         primitives);
     auto &child2 = root_node.add_child(std::move(mesh2));
     child2.translation() = glm::vec3(0.5f, 0.0f, 0.0f);
@@ -91,9 +87,8 @@ void VulkanEngine::recreate_swapchain()
         .build();
     m_context = std::move(context);
 
-    auto &camera = m_context->camera();
+    auto &camera = m_context->scene().camera();
     camera.aspect_ratio() = m_context->swapchain().aspect_ratio();
-    camera.flush();
 }
 
 void VulkanEngine::draw_frame()
@@ -131,8 +126,8 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
     m_context->graphics_pipeline().bind(command_buffer);
     m_context->swapchain().clip(command_buffer);
     m_context->graphics_buffers().bind(command_buffer);
-    m_context->camera().bind(command_buffer, m_context->graphics_pipeline());
-    m_context->model().render(command_buffer, m_context->graphics_pipeline());
+    m_context->scene().bind(command_buffer, m_context->graphics_pipeline());
+    m_context->scene().render(command_buffer, m_context->graphics_pipeline());
     m_context->gui().render(command_buffer);
 
     m_context->render_pass().end(command_buffer);
@@ -150,7 +145,7 @@ void VulkanEngine::update_uniform_buffer()
     auto rotation = glm::quat_cast(
         glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
 
-    auto &node = m_context->model().root_node();
+    auto &node = m_context->scene().model().root_node();
 
     node.rotation() = rotation;
     for (auto &child : node.children())
@@ -158,6 +153,5 @@ void VulkanEngine::update_uniform_buffer()
         child->rotation() = rotation;
     }
 
-    m_context->camera().flush();
-    m_context->model().flush();
+    m_context->scene().flush();
 }

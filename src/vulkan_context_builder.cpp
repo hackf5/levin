@@ -28,12 +28,6 @@ VulkanContextBuilder &VulkanContextBuilder::add_graphics_queue()
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::add_descriptor_pool()
-{
-    m_context->m_descriptor_pool = std::make_unique<DescriptorPool>(*m_context->m_device);
-    return *this;
-}
-
 VulkanContextBuilder &VulkanContextBuilder::add_descriptor_set_layout()
 {
     m_context->m_descriptor_set_layout = std::make_unique<DescriptorSetLayout>(*m_context->m_device);
@@ -44,23 +38,21 @@ VulkanContextBuilder &VulkanContextBuilder::add_graphics_buffers()
 {
     m_context->m_graphics_buffers = std::make_unique<GraphicsBuffers>(
         *m_context->m_device,
-        *m_context->m_descriptor_pool,
         *m_context->m_transfer_queue);
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::add_model()
+VulkanContextBuilder &VulkanContextBuilder::add_uniform_buffer_factory()
 {
-    m_context->m_model = std::make_unique<Model>();
+    m_context->m_uniform_buffer_factory = std::make_unique<UniformBufferFactory>(
+        *m_context->m_device,
+        *m_context->m_descriptor_set_layout);
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::add_camera()
+VulkanContextBuilder &VulkanContextBuilder::add_scene()
 {
-    m_context->m_camera = std::make_unique<Camera>(
-        *m_context->m_device,
-        *m_context->m_descriptor_pool,
-        *m_context->m_descriptor_set_layout);
+    m_context->m_scene = std::make_unique<Scene>(*m_context->m_uniform_buffer_factory);
     return *this;
 }
 

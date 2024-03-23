@@ -8,8 +8,8 @@ using namespace levin;
 
 UniformBuffer::UniformBuffer(
     const Device &device,
-    const DescriptorPool &descriptor_pool,
     const DescriptorSetLayout &descriptor_set_layout,
+    const DescriptorPool &descriptor_pool,
     VkDeviceSize size,
     Usage usage):
     BufferHost(device, size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT),

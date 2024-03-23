@@ -5,15 +5,8 @@
 using namespace levin;
 
 Camera::Camera(
-    const Device &device,
-    const DescriptorPool &descriptor_pool,
-    const DescriptorSetLayout &descriptor_set_layout):
-    m_uniform_buffer(
-        device,
-        descriptor_pool,
-        descriptor_set_layout,
-        sizeof(UniformBlock),
-        UniformBuffer::CAMERA),
+    UniformBufferFactory &uniform_buffer_factory):
+    m_uniform_buffer(uniform_buffer_factory.create(sizeof(UniformBlock), UniformBuffer::CAMERA)),
     m_uniform_block({ glm::identity<glm::mat4>(), glm::identity<glm::mat4>() }),
     m_position(glm::zero<glm::vec3>()),
     m_target(glm::zero<glm::vec3>()),

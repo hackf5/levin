@@ -28,8 +28,8 @@ namespace levin
     public:
         UniformBuffer(
             const Device &device,
-            const DescriptorPool &descriptor_pool,
             const DescriptorSetLayout &descriptor_set_layout,
+            const DescriptorPool &descriptor_pool,
             VkDeviceSize size,
             Usage usage);
 

@@ -4,7 +4,7 @@
 
 #include "util/no_copy_or_move.h"
 
-#include "vulkan/buffer/buffer.h"
+#include "vulkan/buffer/uniform_buffer_factory.h"
 #include "vulkan/descriptor_pool.h"
 #include "vulkan/descriptor_set.h"
 #include "vulkan/descriptor_set_layout.h"
@@ -20,8 +20,7 @@
 #include "vulkan/window.h"
 #include "vulkan/vertex.h"
 
-#include "model/model.h"
-#include "model/camera.h"
+#include "model/scene.h"
 
 #include "gui/gui.h"
 
@@ -34,11 +33,10 @@ namespace levin
         std::unique_ptr<Device> m_device;
         std::unique_ptr<TransferQueue> m_transfer_queue;
         std::unique_ptr<GraphicsQueue> m_graphics_queue;
-        std::unique_ptr<DescriptorPool> m_descriptor_pool;
         std::unique_ptr<DescriptorSetLayout> m_descriptor_set_layout;
         std::unique_ptr<GraphicsBuffers> m_graphics_buffers;
-        std::unique_ptr<Model> m_model;
-        std::unique_ptr<Camera> m_camera;
+        std::unique_ptr<UniformBufferFactory> m_uniform_buffer_factory;
+        std::unique_ptr<Scene> m_scene;
         std::unique_ptr<Swapchain> m_swapchain;
         std::unique_ptr<RenderPass> m_render_pass;
         std::unique_ptr<Framebuffers> m_framebuffers;
@@ -57,18 +55,16 @@ namespace levin
         GraphicsQueue &graphics_queue() { return *m_graphics_queue; }
         const GraphicsQueue &graphics_queue() const { return *m_graphics_queue; }
 
-        const DescriptorPool &descriptor_pool() const { return *m_descriptor_pool; }
-
         const DescriptorSetLayout &descriptor_set_layout() const { return *m_descriptor_set_layout; }
 
         const GraphicsBuffers &graphics_buffers() const { return *m_graphics_buffers; }
         GraphicsBuffers &graphics_buffers() { return *m_graphics_buffers; }
 
-        const Model &model() const { return *m_model; }
-        Model &model() { return *m_model; }
+        const UniformBufferFactory &uniform_buffer_factory() const { return *m_uniform_buffer_factory; }
+        UniformBufferFactory &uniform_buffer_factory() { return *m_uniform_buffer_factory; }
 
-        const Camera &camera() const { return *m_camera; }
-        Camera &camera() { return *m_camera; }
+        const Scene &scene() const { return *m_scene; }
+        Scene &scene() { return *m_scene; }
 
         const Swapchain &swapchain() const { return *m_swapchain; }
 

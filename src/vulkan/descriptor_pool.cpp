@@ -20,19 +20,21 @@ DescriptorPool::~DescriptorPool()
 
 VkDescriptorPool DescriptorPool::create_descriptor_pool()
 {
-    // currently specific to uniform buffer
     spdlog::info("Creating descriptor pool");
 
-    VkDescriptorPoolSize pool_size = {};
-    pool_size.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    pool_size.descriptorCount = 100; // this is arbitrary and needs resolving
+    VkDescriptorPoolSize uniform_buffer_size = {};
+    uniform_buffer_size.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uniform_buffer_size.descriptorCount = 1000;
 
     VkDescriptorPoolCreateInfo pool_info = {};
     pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
     pool_info.poolSizeCount = 1;
-    pool_info.pPoolSizes = &pool_size;
-    pool_info.maxSets = 100; // this is arbitrary and needs resolving
+    pool_info.pPoolSizes = &uniform_buffer_size;
+
+    // this is the maximum number of descriptor sets that can be allocated from the pool
+    // once it is necessary to allocate more sets than this a new pool must be created
+    pool_info.maxSets = 1000;
 
     VkDescriptorPool descriptor_pool;
     if (vkCreateDescriptorPool(m_device, &pool_info, nullptr, &descriptor_pool) != VK_SUCCESS)

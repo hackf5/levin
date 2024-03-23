@@ -23,15 +23,13 @@ namespace levin
 
         VulkanContextBuilder &add_graphics_queue();
 
-        VulkanContextBuilder &add_descriptor_pool();
-
         VulkanContextBuilder &add_descriptor_set_layout();
 
         VulkanContextBuilder &add_graphics_buffers();
 
-        VulkanContextBuilder &add_model();
+        VulkanContextBuilder &add_uniform_buffer_factory();
 
-        VulkanContextBuilder &add_camera();
+        VulkanContextBuilder &add_scene();
 
         VulkanContextBuilder &add_swapchain();
 

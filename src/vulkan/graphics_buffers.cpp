@@ -6,10 +6,8 @@ const VkDeviceSize vertex_offsets[] = { 0 };
 
 GraphicsBuffers::GraphicsBuffers(
     const Device &device,
-    const DescriptorPool &descriptor_pool,
     const TransferQueue &transfer_queue):
     m_device(device),
-    m_descriptor_pool(descriptor_pool),
     m_transfer_queue(transfer_queue),
     m_vertex_buffer(nullptr),
     m_index_buffer(nullptr),

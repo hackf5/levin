@@ -1,22 +1,23 @@
 
 #pragma once
 
+#include <memory>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <vulkan/vulkan.h>
 
 #include "util/no_copy_or_move.h"
 
-#include "vulkan/device.h"
-#include "vulkan/descriptor_pool.h"
-#include "vulkan/descriptor_set_layout.h"
 #include "vulkan/buffer/uniform_buffer.h"
+#include "vulkan/buffer/uniform_buffer_factory.h"
 
 namespace levin
 {
     class Camera : NoCopyOrMove
     {
     private:
-        UniformBuffer m_uniform_buffer;
+        std::unique_ptr<UniformBuffer> m_uniform_buffer;
 
         glm::vec3 m_position;
         glm::vec3 m_target;
@@ -57,10 +58,7 @@ namespace levin
         }
 
     public:
-        Camera(
-            const Device &device,
-            const DescriptorPool &descriptor_pool,
-            const DescriptorSetLayout &descriptor_set_layout);
+        Camera(UniformBufferFactory& uniform_buffer);
 
         const glm::vec3 &position() const { return m_position; }
         glm::vec3 &position() { m_dirty = true; return m_position; }
@@ -86,12 +84,12 @@ namespace levin
         void flush()
         {
             update();
-            m_uniform_buffer.copy_from(&m_uniform_block, sizeof(UniformBlock));
+            m_uniform_buffer->copy_from(&m_uniform_block, sizeof(UniformBlock));
         }
 
         void bind(VkCommandBuffer command_buffer, const GraphicsPipeline &pipeline) const
         {
-            m_uniform_buffer.bind(command_buffer, pipeline);
+            m_uniform_buffer->bind(command_buffer, pipeline);
         }
     };
 }
