@@ -2,8 +2,6 @@
 
 #include "spdlog/spdlog.h"
 
-#include "device.h"
-
 using namespace levin;
 
 Camera::Camera(

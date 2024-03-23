@@ -4,10 +4,10 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_vulkan.h"
 
-#include "window.h"
-#include "device.h"
-#include "swapchain.h"
-#include "render_pass.h"
+#include "vulkan/window.h"
+#include "vulkan/device.h"
+#include "vulkan/swapchain.h"
+#include "vulkan/render_pass.h"
 #include "framerate.h"
 
 namespace levin

@@ -6,7 +6,7 @@
 
 #include "VkBootstrap.h"
 
-#include "util/no_default_ctors.h"
+#include "util/no_copy_or_move.h"
 #include "window.h"
 
 namespace levin

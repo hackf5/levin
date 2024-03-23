@@ -4,7 +4,7 @@
 #include <vma/vk_mem_alloc.h>
 #include <vulkan/vulkan.h>
 
-#include "util/no_default_ctors.h"
+#include "util/no_copy_or_move.h"
 #include "device.h"
 #include "transfer_queue.h"
 

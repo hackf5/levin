@@ -4,14 +4,16 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "device.h"
-#include "descriptor_pool.h"
-#include "descriptor_set_layout.h"
-#include "uniform_buffer.h"
+#include "util/no_copy_or_move.h"
+
+#include "vulkan/device.h"
+#include "vulkan/descriptor_pool.h"
+#include "vulkan/descriptor_set_layout.h"
+#include "vulkan/uniform_buffer.h"
 
 namespace levin
 {
-    class Camera
+    class Camera : NoCopyOrMove
     {
     private:
         UniformBuffer m_uniform_buffer;

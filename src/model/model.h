@@ -9,12 +9,15 @@
 #include <glm/gtc/quaternion.hpp>
 #include <vulkan/vulkan.h>
 
+#include "util/no_copy_or_move.h"
+
 #include "vertex.h"
-#include "device.h"
-#include "descriptor_pool.h"
-#include "descriptor_set_layout.h"
-#include "transfer_queue.h"
-#include "uniform_buffer.h"
+
+#include "vulkan/device.h"
+#include "vulkan/descriptor_pool.h"
+#include "vulkan/descriptor_set_layout.h"
+#include "vulkan/transfer_queue.h"
+#include "vulkan/uniform_buffer.h"
 
 namespace levin
 {
@@ -40,7 +43,7 @@ namespace levin
         }
     };
 
-    class Mesh
+    class Mesh : NoCopyOrMove
     {
     private:
         struct UniformBlock
@@ -81,7 +84,7 @@ namespace levin
         }
     };
 
-    class Node
+    class Node : NoCopyOrMove
     {
     private:
         Node *m_parent;
@@ -175,7 +178,7 @@ namespace levin
         }
     };
 
-    class Model
+    class Model : NoCopyOrMove
     {
     private:
         const Device &m_device;
@@ -195,8 +198,6 @@ namespace levin
             const Device &device,
             const DescriptorPool &descriptor_pool,
             const TransferQueue &transfer_queue);
-
-        Model(const Model &) = delete;
 
         void load_vertexes(const std::vector<levin::Vertex> &vertexes);
         void load_indexes(const std::vector<Vertex::index_t> &indexes);

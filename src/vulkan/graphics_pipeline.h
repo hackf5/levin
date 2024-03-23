@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include "util/no_default_ctors.h"
+#include "util/no_copy_or_move.h"
 #include "device.h"
 #include "descriptor_set_layout.h"
 #include "swapchain.h"
