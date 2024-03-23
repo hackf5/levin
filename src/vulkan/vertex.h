@@ -9,17 +9,21 @@
 
 namespace levin
 {
+    enum class VertexComponent { Position, UV, Color };
+
     struct Vertex
     {
         typedef uint32_t index_t;
 
         static const VkIndexType vk_index_type = VK_INDEX_TYPE_UINT32;
 
-        glm::vec2 pos;
-        glm::vec3 color;
+        static const std::vector<VertexComponent> ALL_COMPONENTS;
+
+        glm::vec3 pos;
+        glm::vec2 uv;
+        glm::vec4 color;
     };
 
-    enum class VertexComponent { Position, Color };
 
     struct VertexInputState
     {

@@ -4,6 +4,13 @@
 
 using namespace levin;
 
+const std::vector<VertexComponent> Vertex::ALL_COMPONENTS =
+{
+    VertexComponent::Position,
+    VertexComponent::UV,
+    VertexComponent::Color
+};
+
 VertexInputState::VertexInputState(
     uint32_t binding,
     const std::vector<VertexComponent> components):
@@ -38,6 +45,10 @@ VkVertexInputAttributeDescription VertexInputState::create_attribute(
     case VertexComponent::Position:
         description.format = VK_FORMAT_R32G32_SFLOAT;
         description.offset = offsetof(Vertex, pos);
+        break;
+    case VertexComponent::UV:
+        description.format = VK_FORMAT_R32G32_SFLOAT;
+        description.offset = offsetof(Vertex, uv);
         break;
     case VertexComponent::Color:
         description.format = VK_FORMAT_R32G32B32_SFLOAT;

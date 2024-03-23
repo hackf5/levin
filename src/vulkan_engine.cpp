@@ -13,10 +13,26 @@
 using namespace levin;
 
 const std::vector<levin::Vertex> vertexes = {
-    {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-    {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-    {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-    {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+    {
+        .pos = {-0.5f, -0.5f, 0.0f},
+        .uv = {1.0f, 0.0f},
+        .color = {1.0f, 0.0f, 0.0f, 1.0f},
+    },
+    {
+        {0.5f, -0.5f, 0.0f},
+        {0.0f, 0.0f},
+        {0.0f, 1.0f, 0.0f, 1.0f},
+    },
+    {
+        {0.5f, 0.5f, 0.0f},
+        {0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f, 1.0f},
+    },
+    {
+        {-0.5f, 0.5f, 0.0f},
+        {1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f},
+    },
 };
 
 const std::vector<levin::Vertex::index_t> indexes = {

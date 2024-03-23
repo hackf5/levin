@@ -57,7 +57,7 @@ VkPipeline GraphicsPipeline::create_pipeline(
 {
     spdlog::info("Creating Graphics Pipeline");
 
-    auto vertex_input_state = VertexInputState(0, { VertexComponent::Position, VertexComponent::Color });
+    auto vertex_input_state = VertexInputState(0, Vertex::ALL_COMPONENTS);
 
     auto vertex_shader = ShaderModule(m_device, "vert");
     auto fragment_shader = ShaderModule(m_device, "frag");
