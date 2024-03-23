@@ -21,24 +21,12 @@ find_package(glfw3 REQUIRED)
 # MAIN PROJECT
 file(
     GLOB_RECURSE
-    SOURCES
+    LEVIN_SOURCES
     *.cpp)
-
-set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/inc/imgui)
-
-file(
-    GLOB
-    IMGUI_SOURCES
-    ${IMGUI_DIR}/*.cpp
-    ${IMGUI_DIR}/*.h
-    ${IMGUI_DIR}/misc/cpp/imgui_stdlib.*
-    ${IMGUI_DIR}/backends/imgui_impl_glfw.*
-    ${IMGUI_DIR}/backends/imgui_impl_vulkan.*)
 
 add_executable(
     ${PROJECT_NAME}
-    ${SOURCES}
-    ${IMGUI_SOURCES})
+    ${LEVIN_SOURCES})
 
 target_include_directories(
     ${PROJECT_NAME}
@@ -55,4 +43,5 @@ target_link_libraries(
     glm::glm
     glfw
     vk-bootstrap::vk-bootstrap
+    imgui
     ${CMAKE_DL_LIBS})
