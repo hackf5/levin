@@ -36,6 +36,8 @@ namespace levin
 
         VulkanContextBuilder &add_swapchain();
 
+        VulkanContextBuilder &add_depth_buffer();
+
         VulkanContextBuilder &add_render_pass();
 
         VulkanContextBuilder &add_framebuffers();

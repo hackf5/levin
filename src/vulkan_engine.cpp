@@ -106,6 +106,7 @@ void VulkanEngine::recreate_swapchain()
 
     auto context = VulkanContextBuilder(std::move(m_context))
         .add_swapchain()
+        .add_depth_buffer()
         .add_render_pass()
         .add_framebuffers()
         .add_graphics_pipeline()

@@ -1,5 +1,8 @@
 #include "framebuffers.h"
 
+#include <array>
+#include <stdexcept>
+
 #include "spdlog/spdlog.h"
 
 using namespace levin;
@@ -7,9 +10,10 @@ using namespace levin;
 Framebuffers::Framebuffers(
     const Device &device,
     const Swapchain &swapchain,
-    const RenderPass &render_pass):
+    const RenderPass &render_pass,
+    const DepthBuffer &depth_buffer):
     m_device(device),
-    m_framebuffers(create_framebuffers(swapchain, render_pass))
+    m_framebuffers(create_framebuffers(swapchain, render_pass, depth_buffer))
 {
 }
 
@@ -23,22 +27,21 @@ Framebuffers::~Framebuffers()
 
 std::vector<VkFramebuffer> Framebuffers::create_framebuffers(
     const Swapchain &swapchain,
-    const RenderPass &render_pass)
+    const RenderPass &render_pass,
+    const DepthBuffer &depth_buffer)
 {
     std::vector<VkFramebuffer> framebuffers;
     framebuffers.resize(swapchain.image_count());
 
     for (size_t i = 0; i < swapchain.image_count(); i++)
     {
-        VkImageView attachments[] = {
-            swapchain.image_view(i)
-        };
+        auto attachments = std::array<VkImageView, 2> { swapchain.image_view(i), depth_buffer.image_view(), };
 
         VkFramebufferCreateInfo framebuffer_info = {};
         framebuffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         framebuffer_info.renderPass = render_pass;
-        framebuffer_info.attachmentCount = 1;
-        framebuffer_info.pAttachments = attachments;
+        framebuffer_info.attachmentCount = static_cast<uint32_t>(attachments.size());
+        framebuffer_info.pAttachments = attachments.data();
         framebuffer_info.width = swapchain.extent().width;
         framebuffer_info.height = swapchain.extent().height;
         framebuffer_info.layers = 1;

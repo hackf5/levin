@@ -4,12 +4,13 @@
 
 #include "util/no_copy_or_move.h"
 
+#include "vulkan/adhoc_queues.h"
 #include "vulkan/descriptor_set_layout.h"
+#include "vulkan/depth_buffer.h"
 #include "vulkan/device.h"
 #include "vulkan/framebuffers.h"
 #include "vulkan/graphics_buffers.h"
 #include "vulkan/graphics_pipeline.h"
-#include "vulkan/adhoc_queues.h"
 #include "vulkan/graphics_queue.h"
 #include "vulkan/render_pass.h"
 #include "vulkan/sampler.h"
@@ -36,6 +37,7 @@ namespace levin
         std::unique_ptr<Sampler> m_sampler;
         std::unique_ptr<Scene> m_scene;
         std::unique_ptr<Swapchain> m_swapchain;
+        std::unique_ptr<DepthBuffer> m_depth_buffer;
         std::unique_ptr<RenderPass> m_render_pass;
         std::unique_ptr<Framebuffers> m_framebuffers;
         std::unique_ptr<GraphicsPipeline> m_graphics_pipeline;

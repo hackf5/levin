@@ -52,6 +52,8 @@ namespace levin
         VkPipelineDynamicStateCreateInfo create_dynamic_state(
             const std::vector<VkDynamicState> &dynamic_states);
 
+        VkPipelineDepthStencilStateCreateInfo create_depth_stencil_state();
+
         PFN_vkCmdPushDescriptorSetKHR fetch_vkCmdPushDescriptorSetKHR();
 
     public:
