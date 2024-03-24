@@ -1,4 +1,4 @@
-#include "image.h"
+#include "texture_image.h"
 
 #include "stb_image.h"
 
@@ -6,7 +6,7 @@
 
 using namespace levin;
 
-Image::Image(
+TextureImage::TextureImage(
     const Device &device,
     const Sampler &sampler,
     const AdhocQueues &adhoc_queues,
@@ -23,7 +23,7 @@ Image::Image(
     image_info.sampler = sampler;
 }
 
-Image::~Image()
+TextureImage::~TextureImage()
 {
     spdlog::info("Destroying image: {}", m_image_info.name);
 
@@ -35,7 +35,7 @@ Image::~Image()
         m_allocation_info.allocation);
 }
 
-Image::ImageInfo Image::create_image_info(const std::string &name)
+TextureImage::ImageInfo TextureImage::create_image_info(const std::string &name)
 {
     int width, height, channels;
     auto file_name = "assets/textures/" + name;
@@ -66,7 +66,7 @@ Image::ImageInfo Image::create_image_info(const std::string &name)
     };
 }
 
-Image::AllocationInfo Image::create_allocation_info()
+TextureImage::AllocationInfo TextureImage::create_allocation_info()
 {
     spdlog::info("Creating image allocation for: {}", m_image_info.name);
 
@@ -107,7 +107,7 @@ Image::AllocationInfo Image::create_allocation_info()
     };
 }
 
-void Image::transition_image_layout(
+void TextureImage::transition_image_layout(
     const AdhocQueues &adhoc_queues,
     VkImageLayout old_layout,
     VkImageLayout new_layout)
@@ -166,7 +166,7 @@ void Image::transition_image_layout(
     adhoc_queues.graphics().submit_and_wait();
 }
 
-void Image::copy_staging_buffer_to_image(const AdhocQueues &adhoc_queues)
+void TextureImage::copy_staging_buffer_to_image(const AdhocQueues &adhoc_queues)
 {
     VkCommandBuffer command_buffer = adhoc_queues.transfer().begin();
 
@@ -205,7 +205,7 @@ void Image::copy_staging_buffer_to_image(const AdhocQueues &adhoc_queues)
     adhoc_queues.transfer().submit_and_wait();
 }
 
-VkImageView Image::create_image_view(const AdhocQueues &adhoc_queues)
+VkImageView TextureImage::create_image_view(const AdhocQueues &adhoc_queues)
 {
     spdlog::info("Creating image view for: {}", m_image_info.name);
 
@@ -243,7 +243,7 @@ VkImageView Image::create_image_view(const AdhocQueues &adhoc_queues)
     return view;
 }
 
-VkDescriptorImageInfo Image::create_image_descriptor_info(const Sampler &sampler)
+VkDescriptorImageInfo TextureImage::create_image_descriptor_info(const Sampler &sampler)
 {
     VkDescriptorImageInfo image_info = {};
     image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;

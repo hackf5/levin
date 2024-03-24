@@ -17,7 +17,7 @@
 
 namespace levin
 {
-    class Image: public NoCopyOrMove
+    class TextureImage: public NoCopyOrMove
     {
     private:
         struct AllocationInfo
@@ -55,12 +55,12 @@ namespace levin
         void copy_staging_buffer_to_image(const AdhocQueues &adhoc_queues);
 
     public:
-        Image(
+        TextureImage(
             const Device &device,
             const Sampler &sampler,
             const AdhocQueues &adhoc_queues,
             const std::string &name);
-        ~Image();
+        ~TextureImage();
 
         VkDescriptorImageInfo* descriptor() { return &m_image_descriptor_info; }
     };

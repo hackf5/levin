@@ -8,7 +8,7 @@
 
 #include "spdlog/spdlog.h"
 
-#include "vulkan/image.h"
+#include "vulkan/texture_image.h"
 
 using namespace levin;
 
@@ -36,7 +36,7 @@ const std::vector<levin::Vertex> vertexes = {
 };
 
 const std::vector<levin::Vertex::index_t> indexes = {
-    0, 1, 2, 2, 3, 0
+    0, 1, 2, 2, 3, 0,
 };
 
 VulkanEngine::VulkanEngine(
@@ -65,7 +65,7 @@ void VulkanEngine::load_scene()
     m_context->graphics_buffers().load_vertexes(vertexes);
     m_context->graphics_buffers().load_indexes(indexes);
 
-    m_image = std::make_unique<Image>(
+    m_texture_image = std::make_unique<TextureImage>(
         m_context->device(),
         m_context->sampler(),
         m_context->adhoc_queues(),
@@ -87,16 +87,16 @@ void VulkanEngine::load_scene()
     auto mesh1 = std::make_unique<Mesh>(
         m_context->device(),
         primitives,
-        m_image.get());
+        m_texture_image.get());
     auto &child1 = root_node.add_child(std::move(mesh1));
-    child1.translation() = glm::vec3(-0.5f, 0.0f, 0.0f);
+    child1.translation() = glm::vec3(0.0f, 0.0f, 0.0f);
 
     auto mesh2 = std::make_unique<Mesh>(
         m_context->device(),
         primitives,
-        m_image.get());
+        m_texture_image.get());
     auto &child2 = root_node.add_child(std::move(mesh2));
-    child2.translation() = glm::vec3(0.5f, 0.0f, 0.0f);
+    child2.translation() = glm::vec3(0.0f, -1.0f, -1.0f);
 }
 
 void VulkanEngine::recreate_swapchain()
