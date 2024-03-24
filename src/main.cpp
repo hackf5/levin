@@ -28,15 +28,22 @@ int main()
 #endif
     try
     {
+        auto descriptor_set_layout_builder = [](DescriptorSetLayoutBuilder &builder)
+            {
+                builder
+                    .add_uniform_buffer() // camera
+                    .add_uniform_buffer() // model
+                    .add_combined_image_sampler(); // texture
+            };
+
         auto context = VulkanContextBuilder()
             .add_window(800, 600, "Levin")
             .add_device(enableValidationLayers)
             .add_graphics_queue()
             .add_adhoc_queues()
-            .add_descriptor_set_layout()
-            .add_graphics_buffers()
-            .add_uniform_buffer_factory()
             .add_sampler()
+            .add_graphics_buffers()
+            .add_descriptor_set_layout(descriptor_set_layout_builder)
             .add_scene()
             .add_swapchain()
             .add_render_pass()

@@ -4,9 +4,6 @@
 
 #include "util/no_copy_or_move.h"
 
-#include "vulkan/buffer/uniform_buffer_factory.h"
-#include "vulkan/descriptor_pool.h"
-#include "vulkan/descriptor_set.h"
 #include "vulkan/descriptor_set_layout.h"
 #include "vulkan/device.h"
 #include "vulkan/framebuffers.h"
@@ -36,7 +33,6 @@ namespace levin
         std::unique_ptr<GraphicsQueue> m_graphics_queue;
         std::unique_ptr<DescriptorSetLayout> m_descriptor_set_layout;
         std::unique_ptr<GraphicsBuffers> m_graphics_buffers;
-        std::unique_ptr<UniformBufferFactory> m_uniform_buffer_factory;
         std::unique_ptr<Sampler> m_sampler;
         std::unique_ptr<Scene> m_scene;
         std::unique_ptr<Swapchain> m_swapchain;
@@ -58,12 +54,10 @@ namespace levin
         const GraphicsQueue &graphics_queue() const { return *m_graphics_queue; }
 
         const DescriptorSetLayout &descriptor_set_layout() const { return *m_descriptor_set_layout; }
+        DescriptorSetLayout &descriptor_set_layout() { return *m_descriptor_set_layout; }
 
         const GraphicsBuffers &graphics_buffers() const { return *m_graphics_buffers; }
         GraphicsBuffers &graphics_buffers() { return *m_graphics_buffers; }
-
-        const UniformBufferFactory &uniform_buffer_factory() const { return *m_uniform_buffer_factory; }
-        UniformBufferFactory &uniform_buffer_factory() { return *m_uniform_buffer_factory; }
 
         const Sampler &sampler() const { return *m_sampler; }
 
@@ -77,6 +71,7 @@ namespace levin
         const Framebuffers &framebuffers() const { return *m_framebuffers; }
 
         const GraphicsPipeline &graphics_pipeline() const { return *m_graphics_pipeline; }
+        GraphicsPipeline &graphics_pipeline() { return *m_graphics_pipeline; }
 
         const Gui &gui() const { return *m_gui; }
         Gui &gui() { return *m_gui; }

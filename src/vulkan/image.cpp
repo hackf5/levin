@@ -10,30 +10,17 @@ Image::Image(
     const Device &device,
     const Sampler &sampler,
     const AdhocQueues &adhoc_queues,
-    const DescriptorPool &descriptor_pool,
-    const DescriptorSetLayout &descriptor_set_layout,
     const std::string &name):
     m_device(device),
     m_image_info(create_image_info(name)),
     m_allocation_info(create_allocation_info()),
     m_image_view(create_image_view(adhoc_queues)),
-    m_descriptor_set(device, descriptor_pool, descriptor_set_layout)
+    m_image_descriptor_info(create_image_descriptor_info(sampler))
 {
     VkDescriptorImageInfo image_info = {};
     image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     image_info.imageView = m_image_view;
     image_info.sampler = sampler;
-
-    VkWriteDescriptorSet descriptor_write {};
-    descriptor_write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptor_write.dstSet = m_descriptor_set;
-    descriptor_write.dstBinding = 0;
-    descriptor_write.dstArrayElement = 0;
-    descriptor_write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    descriptor_write.descriptorCount = 1;
-    descriptor_write.pImageInfo = &image_info;
-
-    vkUpdateDescriptorSets(device, 1, &descriptor_write, 0, nullptr);
 }
 
 Image::~Image()
@@ -254,4 +241,14 @@ VkImageView Image::create_image_view(const AdhocQueues &adhoc_queues)
     }
 
     return view;
+}
+
+VkDescriptorImageInfo Image::create_image_descriptor_info(const Sampler &sampler)
+{
+    VkDescriptorImageInfo image_info = {};
+    image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    image_info.imageView = m_image_view;
+    image_info.sampler = sampler;
+
+    return image_info;
 }

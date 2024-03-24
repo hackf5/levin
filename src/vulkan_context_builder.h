@@ -1,6 +1,9 @@
 #pragma once
 
+#include <functional>
+
 #include "util/no_copy_or_move.h"
+#include "vulkan/descriptor_set_layout_builder.h"
 #include "vulkan_context.h"
 
 namespace levin
@@ -23,11 +26,9 @@ namespace levin
 
         VulkanContextBuilder &add_graphics_queue();
 
-        VulkanContextBuilder &add_descriptor_set_layout();
+        VulkanContextBuilder &add_descriptor_set_layout(std::function<void(DescriptorSetLayoutBuilder &)> configure);
 
         VulkanContextBuilder &add_graphics_buffers();
-
-        VulkanContextBuilder &add_uniform_buffer_factory();
 
         VulkanContextBuilder &add_sampler();
 

@@ -2,15 +2,17 @@
 
 #include <memory>
 #include <vector>
+
 #include <glm/glm.hpp>
 
 #include "util/no_copy_or_move.h"
 
+#include "vulkan/device.h"
+#include "vulkan/buffer/buffer_host.h"
+#include "vulkan/graphics_pipeline.h"
+
 #include "primitive.h"
 
-#include "vulkan/graphics_pipeline.h"
-#include "vulkan/buffer/uniform_buffer.h"
-#include "vulkan/buffer/uniform_buffer_factory.h"
 
 namespace levin
 {
@@ -26,17 +28,18 @@ namespace levin
 
         std::vector<Primitive> m_primitives;
 
-        std::unique_ptr<UniformBuffer> m_uniform_buffer;
+        std::unique_ptr<BufferHost> m_uniform_buffer;
 
     public:
         Mesh(
-            UniformBufferFactory &uniform_buffer_factory,
+            const Device &device,
             const std::vector<Primitive> &primitives):
             m_uniform_block {},
             m_primitives(primitives),
-            m_uniform_buffer(uniform_buffer_factory.create(
-            sizeof(m_uniform_block),
-            UniformBuffer::MESH))
+            m_uniform_buffer(std::make_unique<BufferHost>(
+                device,
+                sizeof(m_uniform_block),
+                VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT))
         {
         }
 
@@ -50,9 +53,16 @@ namespace levin
 
         void render(
             VkCommandBuffer command_buffer,
-            const GraphicsPipeline &pipeline) const
+            GraphicsPipeline &pipeline) const
         {
-            m_uniform_buffer->bind(command_buffer, pipeline);
+            pipeline
+                .descriptor_set_layout()
+                .write_uniform_buffer(m_uniform_buffer->descriptor(), 1);
+
+            // texture!
+
+            pipeline.push_descriptor_set(command_buffer);
+
             for (auto &primitive : m_primitives)
             {
                 primitive.render(command_buffer);

@@ -10,12 +10,14 @@ using namespace levin;
 
 GraphicsPipeline::GraphicsPipeline(
     const Device &device,
-    const DescriptorSetLayout &descriptor_set_layout,
+    DescriptorSetLayout &descriptor_set_layout,
     const Swapchain &swapchain,
     const RenderPass &render_pass):
     m_device(device),
+    m_descriptor_set_layout(descriptor_set_layout),
     m_pipeline_layout(create_pipeline_layout(descriptor_set_layout)),
-    m_pipeline(create_pipeline(swapchain, render_pass))
+    m_pipeline(create_pipeline(swapchain, render_pass)),
+    vkCmdPushDescriptorSetKHR(fetch_vkCmdPushDescriptorSetKHR())
 {
 }
 
@@ -31,16 +33,7 @@ VkPipelineLayout GraphicsPipeline::create_pipeline_layout(
 {
     spdlog::info("Creating Graphics Pipeline Layout");
 
-    // Set 0 = Sampler
-    // Set 1 = Camera UBO
-    // Set 2 = Model UBO
-    const std::array<VkDescriptorSetLayout, 3> set_layouts =
-    {
-        descriptor_set_layout,
-        descriptor_set_layout,
-        descriptor_set_layout,
-    };
-
+    auto set_layouts = descriptor_set_layout.get_layouts_for_pipeline();
     VkPipelineLayoutCreateInfo pipeline_layout_info = {};
     pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipeline_layout_info.setLayoutCount = static_cast<uint32_t>(set_layouts.size());
@@ -214,6 +207,18 @@ VkPipelineDynamicStateCreateInfo GraphicsPipeline::create_dynamic_state(
     result.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
     result.dynamicStateCount = static_cast<uint32_t>(dynamic_states.size());
     result.pDynamicStates = dynamic_states.data();
+
+    return result;
+}
+
+PFN_vkCmdPushDescriptorSetKHR GraphicsPipeline::fetch_vkCmdPushDescriptorSetKHR()
+{
+    auto result = (PFN_vkCmdPushDescriptorSetKHR)vkGetDeviceProcAddr(m_device, "vkCmdPushDescriptorSetKHR");
+    if (!result)
+    {
+        throw std::runtime_error("Failed to load vkCmdPushDescriptorSetKHR");
+
+    }
 
     return result;
 }

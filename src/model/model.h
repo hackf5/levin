@@ -19,7 +19,7 @@ namespace levin
 
         void render(
             VkCommandBuffer command_buffer,
-            const GraphicsPipeline &pipeline) const
+            GraphicsPipeline &pipeline) const
         {
             m_root_node.render(command_buffer, pipeline);
         }

@@ -55,8 +55,6 @@ void VulkanEngine::run()
         m_context->device(),
         m_context->sampler(),
         m_context->adhoc_queues(),
-        m_context->uniform_buffer_factory().pool(),
-        m_context->descriptor_set_layout(),
         "george.png");
 
     while (!m_context->window().should_close())
@@ -87,13 +85,13 @@ void VulkanEngine::load_scene()
 
     auto &root_node = m_context->scene().model().root_node();
     auto mesh1 = std::make_unique<Mesh>(
-        m_context->uniform_buffer_factory(),
+        m_context->device(),
         primitives);
     auto &child1 = root_node.add_child(std::move(mesh1));
     child1.translation() = glm::vec3(-0.5f, 0.0f, 0.0f);
 
     auto mesh2 = std::make_unique<Mesh>(
-        m_context->uniform_buffer_factory(),
+        m_context->device(),
         primitives);
     auto &child2 = root_node.add_child(std::move(mesh2));
     child2.translation() = glm::vec3(0.5f, 0.0f, 0.0f);
@@ -152,8 +150,7 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
     m_context->graphics_pipeline().bind(command_buffer);
     m_context->swapchain().clip(command_buffer);
     m_context->graphics_buffers().bind(command_buffer);
-    m_image->bind(command_buffer, m_context->graphics_pipeline());
-    m_context->scene().bind(command_buffer, m_context->graphics_pipeline());
+    m_image->bind(m_context->graphics_pipeline());
     m_context->scene().render(command_buffer, m_context->graphics_pipeline());
     m_context->gui().render(command_buffer);
 

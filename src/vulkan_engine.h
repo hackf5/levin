@@ -29,7 +29,6 @@ namespace levin
             m_current_frame = (m_current_frame + 1) % Device::max_frames_in_flight;
         }
 
-
     public:
         VulkanEngine(std::unique_ptr<VulkanContext> context);
 

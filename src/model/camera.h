@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <memory>
@@ -9,15 +8,14 @@
 
 #include "util/no_copy_or_move.h"
 
-#include "vulkan/buffer/uniform_buffer.h"
-#include "vulkan/buffer/uniform_buffer_factory.h"
+#include "vulkan/buffer/buffer_host.h"
 
 namespace levin
 {
-    class Camera : NoCopyOrMove
+    class Camera: NoCopyOrMove
     {
     private:
-        std::unique_ptr<UniformBuffer> m_uniform_buffer;
+        std::unique_ptr<BufferHost> m_uniform_buffer;
 
         glm::vec3 m_position;
         glm::vec3 m_target;
@@ -58,7 +56,22 @@ namespace levin
         }
 
     public:
-        Camera(UniformBufferFactory& uniform_buffer);
+        Camera(const Device &device):
+            m_uniform_buffer(
+                std::make_unique<BufferHost>(
+                    device,
+                    sizeof(UniformBlock),
+                    VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
+            ),
+            m_uniform_block({ glm::identity<glm::mat4>(), glm::identity<glm::mat4>() }),
+            m_position(glm::zero<glm::vec3>()),
+            m_target(glm::zero<glm::vec3>()),
+            m_fov(45.0f),
+            m_aspect_ratio(1.0f),
+            m_near(0.1f),
+            m_far(10.0f)
+        {
+        }
 
         const glm::vec3 &position() const { return m_position; }
         glm::vec3 &position() { m_dirty = true; return m_position; }
@@ -87,9 +100,11 @@ namespace levin
             m_uniform_buffer->copy_from(&m_uniform_block, sizeof(UniformBlock));
         }
 
-        void bind(VkCommandBuffer command_buffer, const GraphicsPipeline &pipeline) const
+        void bind(GraphicsPipeline &pipeline) const
         {
-            m_uniform_buffer->bind(command_buffer, pipeline);
+            pipeline
+                .descriptor_set_layout()
+                .write_uniform_buffer(m_uniform_buffer->descriptor(), 0);
         }
     };
 }

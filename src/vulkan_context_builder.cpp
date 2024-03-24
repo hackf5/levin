@@ -28,9 +28,11 @@ VulkanContextBuilder &VulkanContextBuilder::add_graphics_queue()
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::add_descriptor_set_layout()
+VulkanContextBuilder &VulkanContextBuilder::add_descriptor_set_layout(std::function<void(DescriptorSetLayoutBuilder &)> configure)
 {
-    m_context->m_descriptor_set_layout = std::make_unique<DescriptorSetLayout>(*m_context->m_device);
+    DescriptorSetLayoutBuilder builder;
+    configure(builder);
+    m_context->m_descriptor_set_layout = builder.build(*m_context->m_device);
     return *this;
 }
 
@@ -42,14 +44,6 @@ VulkanContextBuilder &VulkanContextBuilder::add_graphics_buffers()
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::add_uniform_buffer_factory()
-{
-    m_context->m_uniform_buffer_factory = std::make_unique<UniformBufferFactory>(
-        *m_context->m_device,
-        *m_context->m_descriptor_set_layout);
-    return *this;
-}
-
 VulkanContextBuilder &VulkanContextBuilder::add_sampler()
 {
     m_context->m_sampler = std::make_unique<Sampler>(*m_context->m_device);
@@ -58,7 +52,7 @@ VulkanContextBuilder &VulkanContextBuilder::add_sampler()
 
 VulkanContextBuilder &VulkanContextBuilder::add_scene()
 {
-    m_context->m_scene = std::make_unique<Scene>(*m_context->m_uniform_buffer_factory);
+    m_context->m_scene = std::make_unique<Scene>(*m_context->m_device);
     return *this;
 }
 

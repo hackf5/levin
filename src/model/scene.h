@@ -3,7 +3,7 @@
 #include <vulkan/vulkan.h>
 
 #include "util/no_copy_or_move.h"
-#include "vulkan/buffer/uniform_buffer_factory.h"
+#include "vulkan/device.h"
 #include "camera.h"
 #include "model.h"
 
@@ -16,8 +16,8 @@ namespace levin
         Model m_model;
 
     public:
-        Scene(UniformBufferFactory& uniform_buffer_factory)
-            : m_camera(uniform_buffer_factory),
+        Scene(const Device& device)
+            : m_camera(device),
               m_model()
         {
         }
@@ -34,13 +34,9 @@ namespace levin
             m_model.flush();
         }
 
-        void bind(VkCommandBuffer command_buffer, const GraphicsPipeline &pipeline) const
+        void render(VkCommandBuffer command_buffer, GraphicsPipeline &pipeline) const
         {
-            m_camera.bind(command_buffer, pipeline);
-        }
-
-        void render(VkCommandBuffer command_buffer, const GraphicsPipeline &pipeline) const
-        {
+            m_camera.bind(pipeline);
             m_model.render(command_buffer, pipeline);
         }
     };

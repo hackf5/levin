@@ -1,11 +1,11 @@
 #version 450
 
-layout(set = 1, binding = 1) uniform Camera {
+layout(binding = 0) uniform Camera {
     mat4 proj;
     mat4 view;
 } camera;
 
-layout(set = 2, binding = 1) uniform Mesh {
+layout(binding = 1) uniform Mesh {
     mat4 model;
 } mesh;
 

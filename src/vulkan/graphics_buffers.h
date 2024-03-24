@@ -7,7 +7,6 @@
 
 #include "buffer/buffer_gpu.h"
 #include "device.h"
-#include "descriptor_pool.h"
 #include "adhoc_queues.h"
 #include "vertex.h"
 

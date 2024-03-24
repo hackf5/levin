@@ -65,6 +65,7 @@ vkb::Device Device::create_device()
         .set_minimum_version(1, 3)
         .require_dedicated_transfer_queue()
         .set_required_features(required_features)
+        .add_required_extension(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME)
         .select();
     if (!phys_ret)
     {
