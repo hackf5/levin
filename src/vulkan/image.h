@@ -62,11 +62,6 @@ namespace levin
             const std::string &name);
         ~Image();
 
-        void bind(GraphicsPipeline &pipeline)
-        {
-            pipeline
-                .descriptor_set_layout()
-                .write_combined_image_sampler(&m_image_descriptor_info, 2);
-        }
+        VkDescriptorImageInfo* descriptor() { return &m_image_descriptor_info; }
     };
 }

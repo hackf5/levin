@@ -10,6 +10,7 @@
 #include "vulkan/device.h"
 #include "vulkan/buffer/buffer_host.h"
 #include "vulkan/graphics_pipeline.h"
+#include "vulkan/image.h"
 
 #include "primitive.h"
 
@@ -25,17 +26,18 @@ namespace levin
         };
 
         UniformBlock m_uniform_block;
-
         std::vector<Primitive> m_primitives;
-
         std::unique_ptr<BufferHost> m_uniform_buffer;
+        Image* m_texture;
 
     public:
         Mesh(
             const Device &device,
-            const std::vector<Primitive> &primitives):
+            const std::vector<Primitive> &primitives,
+            Image* texture = nullptr):
             m_uniform_block {},
             m_primitives(primitives),
+            m_texture(texture),
             m_uniform_buffer(std::make_unique<BufferHost>(
                 device,
                 sizeof(m_uniform_block),
@@ -59,7 +61,12 @@ namespace levin
                 .descriptor_set_layout()
                 .write_uniform_buffer(m_uniform_buffer->descriptor(), 1);
 
-            // texture!
+            if (m_texture)
+            {
+                pipeline
+                    .descriptor_set_layout()
+                    .write_combined_image_sampler(m_texture->descriptor(), 2);
+            }
 
             pipeline.push_descriptor_set(command_buffer);
 

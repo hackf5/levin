@@ -42,22 +42,26 @@ namespace levin
             return m_write_descriptor_sets;
         }
 
-        void write_combined_image_sampler(
+        DescriptorSetLayout&  write_combined_image_sampler(
             VkDescriptorImageInfo *image_info,
             uint32_t binding_index)
         {
             auto &write_descriptor_set = m_write_descriptor_sets[binding_index];
             write_descriptor_set.dstBinding = binding_index;
             write_descriptor_set.pImageInfo = image_info;
+
+            return *this;
         }
 
-        void write_uniform_buffer(
+        DescriptorSetLayout& write_uniform_buffer(
             VkDescriptorBufferInfo *buffer_info,
             uint32_t binding_index)
         {
             auto &write_descriptor_set = m_write_descriptor_sets[binding_index];
             write_descriptor_set.dstBinding = binding_index;
             write_descriptor_set.pBufferInfo = buffer_info;
+
+            return *this;
         }
     };
 }

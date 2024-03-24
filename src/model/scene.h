@@ -34,7 +34,9 @@ namespace levin
             m_model.flush();
         }
 
-        void render(VkCommandBuffer command_buffer, GraphicsPipeline &pipeline) const
+        void render(
+            VkCommandBuffer command_buffer,
+            GraphicsPipeline &pipeline) const
         {
             m_camera.bind(pipeline);
             m_model.render(command_buffer, pipeline);
