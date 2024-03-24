@@ -98,7 +98,9 @@
     "codecvt": "cpp",
     "shared_mutex": "cpp",
     "bitset": "cpp",
-    "source_location": "cpp"
+    "source_location": "cpp",
+    "buffer": "cpp",
+    "netfwd": "cpp"
   },
   "C_Cpp.default.compilerPath": "C:\\msys64\\ucrt64\\bin\\g++.exe",
 }

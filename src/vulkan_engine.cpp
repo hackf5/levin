@@ -8,17 +8,35 @@
 
 #include "spdlog/spdlog.h"
 
+#include "vulkan/texture.h"
+
 using namespace levin;
 
 const std::vector<levin::Vertex> vertexes = {
-    {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-    {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-    {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-    {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+    {
+        .pos = {-0.5f, -0.5f, 0.0f},
+        .uv = {1.0f, 0.0f},
+        .color = {1.0f, 0.0f, 0.0f, 1.0f},
+    },
+    {
+        {0.5f, -0.5f, 0.0f},
+        {0.0f, 0.0f},
+        {0.0f, 1.0f, 0.0f, 1.0f},
+    },
+    {
+        {0.5f, 0.5f, 0.0f},
+        {0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f, 1.0f},
+    },
+    {
+        {-0.5f, 0.5f, 0.0f},
+        {1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f},
+    },
 };
 
 const std::vector<levin::Vertex::index_t> indexes = {
-    0, 1, 2, 2, 3, 0
+    0, 1, 2, 2, 3, 0,
 };
 
 VulkanEngine::VulkanEngine(
@@ -31,15 +49,7 @@ void VulkanEngine::run()
 {
     spdlog::info("Vulkan Engine is running");
 
-    load_model();
-
-    auto &camera = m_context->scene().camera();
-    camera.position() = glm::vec3(2.0f, 2.0f, 2.0f);
-    camera.target() = glm::vec3(0.0f, 0.0f, 0.0f);
-    camera.clip_far() = 10.0f;
-    camera.clip_near() = 0.1f;
-    camera.fov() = 45.0f;
-    camera.aspect_ratio() = m_context->swapchain().aspect_ratio();
+    load_scene();
 
     while (!m_context->window().should_close())
     {
@@ -50,10 +60,24 @@ void VulkanEngine::run()
     m_context->device().wait_idle();
 }
 
-void VulkanEngine::load_model()
+void VulkanEngine::load_scene()
 {
     m_context->graphics_buffers().load_vertexes(vertexes);
     m_context->graphics_buffers().load_indexes(indexes);
+
+    m_texture_image = std::make_unique<Texture>(
+        m_context->device(),
+        m_context->sampler(),
+        m_context->adhoc_queues(),
+        "george.png");
+
+    auto &camera = m_context->scene().camera();
+    camera.position() = glm::vec3(2.0f, 2.0f, 2.0f);
+    camera.target() = glm::vec3(0.0f, 0.0f, 0.0f);
+    camera.clip_far() = 10.0f;
+    camera.clip_near() = 0.1f;
+    camera.fov() = 45.0f;
+    camera.aspect_ratio() = m_context->swapchain().aspect_ratio();
 
     std::vector<Primitive> primitives = {
         {0, static_cast<uint32_t>(indexes.size())}
@@ -61,16 +85,18 @@ void VulkanEngine::load_model()
 
     auto &root_node = m_context->scene().model().root_node();
     auto mesh1 = std::make_unique<Mesh>(
-        m_context->uniform_buffer_factory(),
-        primitives);
+        m_context->device(),
+        primitives,
+        m_texture_image.get());
     auto &child1 = root_node.add_child(std::move(mesh1));
-    child1.translation() = glm::vec3(-0.5f, 0.0f, 0.0f);
+    child1.translation() = glm::vec3(0.0f, 0.0f, 0.0f);
 
     auto mesh2 = std::make_unique<Mesh>(
-        m_context->uniform_buffer_factory(),
-        primitives);
+        m_context->device(),
+        primitives,
+        m_texture_image.get());
     auto &child2 = root_node.add_child(std::move(mesh2));
-    child2.translation() = glm::vec3(0.5f, 0.0f, 0.0f);
+    child2.translation() = glm::vec3(0.0f, -1.0f, -1.0f);
 }
 
 void VulkanEngine::recreate_swapchain()
@@ -80,6 +106,7 @@ void VulkanEngine::recreate_swapchain()
 
     auto context = VulkanContextBuilder(std::move(m_context))
         .add_swapchain()
+        .add_depth_buffer()
         .add_render_pass()
         .add_framebuffers()
         .add_graphics_pipeline()
@@ -126,7 +153,6 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
     m_context->graphics_pipeline().bind(command_buffer);
     m_context->swapchain().clip(command_buffer);
     m_context->graphics_buffers().bind(command_buffer);
-    m_context->scene().bind(command_buffer, m_context->graphics_pipeline());
     m_context->scene().render(command_buffer, m_context->graphics_pipeline());
     m_context->gui().render(command_buffer);
 

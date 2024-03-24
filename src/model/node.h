@@ -96,7 +96,7 @@ namespace levin
 
         void render(
             VkCommandBuffer command_buffer,
-            const GraphicsPipeline &pipeline) const
+            GraphicsPipeline &pipeline) const
         {
             if (m_mesh)
             {

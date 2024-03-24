@@ -32,8 +32,7 @@ add_executable(
 target_include_directories(
     ${PROJECT_NAME}
     PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${IMGUI_DIR})
+    ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(
     ${PROJECT_NAME}
@@ -41,8 +40,9 @@ target_link_libraries(
     OpenGL::GL
     Vulkan::Vulkan
     glm::glm
-    glfw
     vk-bootstrap::vk-bootstrap
-    imgui
     spdlog::spdlog
+    glfw
+    imgui
+    stb
     ${CMAKE_DL_LIBS})

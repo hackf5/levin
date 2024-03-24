@@ -10,12 +10,14 @@ using namespace levin;
 
 GraphicsPipeline::GraphicsPipeline(
     const Device &device,
-    const DescriptorSetLayout &descriptor_set_layout,
+    DescriptorSetLayout &descriptor_set_layout,
     const Swapchain &swapchain,
     const RenderPass &render_pass):
     m_device(device),
+    m_descriptor_set_layout(descriptor_set_layout),
     m_pipeline_layout(create_pipeline_layout(descriptor_set_layout)),
-    m_pipeline(create_pipeline(swapchain, render_pass))
+    m_pipeline(create_pipeline(swapchain, render_pass)),
+    vkCmdPushDescriptorSetKHR(fetch_vkCmdPushDescriptorSetKHR())
 {
 }
 
@@ -31,10 +33,7 @@ VkPipelineLayout GraphicsPipeline::create_pipeline_layout(
 {
     spdlog::info("Creating Graphics Pipeline Layout");
 
-    // Set 0 = Camera UBO
-    // Set 1 = Model UBO
-    const std::array<VkDescriptorSetLayout, 2> set_layouts = { descriptor_set_layout, descriptor_set_layout };
-
+    auto set_layouts = descriptor_set_layout.get_layouts_for_pipeline();
     VkPipelineLayoutCreateInfo pipeline_layout_info = {};
     pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipeline_layout_info.setLayoutCount = static_cast<uint32_t>(set_layouts.size());
@@ -57,7 +56,7 @@ VkPipeline GraphicsPipeline::create_pipeline(
 {
     spdlog::info("Creating Graphics Pipeline");
 
-    auto vertex_input_state = VertexInputState(0, { VertexComponent::Position, VertexComponent::Color });
+    auto vertex_input_state = VertexInputState(0, Vertex::ALL_COMPONENTS);
 
     auto vertex_shader = ShaderModule(m_device, "vert");
     auto fragment_shader = ShaderModule(m_device, "frag");
@@ -71,6 +70,7 @@ VkPipeline GraphicsPipeline::create_pipeline(
     auto color_blend_state = create_color_blend_state(color_blend_attachment);
     auto dynamic_states = create_dynamic_states();
     auto dynamic_state = create_dynamic_state(dynamic_states);
+    auto depth_stencil_state = create_depth_stencil_state();
 
     VkGraphicsPipelineCreateInfo pipeline_info = {};
     pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -83,6 +83,7 @@ VkPipeline GraphicsPipeline::create_pipeline(
     pipeline_info.pMultisampleState = &multisampling_state;
     pipeline_info.pColorBlendState = &color_blend_state;
     pipeline_info.pDynamicState = &dynamic_state;
+    pipeline_info.pDepthStencilState = &depth_stencil_state;
     pipeline_info.layout = m_pipeline_layout;
     pipeline_info.renderPass = render_pass;
     pipeline_info.subpass = 0;
@@ -208,6 +209,35 @@ VkPipelineDynamicStateCreateInfo GraphicsPipeline::create_dynamic_state(
     result.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
     result.dynamicStateCount = static_cast<uint32_t>(dynamic_states.size());
     result.pDynamicStates = dynamic_states.data();
+
+    return result;
+}
+
+VkPipelineDepthStencilStateCreateInfo GraphicsPipeline::create_depth_stencil_state()
+{
+    VkPipelineDepthStencilStateCreateInfo result = {};
+    result.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+    result.depthTestEnable = VK_TRUE;
+    result.depthWriteEnable = VK_TRUE;
+    result.depthCompareOp = VK_COMPARE_OP_LESS;
+    result.depthBoundsTestEnable = VK_FALSE;
+    result.stencilTestEnable = VK_FALSE;
+    result.minDepthBounds = 0.0f;
+    result.maxDepthBounds = 1.0f;
+    result.front = {};
+    result.back = {};
+
+    return result;
+}
+
+PFN_vkCmdPushDescriptorSetKHR GraphicsPipeline::fetch_vkCmdPushDescriptorSetKHR()
+{
+    auto result = (PFN_vkCmdPushDescriptorSetKHR)vkGetDeviceProcAddr(m_device, "vkCmdPushDescriptorSetKHR");
+    if (!result)
+    {
+        throw std::runtime_error("Failed to load vkCmdPushDescriptorSetKHR");
+
+    }
 
     return result;
 }

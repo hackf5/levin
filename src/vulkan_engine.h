@@ -5,6 +5,7 @@
 
 #include "util/no_copy_or_move.h"
 #include "vulkan_context.h"
+#include "vulkan/texture.h"
 
 namespace levin
 {
@@ -13,9 +14,11 @@ namespace levin
     private:
         std::unique_ptr<VulkanContext> m_context;
 
+        std::unique_ptr<Texture> m_texture_image;
+
         uint32_t m_current_frame = 0;
 
-        void load_model();
+        void load_scene();
         void draw_frame();
         void recreate_swapchain();
         void update_uniform_buffer();
@@ -25,7 +28,6 @@ namespace levin
         {
             m_current_frame = (m_current_frame + 1) % Device::max_frames_in_flight;
         }
-
 
     public:
         VulkanEngine(std::unique_ptr<VulkanContext> context);

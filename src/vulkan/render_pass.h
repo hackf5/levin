@@ -1,12 +1,13 @@
 #pragma once
 
 #include "util/no_copy_or_move.h"
+#include "depth_buffer.h"
 #include "device.h"
 #include "swapchain.h"
 
 namespace levin
 {
-    class RenderPass : NoCopyOrMove
+    class RenderPass: NoCopyOrMove
     {
     private:
         const Device &m_device;
@@ -14,12 +15,13 @@ namespace levin
 
         const VkRenderPass m_render_pass;
 
-        VkRenderPass create_render_pass();
+        VkRenderPass create_render_pass(const DepthBuffer &depth_buffer) const;
 
     public:
         RenderPass(
             const Device &device,
-            const Swapchain &swapchain);
+            const Swapchain &swapchain,
+            const DepthBuffer &depth_buffer);
         ~RenderPass();
 
         operator VkRenderPass() const { return m_render_pass; }

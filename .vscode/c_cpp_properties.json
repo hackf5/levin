@@ -6,6 +6,7 @@
                 "${workspaceFolder}/build/**",
                 "${workspaceFolder}/src",
                 "${workspaceFolder}/submodules/imgui",
+                "${workspaceFolder}/libs/stb",
                 "${VULKAN_SDK}/include/"
             ],
             "defines": [],

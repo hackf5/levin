@@ -6,6 +6,7 @@
 #include "device.h"
 #include "swapchain.h"
 #include "render_pass.h"
+#include "depth_buffer.h"
 
 namespace levin
 {
@@ -18,13 +19,15 @@ namespace levin
 
         std::vector<VkFramebuffer> create_framebuffers(
             const Swapchain &swapchain,
-            const RenderPass &render_pass);
+            const RenderPass &render_pass,
+            const DepthBuffer &depth_buffer);
 
     public:
         Framebuffers(
             const Device &device,
             const Swapchain &swapchain,
-            const RenderPass &render_pass);
+            const RenderPass &render_pass,
+            const DepthBuffer &depth_buffer);
         Framebuffers(const Framebuffers &) = delete;
         ~Framebuffers();
 

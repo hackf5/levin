@@ -4,6 +4,7 @@
 #include <vulkan/vulkan.h>
 #include "buffer.h"
 #include "buffer_host.h"
+#include "vulkan/adhoc_queues.h"
 
 namespace levin
 {
@@ -11,12 +12,12 @@ namespace levin
     {
     private:
         const Device &m_device;
-        const TransferQueue &m_transfer_queue;
+        const AdhocQueues &m_adhoc_queues;
 
     public:
         BufferGPU(
             const Device &device,
-            const TransferQueue &transfer_queue,
+            const AdhocQueues &adhoc_queues,
             VkDeviceSize size,
             VkBufferUsageFlags usage):
             Buffer(
@@ -24,19 +25,19 @@ namespace levin
             size,
             usage | VK_BUFFER_USAGE_TRANSFER_DST_BIT),
             m_device(device),
-            m_transfer_queue(transfer_queue)
+            m_adhoc_queues(adhoc_queues)
         {
         };
 
         void copy_from(const BufferHost &buffer) const
         {
-            auto command_buffer = m_transfer_queue.begin();
+            auto command_buffer = m_adhoc_queues.transfer().begin();
 
             VkBufferCopy copy_region = {};
             copy_region.size = buffer.size();
             vkCmdCopyBuffer(command_buffer, buffer, *this, 1, &copy_region);
 
-            m_transfer_queue.submit_and_wait();
+            m_adhoc_queues.transfer().submit_and_wait();
         }
 
         template <typename T>

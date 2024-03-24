@@ -6,7 +6,6 @@
 
 #include "util/no_copy_or_move.h"
 #include "vulkan/device.h"
-#include "vulkan/transfer_queue.h"
 
 namespace levin
 {
@@ -28,7 +27,7 @@ namespace levin
 
         const AllocationInfo m_allocation_info;
 
-        const VkDescriptorBufferInfo m_descriptor;
+        VkDescriptorBufferInfo m_descriptor;
 
         AllocationInfo create_allocation_info(VkDeviceSize size);
         VkDescriptorBufferInfo create_descriptor_info() const;
@@ -46,6 +45,6 @@ namespace levin
 
         operator VkBuffer() const { return m_allocation_info.buffer; }
 
-        const VkDescriptorBufferInfo &descriptor() const { return m_descriptor; }
+        VkDescriptorBufferInfo* descriptor() { return &m_descriptor; }
     };
 }
