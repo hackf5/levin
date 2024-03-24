@@ -8,7 +8,7 @@
 
 #include "spdlog/spdlog.h"
 
-#include "vulkan/texture_image.h"
+#include "vulkan/texture.h"
 
 using namespace levin;
 
@@ -65,7 +65,7 @@ void VulkanEngine::load_scene()
     m_context->graphics_buffers().load_vertexes(vertexes);
     m_context->graphics_buffers().load_indexes(indexes);
 
-    m_texture_image = std::make_unique<TextureImage>(
+    m_texture_image = std::make_unique<Texture>(
         m_context->device(),
         m_context->sampler(),
         m_context->adhoc_queues(),

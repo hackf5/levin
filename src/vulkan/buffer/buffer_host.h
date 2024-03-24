@@ -14,14 +14,15 @@ namespace levin
             VkDeviceSize size,
             VkBufferUsageFlags usage):
             Buffer(
-            device,
-            size,
-            usage,
-            VMA_MEMORY_USAGE_AUTO,
-            VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
-            | VMA_ALLOCATION_CREATE_MAPPED_BIT)
+                device,
+                size,
+                usage,
+                VMA_MEMORY_USAGE_AUTO,
+                VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
+                | VMA_ALLOCATION_CREATE_MAPPED_BIT)
         {
         }
+
         void copy_from(void *data, VkDeviceSize size)
         {
             memcpy(m_allocation_info.info.pMappedData, data, size);

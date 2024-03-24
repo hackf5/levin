@@ -10,7 +10,7 @@
 #include "vulkan/device.h"
 #include "vulkan/buffer/buffer_host.h"
 #include "vulkan/graphics_pipeline.h"
-#include "vulkan/texture_image.h"
+#include "vulkan/texture.h"
 
 #include "primitive.h"
 
@@ -28,13 +28,13 @@ namespace levin
         UniformBlock m_uniform_block;
         std::vector<Primitive> m_primitives;
         std::unique_ptr<BufferHost> m_uniform_buffer;
-        TextureImage* m_texture;
+        Texture* m_texture;
 
     public:
         Mesh(
             const Device &device,
             const std::vector<Primitive> &primitives,
-            TextureImage* texture = nullptr):
+            Texture* texture = nullptr):
             m_uniform_block {},
             m_primitives(primitives),
             m_texture(texture),
