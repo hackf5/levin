@@ -153,7 +153,7 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
     m_context->graphics_pipeline().bind(command_buffer);
     m_context->swapchain().clip(command_buffer);
     m_context->graphics_buffers().bind(command_buffer);
-    m_context->scene().render(command_buffer, m_context->graphics_pipeline());
+    m_context->scene().render(command_buffer, m_current_frame, m_context->graphics_pipeline());
     m_context->gui().render(command_buffer);
 
     m_context->render_pass().end(command_buffer);
@@ -179,5 +179,5 @@ void VulkanEngine::update_uniform_buffer()
         child->rotation() = rotation;
     }
 
-    m_context->scene().flush();
+    m_context->scene().flush(m_current_frame);
 }

@@ -20,6 +20,8 @@ namespace levin
     class Mesh: NoCopyOrMove
     {
     private:
+        typedef std::array<std::unique_ptr<BufferHost>, Device::max_frames_in_flight> uniform_buffers_t;
+
         struct UniformBlock
         {
             glm::mat4 model;
@@ -27,39 +29,51 @@ namespace levin
 
         UniformBlock m_uniform_block;
         std::vector<Primitive> m_primitives;
-        std::unique_ptr<BufferHost> m_uniform_buffer;
-        Texture* m_texture;
+        Texture *m_texture;
+        uniform_buffers_t m_uniform_buffers;
+
+        uniform_buffers_t create_uniform_buffers(const Device &device)
+        {
+            uniform_buffers_t uniform_buffers;
+            for (auto &uniform_buffer : uniform_buffers)
+            {
+                uniform_buffer = std::make_unique<BufferHost>(
+                    device,
+                    sizeof(UniformBlock),
+                    VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+            }
+
+            return uniform_buffers;
+        }
 
     public:
         Mesh(
             const Device &device,
             const std::vector<Primitive> &primitives,
-            Texture* texture = nullptr):
+            Texture *texture = nullptr):
             m_uniform_block {},
             m_primitives(primitives),
             m_texture(texture),
-            m_uniform_buffer(std::make_unique<BufferHost>(
-                device,
-                sizeof(m_uniform_block),
-                VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT))
+            m_uniform_buffers(create_uniform_buffers(device))
         {
         }
 
         const glm::mat4 &model() const { return m_uniform_block.model; }
         glm::mat4 &model() { return m_uniform_block.model; }
 
-        void flush()
+        void flush(uint32_t frame_index)
         {
-            m_uniform_buffer->copy_from(&m_uniform_block, sizeof(m_uniform_block));
+            m_uniform_buffers[frame_index]->copy_from(&m_uniform_block, sizeof(m_uniform_block));
         }
 
         void render(
             VkCommandBuffer command_buffer,
+            uint32_t frame_index,
             GraphicsPipeline &pipeline) const
         {
             pipeline
                 .descriptor_set_layout()
-                .write_uniform_buffer(m_uniform_buffer->descriptor(), 1);
+                .write_uniform_buffer(m_uniform_buffers[frame_index]->descriptor(), 1);
 
             if (m_texture)
             {

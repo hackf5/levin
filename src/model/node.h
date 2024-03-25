@@ -80,32 +80,33 @@ namespace levin
             return m_parent ? m_parent->global_matrix() * local_matrix() : local_matrix();
         }
 
-        void flush()
+        void flush(uint32_t frame_index)
         {
             if (m_mesh)
             {
                 m_mesh->model() = global_matrix();
-                m_mesh->flush();
+                m_mesh->flush(frame_index);
             }
 
             for (auto &child : m_children)
             {
-                child->flush();
+                child->flush(frame_index);
             }
         }
 
         void render(
             VkCommandBuffer command_buffer,
+            uint32_t frame_index,
             GraphicsPipeline &pipeline) const
         {
             if (m_mesh)
             {
-                m_mesh->render(command_buffer, pipeline);
+                m_mesh->render(command_buffer, frame_index, pipeline);
             }
 
             for (auto &child : m_children)
             {
-                child->render(command_buffer, pipeline);
+                child->render(command_buffer, frame_index, pipeline);
             }
         }
     };
