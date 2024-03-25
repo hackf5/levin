@@ -18,6 +18,7 @@ namespace levin
             const VkFormat format;
             const VkImageUsageFlags usage;
             const VkImageTiling tiling;
+            const VkSampleCountFlagBits samples;
         };
 
     private:
@@ -41,7 +42,8 @@ namespace levin
             uint32_t height,
             VkFormat format,
             VkImageUsageFlags usage,
-            VkImageTiling tiling);
+            VkImageTiling tiling,
+            VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT);
         ~Image();
 
         operator VkImage() const { return m_allocation_info.image; }
