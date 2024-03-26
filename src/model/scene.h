@@ -37,7 +37,7 @@ namespace levin
         void render(
             VkCommandBuffer command_buffer,
             uint32_t frame_index,
-            GraphicsPipeline &pipeline) const
+            GraphicsPipeline &pipeline)
         {
             m_camera.bind(frame_index, pipeline);
             m_model.render(command_buffer, frame_index, pipeline);

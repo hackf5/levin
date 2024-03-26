@@ -26,7 +26,7 @@ namespace levin
         void render(
             VkCommandBuffer command_buffer,
             uint32_t frame_index,
-            GraphicsPipeline &pipeline) const
+            GraphicsPipeline &pipeline)
         {
             m_root_node.render(command_buffer, frame_index, pipeline);
         }

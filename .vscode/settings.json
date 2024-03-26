@@ -18,6 +18,7 @@
     "Multisampler",
     "SFLOAT",
     "spdlog",
+    "STBI",
     "subpass",
     "Subpasses",
     "subresource",

@@ -9,22 +9,20 @@
 
 #include "util/no_copy_or_move.h"
 
-#include "vulkan/buffer/buffer_host.h"
+#include "vulkan/buffer/uniform_buffer.h"
 
 namespace levin
 {
     class Camera: NoCopyOrMove
     {
     private:
-        typedef std::array<std::unique_ptr<BufferHost>, Device::max_frames_in_flight> uniform_buffers_t;
-
         struct UniformBlock
         {
             glm::mat4 proj;
             glm::mat4 view;
         };
 
-        uniform_buffers_t m_uniform_buffers;
+        UniformBuffer m_uniform_buffers;
 
         glm::vec3 m_position;
         glm::vec3 m_target;
@@ -37,20 +35,6 @@ namespace levin
         bool m_dirty = true;
 
         UniformBlock m_uniform_block;
-
-        uniform_buffers_t create_uniform_buffers(const Device &device)
-        {
-            uniform_buffers_t uniform_buffers;
-            for (auto &uniform_buffer : uniform_buffers)
-            {
-                uniform_buffer = std::make_unique<BufferHost>(
-                    device,
-                    sizeof(UniformBlock),
-                    VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-            }
-
-            return uniform_buffers;
-        }
 
         void update()
         {
@@ -76,7 +60,7 @@ namespace levin
 
     public:
         Camera(const Device &device):
-            m_uniform_buffers(create_uniform_buffers(device)),
+            m_uniform_buffers(device, sizeof(UniformBlock)),
             m_uniform_block({ glm::identity<glm::mat4>(), glm::identity<glm::mat4>() }),
             m_position(glm::zero<glm::vec3>()),
             m_target(glm::zero<glm::vec3>()),
@@ -108,17 +92,17 @@ namespace levin
         const glm::mat4 &view() { update(); return m_uniform_block.view; }
         const glm::mat4 &proj() { update(); return m_uniform_block.proj; }
 
-        void flush(uint16_t frame_index)
+        void flush(uint32_t frame_index)
         {
             update();
-            m_uniform_buffers[frame_index]->copy_from(&m_uniform_block, sizeof(UniformBlock));
+            m_uniform_buffers[frame_index].copy_from(&m_uniform_block, sizeof(UniformBlock));
         }
 
-        void bind(uint16_t frame_index, GraphicsPipeline &pipeline) const
+        void bind(uint32_t frame_index, GraphicsPipeline &pipeline)
         {
             pipeline
                 .descriptor_set_layout()
-                .write_uniform_buffer(m_uniform_buffers[0]->descriptor(), 0);
+                .write_uniform_buffer(m_uniform_buffers[frame_index].descriptor(), 0);
         }
     };
 }
