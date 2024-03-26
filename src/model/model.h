@@ -17,16 +17,18 @@ namespace levin
         const Node &root_node() const { return m_root_node; }
         Node &root_node() { return m_root_node; }
 
-        void render(
-            VkCommandBuffer command_buffer,
-            GraphicsPipeline &pipeline) const
+
+        void flush(uint32_t frame_index)
         {
-            m_root_node.render(command_buffer, pipeline);
+            m_root_node.flush(frame_index);
         }
 
-        void flush()
+        void render(
+            VkCommandBuffer command_buffer,
+            uint32_t frame_index,
+            GraphicsPipeline &pipeline)
         {
-            m_root_node.flush();
+            m_root_node.render(command_buffer, frame_index, pipeline);
         }
     };
 }

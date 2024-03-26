@@ -8,12 +8,11 @@
 #include "util/no_copy_or_move.h"
 
 #include "vulkan/device.h"
-#include "vulkan/buffer/buffer_host.h"
+#include "vulkan/buffer/uniform_buffer.h"
 #include "vulkan/graphics_pipeline.h"
 #include "vulkan/texture.h"
 
 #include "primitive.h"
-
 
 namespace levin
 {
@@ -26,40 +25,38 @@ namespace levin
         };
 
         UniformBlock m_uniform_block;
+        UniformBuffer m_uniform_buffers;
         std::vector<Primitive> m_primitives;
-        std::unique_ptr<BufferHost> m_uniform_buffer;
-        Texture* m_texture;
+        Texture *m_texture;
 
     public:
         Mesh(
             const Device &device,
             const std::vector<Primitive> &primitives,
-            Texture* texture = nullptr):
+            Texture *texture = nullptr):
             m_uniform_block {},
+            m_uniform_buffers(device, sizeof(UniformBlock)),
             m_primitives(primitives),
-            m_texture(texture),
-            m_uniform_buffer(std::make_unique<BufferHost>(
-                device,
-                sizeof(m_uniform_block),
-                VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT))
+            m_texture(texture)
         {
         }
 
         const glm::mat4 &model() const { return m_uniform_block.model; }
         glm::mat4 &model() { return m_uniform_block.model; }
 
-        void flush()
+        void flush(uint32_t frame_index)
         {
-            m_uniform_buffer->copy_from(&m_uniform_block, sizeof(m_uniform_block));
+            m_uniform_buffers[frame_index].copy_from(&m_uniform_block, sizeof(m_uniform_block));
         }
 
         void render(
             VkCommandBuffer command_buffer,
-            GraphicsPipeline &pipeline) const
+            uint32_t frame_index,
+            GraphicsPipeline &pipeline)
         {
             pipeline
                 .descriptor_set_layout()
-                .write_uniform_buffer(m_uniform_buffer->descriptor(), 1);
+                .write_uniform_buffer(m_uniform_buffers[frame_index].descriptor(), 1);
 
             if (m_texture)
             {

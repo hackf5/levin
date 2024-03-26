@@ -10,9 +10,10 @@ Image::Image(
     uint32_t height,
     VkFormat format,
     VkImageUsageFlags usage,
-    VkImageTiling tiling):
+    VkImageTiling tiling,
+    VkSampleCountFlagBits samples):
     m_device(device),
-    m_image_info({width, height, format, usage, tiling}),
+    m_image_info({width, height, format, usage, tiling, samples}),
     m_allocation_info(create_allocation_info())
 {
 }
@@ -41,7 +42,7 @@ Image::AllocationInfo Image::create_allocation_info()
     image_info.tiling = m_image_info.tiling;
     image_info.usage = m_image_info.usage;
     image_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    image_info.samples = VK_SAMPLE_COUNT_1_BIT;
+    image_info.samples = m_image_info.samples;
     image_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
     image_info.flags = 0;
 

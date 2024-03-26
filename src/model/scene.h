@@ -28,18 +28,19 @@ namespace levin
         const Model &model() const { return m_model; }
         Model &model() { return m_model; }
 
-        void flush()
+        void flush(uint32_t frame_index)
         {
-            m_camera.flush();
-            m_model.flush();
+            m_camera.flush(frame_index);
+            m_model.flush(frame_index);
         }
 
         void render(
             VkCommandBuffer command_buffer,
-            GraphicsPipeline &pipeline) const
+            uint32_t frame_index,
+            GraphicsPipeline &pipeline)
         {
-            m_camera.bind(pipeline);
-            m_model.render(command_buffer, pipeline);
+            m_camera.bind(frame_index, pipeline);
+            m_model.render(command_buffer, frame_index, pipeline);
         }
     };
 

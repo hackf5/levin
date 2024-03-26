@@ -13,6 +13,7 @@ Framebuffers::Framebuffers(
     const RenderPass &render_pass,
     const DepthBuffer &depth_buffer):
     m_device(device),
+    m_multisampler(device, swapchain),
     m_framebuffers(create_framebuffers(swapchain, render_pass, depth_buffer))
 {
 }
@@ -35,7 +36,12 @@ std::vector<VkFramebuffer> Framebuffers::create_framebuffers(
 
     for (size_t i = 0; i < swapchain.image_count(); i++)
     {
-        auto attachments = std::array<VkImageView, 2> { swapchain.image_view(i), depth_buffer.image_view(), };
+        auto attachments = std::array<VkImageView, 3>
+        {
+                m_multisampler.image_view(),
+                depth_buffer.image_view(),
+            swapchain.image_view(i),
+        };
 
         VkFramebufferCreateInfo framebuffer_info = {};
         framebuffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;

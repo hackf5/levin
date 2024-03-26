@@ -3,10 +3,11 @@
 #include <vector>
 
 #include "util/no_copy_or_move.h"
-#include "device.h"
-#include "swapchain.h"
-#include "render_pass.h"
 #include "depth_buffer.h"
+#include "device.h"
+#include "multisampler.h"
+#include "render_pass.h"
+#include "swapchain.h"
 
 namespace levin
 {
@@ -14,6 +15,7 @@ namespace levin
     {
     private:
         const Device &m_device;
+        const Multisampler m_multisampler;
 
         const std::vector<VkFramebuffer> m_framebuffers;
 

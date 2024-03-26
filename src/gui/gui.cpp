@@ -43,7 +43,7 @@ Gui::Gui(
     init_info.MinImageCount = Device::max_frames_in_flight;
     init_info.ImageCount = Device::max_frames_in_flight;
     init_info.CheckVkResultFn = check_vk_result;
-    init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+    init_info.MSAASamples = device.msaa_samples();
 
     ImGui_ImplVulkan_Init(&init_info);
 

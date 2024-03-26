@@ -32,7 +32,9 @@ vkb::Swapchain Swapchain::create_swapchain()
 
     vkb::SwapchainBuilder swapchain_builder { m_device };
 
-    auto swapchain_ret = swapchain_builder.build();
+    auto swapchain_ret = swapchain_builder
+        .set_desired_present_mode(VK_PRESENT_MODE_MAILBOX_KHR)
+        .build();
     if (!swapchain_ret)
     {
         throw std::runtime_error("Failed to create swapchain: " + swapchain_ret.error().message());

@@ -159,7 +159,7 @@ VkPipelineMultisampleStateCreateInfo GraphicsPipeline::create_multisample_state(
     VkPipelineMultisampleStateCreateInfo result = {};
     result.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
     result.sampleShadingEnable = VK_FALSE;
-    result.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+    result.rasterizationSamples = m_device.msaa_samples();
 
     return result;
 }
