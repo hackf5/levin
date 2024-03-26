@@ -50,6 +50,15 @@ VulkanContextBuilder &VulkanContextBuilder::add_sampler()
     return *this;
 }
 
+VulkanContextBuilder &VulkanContextBuilder::add_texture_factory()
+{
+    m_context->m_texture_factory = std::make_unique<TextureFactory>(
+        *m_context->m_device,
+        *m_context->m_sampler,
+        *m_context->m_adhoc_queues);
+    return *this;
+}
+
 VulkanContextBuilder &VulkanContextBuilder::add_scene()
 {
     m_context->m_scene = std::make_unique<Scene>(*m_context->m_device);

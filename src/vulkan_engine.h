@@ -5,7 +5,7 @@
 
 #include "util/no_copy_or_move.h"
 #include "vulkan_context.h"
-#include "vulkan/texture.h"
+#include "scenes/render_scene.h"
 
 namespace levin
 {
@@ -13,15 +13,12 @@ namespace levin
     {
     private:
         std::unique_ptr<VulkanContext> m_context;
-
-        std::unique_ptr<Texture> m_texture_image;
+        std::unique_ptr<RenderScene> m_render_scene;
 
         uint32_t m_current_frame = 0;
 
-        void load_scene();
         void draw_frame();
         void recreate_swapchain();
-        void update_uniform_buffer();
         void render(VkFramebuffer framebuffer);
 
         void next_frame()

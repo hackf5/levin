@@ -14,8 +14,8 @@
 #include "vulkan/graphics_queue.h"
 #include "vulkan/render_pass.h"
 #include "vulkan/sampler.h"
-#include "vulkan/shader_module.h"
 #include "vulkan/swapchain.h"
+#include "vulkan/texture_factory.h"
 #include "vulkan/window.h"
 #include "vulkan/vertex.h"
 
@@ -35,6 +35,7 @@ namespace levin
         std::unique_ptr<DescriptorSetLayout> m_descriptor_set_layout;
         std::unique_ptr<GraphicsBuffers> m_graphics_buffers;
         std::unique_ptr<Sampler> m_sampler;
+        std::unique_ptr<TextureFactory> m_texture_factory;
         std::unique_ptr<Scene> m_scene;
         std::unique_ptr<Swapchain> m_swapchain;
         std::unique_ptr<DepthBuffer> m_depth_buffer;
@@ -65,6 +66,8 @@ namespace levin
 
         const Scene &scene() const { return *m_scene; }
         Scene &scene() { return *m_scene; }
+
+        TextureFactory &texture_factory() { return *m_texture_factory; }
 
         const Swapchain &swapchain() const { return *m_swapchain; }
 

@@ -32,6 +32,8 @@ namespace levin
 
         VulkanContextBuilder &add_sampler();
 
+        VulkanContextBuilder &add_texture_factory();
+
         VulkanContextBuilder &add_scene();
 
         VulkanContextBuilder &add_swapchain();
