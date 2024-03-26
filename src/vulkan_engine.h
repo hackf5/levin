@@ -9,26 +9,26 @@
 
 namespace levin
 {
-    class VulkanEngine : NoCopyOrMove
+class VulkanEngine: NoCopyOrMove
+{
+private:
+    std::unique_ptr<VulkanContext> m_context;
+    std::unique_ptr<RenderScene> m_render_scene;
+
+    uint32_t m_current_frame = 0;
+
+    void draw_frame();
+    void recreate_swapchain();
+    void render(VkFramebuffer framebuffer);
+
+    void next_frame()
     {
-    private:
-        std::unique_ptr<VulkanContext> m_context;
-        std::unique_ptr<RenderScene> m_render_scene;
+        m_current_frame = (m_current_frame + 1) % Device::max_frames_in_flight;
+    }
 
-        uint32_t m_current_frame = 0;
+public:
+    VulkanEngine(std::unique_ptr<VulkanContext> context);
 
-        void draw_frame();
-        void recreate_swapchain();
-        void render(VkFramebuffer framebuffer);
-
-        void next_frame()
-        {
-            m_current_frame = (m_current_frame + 1) % Device::max_frames_in_flight;
-        }
-
-    public:
-        VulkanEngine(std::unique_ptr<VulkanContext> context);
-
-        void run();
-    };
+    void run();
+};
 }

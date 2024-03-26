@@ -6,18 +6,18 @@
 
 namespace levin
 {
-    class Sampler
-    {
-    private:
-        const Device &m_device;
-        const VkSampler m_sampler;
+class Sampler
+{
+private:
+    const Device &m_device;
+    const VkSampler m_sampler;
 
-        VkSampler create_sampler();
+    VkSampler create_sampler();
 
-    public:
-        Sampler(const Device &device);
-        ~Sampler();
+public:
+    Sampler(const Device &device);
+    ~Sampler();
 
-        operator VkSampler () const { return m_sampler; }
-    };
+    operator VkSampler () const { return m_sampler; }
+};
 }

@@ -11,18 +11,18 @@
 
 namespace levin
 {
-    class Multisampler: public NoCopyOrMove
-    {
-    private:
-        const Device &m_device;
-        const Image m_image;
-        const ImageView m_image_view;
+class Multisampler: public NoCopyOrMove
+{
+private:
+    const Device &m_device;
+    const Image m_image;
+    const ImageView m_image_view;
 
-    public:
-        Multisampler(
-            const Device &device,
-            const Swapchain &swapchain);
+public:
+    Multisampler(
+        const Device &device,
+        const Swapchain &swapchain);
 
-        VkImageView image_view() const { return m_image_view; }
-    };
+    VkImageView image_view() const { return m_image_view; }
+};
 }

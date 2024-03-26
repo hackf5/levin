@@ -12,25 +12,25 @@
 
 namespace levin
 {
-    class Gui
-    {
-    private:
-        const Device &m_device;
-        VkDescriptorPool m_descriptor_pool;
-        Framerate<> m_framerate;
+class Gui
+{
+private:
+    const Device &m_device;
+    VkDescriptorPool m_descriptor_pool;
+    Framerate<> m_framerate;
 
-        VkDescriptorPool create_descriptor_pool();
+    VkDescriptorPool create_descriptor_pool();
 
-        static void check_vk_result(VkResult result);
+    static void check_vk_result(VkResult result);
 
-    public:
-        Gui(
-            const Window &window,
-            const Device &device,
-            const RenderPass &render_pass);
-        ~Gui();
+public:
+    Gui(
+        const Window &window,
+        const Device &device,
+        const RenderPass &render_pass);
+    ~Gui();
 
-        void begin_frame();
-        void render(VkCommandBuffer command_buffer) const;
-    };
+    void begin_frame();
+    void render(VkCommandBuffer command_buffer) const;
+};
 } //

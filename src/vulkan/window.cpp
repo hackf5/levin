@@ -6,7 +6,7 @@
 
 using namespace levin;
 
-Window::Window(int width, int height, const std::string &title) :
+Window::Window(int width, int height, const std::string &title):
     m_width(width),
     m_height(height)
 {

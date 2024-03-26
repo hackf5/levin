@@ -13,7 +13,7 @@ DescriptorSetLayout::DescriptorSetLayout(
     m_device(device),
     m_layout_infos(layout_infos),
     m_descriptor_set_layout(create_descriptor_set_layout()),
-    m_descriptor_set_layouts({m_descriptor_set_layout}),
+    m_descriptor_set_layouts({ m_descriptor_set_layout }),
     m_write_descriptor_sets(create_write_descriptor_sets())
 {
 }

@@ -12,26 +12,26 @@
 
 namespace levin
 {
-    class George: public RenderScene
+class George: public RenderScene
+{
+protected:
+    void update(
+        uint32_t frame_index,
+        float aspect_ratio,
+        float time)
+        override;
+
+public:
+    George(
+        Scene &scene):
+        RenderScene(scene)
     {
-    protected:
-        void update(
-            uint32_t frame_index,
-            float aspect_ratio,
-            float time)
-            override;
+    }
 
-    public:
-        George(
-            Scene &scene):
-            RenderScene(scene)
-        {
-        }
-
-        virtual void load(
-            const Device &device,
-            TextureFactory &texture_factory,
-            GraphicsBuffers &graphics_buffers)
-            override;
-    };
+    virtual void load(
+        const Device &device,
+        TextureFactory &texture_factory,
+        GraphicsBuffers &graphics_buffers)
+        override;
+};
 }

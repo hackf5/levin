@@ -11,49 +11,49 @@
 
 namespace levin
 {
-    class RenderScene : NoCopyOrMove
+class RenderScene: NoCopyOrMove
+{
+protected:
+    Scene &m_scene;
+
+    float time_delta()
     {
-    protected:
-        Scene &m_scene;
+        static auto start_time = std::chrono::high_resolution_clock::now();
+        auto current_time = std::chrono::high_resolution_clock::now();
+        return std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
+    }
 
-        float time_delta()
-        {
-            static auto start_time = std::chrono::high_resolution_clock::now();
-            auto current_time = std::chrono::high_resolution_clock::now();
-            return std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
-        }
+    virtual void update(
+        uint32_t frame_index,
+        float aspect_ratio,
+        float time) = 0;
 
-        virtual void update(
-            uint32_t frame_index,
-            float aspect_ratio,
-            float time) = 0;
+public:
+    RenderScene(
+        Scene &scene):
+        m_scene(scene)
+    {
+    }
 
-    public:
-        RenderScene(
-            Scene &scene):
-            m_scene(scene)
-        {
-        }
+    virtual void load(
+        const Device &device,
+        TextureFactory &texture_factory,
+        GraphicsBuffers &graphics_buffers) = 0;
 
-        virtual void load(
-            const Device &device,
-            TextureFactory &texture_factory,
-            GraphicsBuffers &graphics_buffers) = 0;
+    void update(
+        uint32_t frame_index,
+        float aspect_ratio)
+    {
+        auto time = time_delta();
+        update(frame_index, aspect_ratio, time);
+    }
 
-        void update(
-            uint32_t frame_index,
-            float aspect_ratio)
-        {
-            auto time = time_delta();
-            update(frame_index, aspect_ratio, time);
-        }
-
-        void render(
-            VkCommandBuffer command_buffer,
-            uint32_t frame_index,
-            GraphicsPipeline &pipeline)
-        {
-            m_scene.render(command_buffer, frame_index, pipeline);
-        }
-    };
+    void render(
+        VkCommandBuffer command_buffer,
+        uint32_t frame_index,
+        GraphicsPipeline &pipeline)
+    {
+        m_scene.render(command_buffer, frame_index, pipeline);
+    }
+};
 }
