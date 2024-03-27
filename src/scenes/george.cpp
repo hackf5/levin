@@ -42,8 +42,8 @@ void George::load(
 
     texture_factory.load_texture("george", "george.png");
 
-    graphics_buffers.load_vertexes(vertexes.begin(), vertexes.end());
-    graphics_buffers.load_indexes(indexes.begin(), indexes.end());
+    graphics_buffers.load_vertexes(vertexes);
+    graphics_buffers.load_indexes(indexes);
 
     std::vector<Primitive> primitives = {
         {0, static_cast<uint32_t>(indexes.size())}

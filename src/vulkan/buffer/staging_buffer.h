@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ranges>
+
 #include "buffer_host.h"
 
 namespace levin
@@ -18,6 +20,17 @@ namespace levin
                 VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
         {
             copy_from(begin, end);
+        }
+
+        StagingBuffer(
+            const Device &device,
+            const std::ranges::contiguous_range auto &range):
+            BufferHost(
+                device,
+                total_bytes(range),
+                VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
+        {
+            copy_from(range);
         }
     };
 }

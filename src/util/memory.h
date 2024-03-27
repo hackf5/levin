@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iterator>
+#include <ranges>
 #include <type_traits>
 
 namespace levin
@@ -14,6 +15,11 @@ size_t total_bytes(TIter begin, TIter end)
         "TIter must be an iterator to a standard layout type");
 
     return sizeof(*begin) * std::distance(begin, end);
+}
+
+size_t total_bytes(const std::ranges::contiguous_range auto &range)
+{
+    return total_bytes(std::begin(range), std::end(range));
 }
 
 template <typename TIter>
@@ -31,6 +37,11 @@ void copy_to(void *dst, TIter begin, TIter end)
         "TIter must be an iterator to a standard layout type");
 
     memcpy(dst, to_void_address(begin), total_bytes(begin, end));
+}
+
+void copy_to(void *dst, const std::ranges::contiguous_range auto &range)
+{
+    copy_to(dst, std::begin(range), std::end(range));
 }
 
 template <typename T>

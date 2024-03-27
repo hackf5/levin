@@ -2,6 +2,7 @@
 
 #include <array>
 #include <memory>
+#include <ranges>
 #include <type_traits>
 
 #include <vulkan/vulkan.h>
@@ -25,8 +26,6 @@ private:
     std::unique_ptr<BufferGPU> m_vertex_buffer;
     std::unique_ptr<BufferGPU> m_index_buffer;
 
-    std::array<VkBuffer, 1> m_vertex_buffers;
-
 public:
     GraphicsBuffers(
         const Device &device,
@@ -45,8 +44,11 @@ public:
             total_bytes(begin, end),
             VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
         m_vertex_buffer->copy_from(begin, end);
+    }
 
-        m_vertex_buffers[0] = *m_vertex_buffer;
+    void load_vertexes(const std::ranges::contiguous_range auto &vertexes)
+    {
+        load_vertexes(std::begin(vertexes), std::end(vertexes));
     }
 
     template <typename TIter>
@@ -62,6 +64,11 @@ public:
             total_bytes(begin, end),
             VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
         m_index_buffer->copy_from(begin, end);
+    }
+
+    void load_indexes(const std::ranges::contiguous_range auto &indexes)
+    {
+        load_indexes(std::begin(indexes), std::end(indexes));
     }
 
     void bind(VkCommandBuffer command_buffer) const;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ranges>
+
 #include <vulkan/vulkan.h>
 
 #include "util/memory.h"
@@ -40,6 +42,11 @@ public:
     void copy_from(TIter begin, TIter end)
     {
         copy_to(m_allocation_info.info.pMappedData, begin, end);
+    }
+
+    void copy_from(const std::ranges::contiguous_range auto &range)
+    {
+        copy_to(m_allocation_info.info.pMappedData, range);
     }
 };
 }

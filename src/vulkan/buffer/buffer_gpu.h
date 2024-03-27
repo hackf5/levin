@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ranges>
+
 #include <vulkan/vulkan.h>
 
 #include "buffer.h"
@@ -44,6 +46,12 @@ public:
     void copy_from(TIter begin, TIter end) const
     {
         StagingBuffer staging_buffer(m_device, begin, end);
+        copy_from(staging_buffer);
+    }
+
+    void copy_from(const std::ranges::contiguous_range auto &range) const
+    {
+        StagingBuffer staging_buffer(m_device, range);
         copy_from(staging_buffer);
     }
 };
