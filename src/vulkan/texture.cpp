@@ -35,13 +35,13 @@ std::unique_ptr<BufferHost> Texture::create_staging_buffer(
         throw std::runtime_error("Failed to load image " + file_name + ": " + stbi_failure_reason());
     }
 
-    VkDeviceSize image_size = width * height * 4;
+    auto image_size = width * height * 4;
     auto staging_buffer = std::make_unique<BufferHost>(
         m_device,
         image_size,
         VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+    staging_buffer->copy_from(pixels, pixels + image_size);
 
-    staging_buffer->copy_from(pixels, image_size);
     stbi_image_free(pixels);
 
     return staging_buffer;

@@ -2,6 +2,7 @@
 
 #include <array>
 #include <memory>
+#include <type_traits>
 
 #include <vulkan/vulkan.h>
 
@@ -30,8 +31,44 @@ public:
         const Device &device,
         const AdhocQueues &adhoc_queues);
 
-    void load_vertexes(const std::vector<levin::Vertex> &vertexes);
-    void load_indexes(const std::vector<Vertex::index_t> &indexes);
+    template <typename TIter>
+    void load_vertexes(TIter begin, TIter end)
+    {
+        static_assert(
+            std::is_same_v<Vertex, std::decay_t<decltype(*begin)>>,
+            "TIter must be an iterator to Vertex");
+
+        static_assert(std::contiguous_iterator<TIter>, "TIter must be a contiguous iterator");
+
+        m_vertex_buffer.reset();
+        m_vertex_buffer = std::make_unique<BufferGPU>(
+            m_device,
+            m_adhoc_queues,
+            sizeof(*begin) * std::distance(begin, end),
+            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+        m_vertex_buffer->copy_from(begin, end);
+
+        m_vertex_buffers[0] = *m_vertex_buffer;
+    }
+
+    template <typename TIter>
+    void load_indexes(TIter begin, TIter end)
+    {
+        static_assert(
+            std::is_same_v<Vertex::index_t, std::decay_t<decltype(*begin)>>,
+            "TIter must be an iterator to Vertex::index_t");
+
+        static_assert(std::contiguous_iterator<TIter>, "TIter must be a contiguous iterator");
+
+        m_index_buffer.reset();
+        m_index_buffer = std::make_unique<BufferGPU>(
+            m_device,
+            m_adhoc_queues,
+            sizeof(*begin) * std::distance(begin, end),
+            VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+        m_index_buffer->copy_from(begin, end);
+    }
+
     void bind(VkCommandBuffer command_buffer) const;
 };
 }

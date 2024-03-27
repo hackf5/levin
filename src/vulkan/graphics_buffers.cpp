@@ -15,33 +15,6 @@ GraphicsBuffers::GraphicsBuffers(
 {
 }
 
-void GraphicsBuffers::load_vertexes(const std::vector<Vertex> &vertexes)
-{
-    m_vertex_buffer.reset();
-
-    m_vertex_buffer = std::make_unique<BufferGPU>(
-        m_device,
-        m_adhoc_queues,
-        sizeof(vertexes[0]) * vertexes.size(),
-        VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-    m_vertex_buffers[0] = *m_vertex_buffer;
-
-    m_vertex_buffer->copy_from(vertexes);
-}
-
-void GraphicsBuffers::load_indexes(const std::vector<Vertex::index_t> &indexes)
-{
-    m_index_buffer.reset();
-
-    m_index_buffer = std::make_unique<BufferGPU>(
-        m_device,
-        m_adhoc_queues,
-        sizeof(indexes[0]) * indexes.size(),
-        VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
-
-    m_index_buffer->copy_from(indexes);
-}
-
 void GraphicsBuffers::bind(VkCommandBuffer command_buffer) const
 {
     vkCmdBindVertexBuffers(command_buffer, 0, 1, m_vertex_buffers.data(), vertex_offsets);

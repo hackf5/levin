@@ -1,7 +1,10 @@
 #pragma once
 
+#include <type_traits>
 #include <vector>
+
 #include <vulkan/vulkan.h>
+
 #include "buffer.h"
 #include "buffer_host.h"
 #include "vulkan/adhoc_queues.h"
@@ -40,14 +43,16 @@ public:
         m_adhoc_queues.transfer().submit_and_wait();
     }
 
-    template <typename T>
-    void copy_from(const std::vector<T> &data) const
+    template <typename TIter>
+    void copy_from(TIter begin, TIter end) const
     {
+        static_assert(std::contiguous_iterator<TIter>, "TIter must be a contiguous iterator");
+
         BufferHost staging_buffer(
             m_device,
-            sizeof(T) * data.size(),
+            sizeof(*begin) * std::distance(begin, end),
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-        staging_buffer.copy_from(data);
+        staging_buffer.copy_from(begin, end);
         copy_from(staging_buffer);
     }
 };

@@ -48,7 +48,7 @@ public:
 
     void flush(uint32_t frame_index)
     {
-        m_uniform_buffers[frame_index].copy_from(&m_uniform_block, sizeof(m_uniform_block));
+        m_uniform_buffers[frame_index].copy_from(m_uniform_block);
     }
 
     void render(

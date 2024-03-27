@@ -97,7 +97,7 @@ public:
     void flush(uint32_t frame_index)
     {
         update();
-        m_uniform_buffers[frame_index].copy_from(&m_uniform_block, sizeof(UniformBlock));
+        m_uniform_buffers[frame_index].copy_from(m_uniform_block);
     }
 
     void bind(uint32_t frame_index, GraphicsPipeline &pipeline)

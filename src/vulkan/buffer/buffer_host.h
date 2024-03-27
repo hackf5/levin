@@ -1,13 +1,22 @@
 #pragma once
 
+#include <type_traits>
 #include <vector>
+
 #include <vulkan/vulkan.h>
+
 #include "buffer.h"
 
 namespace levin
 {
 class BufferHost: public Buffer
 {
+private:
+    void copy_from(void *data, VkDeviceSize size)
+    {
+        memcpy(m_allocation_info.info.pMappedData, data, size);
+    }
+
 public:
     BufferHost(
         const Device &device,
@@ -23,16 +32,18 @@ public:
     {
     }
 
-    void copy_from(void *data, VkDeviceSize size)
+    template <typename T>
+    void copy_from(const T &data)
     {
-        memcpy(m_allocation_info.info.pMappedData, data, size);
+        copy_from((void *)&data, sizeof(data));
     }
 
-    template <typename T>
-    void copy_from(const std::vector<T> &data)
+    template <typename TIter>
+    void copy_from(TIter begin, TIter end)
     {
-        copy_from((void *)data.data(), sizeof(T) * data.size());
+        static_assert(std::contiguous_iterator<TIter>, "TIter must be a contiguous iterator");
+
+        copy_from((void *)&*begin, sizeof(*begin) * std::distance(begin, end));
     }
 };
-
 }
