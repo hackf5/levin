@@ -11,7 +11,7 @@
 #include "buffer/buffer_host.h"
 #include "adhoc_queues.h"
 #include "device.h"
-#include "buffer/buffer_host.h"
+#include "buffer/buffer.h"
 #include "sampler.h"
 #include "image.h"
 #include "image_view.h"
@@ -30,7 +30,7 @@ private:
     const ImageView m_image_view;
     VkDescriptorImageInfo m_image_descriptor_info;
 
-    std::unique_ptr<BufferHost> create_staging_buffer(const std::string &name, int &width, int &height);
+    std::unique_ptr<Buffer> create_staging_buffer(const std::string &name, int &width, int &height);
     std::unique_ptr<Image> create_image(const AdhocQueues &adhoc_queues);
     VkDescriptorImageInfo create_image_descriptor_info(const Sampler &sampler);
 

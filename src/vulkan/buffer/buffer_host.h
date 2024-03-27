@@ -1,10 +1,8 @@
 #pragma once
 
-#include <type_traits>
-#include <vector>
-
 #include <vulkan/vulkan.h>
 
+#include "util/memory.h"
 #include "buffer.h"
 
 namespace levin
@@ -35,15 +33,13 @@ public:
     template <typename T>
     void copy_from(const T &data)
     {
-        copy_from((void *)&data, sizeof(data));
+        copy_to(m_allocation_info.info.pMappedData, data);
     }
 
     template <typename TIter>
     void copy_from(TIter begin, TIter end)
     {
-        static_assert(std::contiguous_iterator<TIter>, "TIter must be a contiguous iterator");
-
-        copy_from((void *)&*begin, sizeof(*begin) * std::distance(begin, end));
+        copy_to(m_allocation_info.info.pMappedData, begin, end);
     }
 };
 }

@@ -1,12 +1,9 @@
 #pragma once
 
-#include <type_traits>
-#include <vector>
-
 #include <vulkan/vulkan.h>
 
 #include "buffer.h"
-#include "buffer_host.h"
+#include "staging_buffer.h"
 #include "vulkan/adhoc_queues.h"
 
 namespace levin
@@ -46,13 +43,7 @@ public:
     template <typename TIter>
     void copy_from(TIter begin, TIter end) const
     {
-        static_assert(std::contiguous_iterator<TIter>, "TIter must be a contiguous iterator");
-
-        BufferHost staging_buffer(
-            m_device,
-            sizeof(*begin) * std::distance(begin, end),
-            VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-        staging_buffer.copy_from(begin, end);
+        StagingBuffer staging_buffer(m_device, begin, end);
         copy_from(staging_buffer);
     }
 };

@@ -11,6 +11,7 @@
 #include "adhoc_queues.h"
 #include "vertex.h"
 
+#include "util/memory.h"
 #include "util/no_copy_or_move.h"
 
 namespace levin
@@ -38,13 +39,10 @@ public:
             std::is_same_v<Vertex, std::decay_t<decltype(*begin)>>,
             "TIter must be an iterator to Vertex");
 
-        static_assert(std::contiguous_iterator<TIter>, "TIter must be a contiguous iterator");
-
-        m_vertex_buffer.reset();
         m_vertex_buffer = std::make_unique<BufferGPU>(
             m_device,
             m_adhoc_queues,
-            sizeof(*begin) * std::distance(begin, end),
+            total_bytes(begin, end),
             VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
         m_vertex_buffer->copy_from(begin, end);
 
@@ -58,13 +56,10 @@ public:
             std::is_same_v<Vertex::index_t, std::decay_t<decltype(*begin)>>,
             "TIter must be an iterator to Vertex::index_t");
 
-        static_assert(std::contiguous_iterator<TIter>, "TIter must be a contiguous iterator");
-
-        m_index_buffer.reset();
         m_index_buffer = std::make_unique<BufferGPU>(
             m_device,
             m_adhoc_queues,
-            sizeof(*begin) * std::distance(begin, end),
+            total_bytes(begin, end),
             VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
         m_index_buffer->copy_from(begin, end);
     }
