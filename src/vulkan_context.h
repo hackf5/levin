@@ -37,7 +37,6 @@ private:
     std::unique_ptr<GraphicsBuffers> m_graphics_buffers;
     std::unique_ptr<Sampler> m_sampler;
     std::unique_ptr<TextureFactory> m_texture_factory;
-    std::unique_ptr<Scene> m_scene;
     std::unique_ptr<RenderScene> m_render_scene;
     std::unique_ptr<Swapchain> m_swapchain;
     std::unique_ptr<DepthBuffer> m_depth_buffer;
@@ -65,9 +64,6 @@ public:
     GraphicsBuffers &graphics_buffers() { return *m_graphics_buffers; }
 
     const Sampler &sampler() const { return *m_sampler; }
-
-    const Scene &scene() const { return *m_scene; }
-    Scene &scene() { return *m_scene; }
 
     const RenderScene &render_scene() const { return *m_render_scene; }
     RenderScene &render_scene() { return *m_render_scene; }

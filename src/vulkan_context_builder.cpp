@@ -61,12 +61,10 @@ VulkanContextBuilder &VulkanContextBuilder::add_texture_factory()
 }
 
 VulkanContextBuilder &VulkanContextBuilder::add_scene(
-    std::function<std::unique_ptr<RenderScene>(Scene &)> scene_factory)
+    std::function<std::unique_ptr<RenderScene>(const Device &)> scene_factory)
 {
     m_context->m_render_scene.reset();
-    m_context->m_scene.reset();
-    m_context->m_scene = std::make_unique<Scene>(*m_context->m_device);
-    m_context->m_render_scene = scene_factory(*m_context->m_scene);
+    m_context->m_render_scene = scene_factory(*m_context->m_device);
     return *this;
 }
 

@@ -31,7 +31,7 @@ int main()
                 .add_combined_image_sampler(); // texture
         };
 
-        auto scene_factory = [](Scene &scene) { return std::make_unique<George>(scene); };
+        auto scene_factory = [](const Device &device) { return std::make_unique<George>(device); };
 
         auto context = VulkanContextBuilder()
             .add_window(800, 600, "Levin")

@@ -5,7 +5,6 @@
 #include <glm/glm.hpp>
 
 #include "util/no_copy_or_move.h"
-#include "model/scene.h"
 #include "render_scene.h"
 #include "vulkan/device.h"
 #include "vulkan/graphics_buffers.h"
@@ -32,9 +31,8 @@ protected:
         override;
 
 public:
-    CubesOne(
-        Scene &scene):
-        RenderScene(scene, "cubes.vert", "cubes.frag"),
+    CubesOne(const Device &device):
+        RenderScene(device, "cubes.vert", "cubes.frag"),
         m_vertexes(create_vertexes()),
         m_indexes(create_indexes())
     {

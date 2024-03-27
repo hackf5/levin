@@ -19,7 +19,7 @@ class RenderScene: NoCopyOrMove
     const std::string m_fragment_shader;
 
 protected:
-    Scene &m_scene;
+    Scene m_scene;
 
     float time_delta()
     {
@@ -35,10 +35,10 @@ protected:
 
 public:
     RenderScene(
-        Scene &scene,
+        const Device &device,
         const std::string &vertex_shader,
         const std::string &fragment_shader):
-        m_scene(scene),
+        m_scene(device),
         m_vertex_shader(vertex_shader),
         m_fragment_shader(fragment_shader)
     {

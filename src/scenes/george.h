@@ -4,7 +4,6 @@
 
 #include "util/no_copy_or_move.h"
 #include "render_scene.h"
-#include "model/scene.h"
 #include "vulkan/device.h"
 #include "vulkan/graphics_buffers.h"
 #include "vulkan/graphics_pipeline.h"
@@ -22,9 +21,8 @@ protected:
         override;
 
 public:
-    George(
-        Scene &scene):
-        RenderScene(scene, "george.vert", "george.frag")
+    George(const Device &device):
+        RenderScene(device, "george.vert", "george.frag")
     {
     }
 

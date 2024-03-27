@@ -36,7 +36,7 @@ public:
     VulkanContextBuilder &add_texture_factory();
 
     VulkanContextBuilder &add_scene(
-        std::function<std::unique_ptr<RenderScene>(Scene &)> scene_factory);
+        std::function<std::unique_ptr<RenderScene>(const Device &)> scene_factory);
 
     VulkanContextBuilder &add_swapchain();
 
