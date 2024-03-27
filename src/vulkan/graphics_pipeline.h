@@ -1,7 +1,10 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include <vector>
+
+#include <vulkan/vulkan.h>
 
 #include "util/no_copy_or_move.h"
 #include "device.h"
@@ -28,7 +31,9 @@ private:
 
     VkPipeline create_pipeline(
         const Swapchain &swapchain,
-        const RenderPass &render_pass);
+        const RenderPass &render_pass,
+        const std::string &vertex_shader,
+        const std::string &fragment_shader);
 
     std::vector<VkPipelineShaderStageCreateInfo> create_shader_stages(
         const ShaderModule &vertex_shader,
@@ -61,7 +66,9 @@ public:
         const Device &device,
         DescriptorSetLayout &descriptor_set_layout,
         const Swapchain &swapchain,
-        const RenderPass &render_pass);
+        const RenderPass &render_pass,
+        const std::string &vertex_shader,
+        const std::string &fragment_shader);
     ~GraphicsPipeline();
 
     operator VkPipeline() const { return m_pipeline; }

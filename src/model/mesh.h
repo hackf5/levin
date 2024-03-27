@@ -44,6 +44,8 @@ public:
     const glm::mat4 &model() const { return m_uniform_block.model; }
     glm::mat4 &model() { return m_uniform_block.model; }
 
+    void set_texture(Texture *texture) { m_texture = texture; }
+
     void flush(uint32_t frame_index)
     {
         m_uniform_buffers[frame_index].copy_from(&m_uniform_block, sizeof(m_uniform_block));

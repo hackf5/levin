@@ -24,7 +24,7 @@ protected:
 public:
     George(
         Scene &scene):
-        RenderScene(scene)
+        RenderScene(scene, "george.vert", "george.frag")
     {
     }
 

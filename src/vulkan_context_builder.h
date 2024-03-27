@@ -26,7 +26,8 @@ public:
 
     VulkanContextBuilder &add_graphics_queue();
 
-    VulkanContextBuilder &add_descriptor_set_layout(std::function<void(DescriptorSetLayoutBuilder &)> configure);
+    VulkanContextBuilder &add_descriptor_set_layout(
+        std::function<void(DescriptorSetLayoutBuilder &)> configure);
 
     VulkanContextBuilder &add_graphics_buffers();
 
@@ -34,7 +35,8 @@ public:
 
     VulkanContextBuilder &add_texture_factory();
 
-    VulkanContextBuilder &add_scene();
+    VulkanContextBuilder &add_scene(
+        std::function<std::unique_ptr<RenderScene>(Scene &)> scene_factory);
 
     VulkanContextBuilder &add_swapchain();
 

@@ -6,6 +6,7 @@
 
 #include "vulkan_context_builder.h"
 #include "vulkan_engine.h"
+#include "scenes/george.h"
 
 using namespace levin;
 
@@ -30,6 +31,8 @@ int main()
                 .add_combined_image_sampler(); // texture
         };
 
+        auto scene_factory = [](Scene &scene) { return std::make_unique<George>(scene); };
+
         auto context = VulkanContextBuilder()
             .add_window(800, 600, "Levin")
             .add_device(enableValidationLayers)
@@ -39,7 +42,7 @@ int main()
             .add_descriptor_set_layout(layout_builder)
             .add_sampler()
             .add_texture_factory()
-            .add_scene()
+            .add_scene(scene_factory)
             .add_swapchain()
             .add_depth_buffer()
             .add_render_pass()

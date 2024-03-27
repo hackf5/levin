@@ -28,7 +28,8 @@ VulkanContextBuilder &VulkanContextBuilder::add_graphics_queue()
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::add_descriptor_set_layout(std::function<void(DescriptorSetLayoutBuilder &)> configure)
+VulkanContextBuilder &VulkanContextBuilder::add_descriptor_set_layout(
+    std::function<void(DescriptorSetLayoutBuilder &)> configure)
 {
     DescriptorSetLayoutBuilder builder;
     configure(builder);
@@ -59,9 +60,13 @@ VulkanContextBuilder &VulkanContextBuilder::add_texture_factory()
     return *this;
 }
 
-VulkanContextBuilder &VulkanContextBuilder::add_scene()
+VulkanContextBuilder &VulkanContextBuilder::add_scene(
+    std::function<std::unique_ptr<RenderScene>(Scene &)> scene_factory)
 {
+    m_context->m_render_scene.reset();
+    m_context->m_scene.reset();
     m_context->m_scene = std::make_unique<Scene>(*m_context->m_device);
+    m_context->m_render_scene = scene_factory(*m_context->m_scene);
     return *this;
 }
 
@@ -117,7 +122,9 @@ VulkanContextBuilder &VulkanContextBuilder::add_graphics_pipeline()
         *m_context->m_device,
         *m_context->m_descriptor_set_layout,
         *m_context->m_swapchain,
-        *m_context->m_render_pass);
+        *m_context->m_render_pass,
+        m_context->m_render_scene->vertex_shader(),
+        m_context->m_render_scene->fragment_shader());
 
     return *this;
 }

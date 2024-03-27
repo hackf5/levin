@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <string>
 
 #include "util/no_copy_or_move.h"
 #include "model/scene.h"
@@ -13,6 +14,10 @@ namespace levin
 {
 class RenderScene: NoCopyOrMove
 {
+    private:
+    const std::string m_vertex_shader;
+    const std::string m_fragment_shader;
+
 protected:
     Scene &m_scene;
 
@@ -30,10 +35,17 @@ protected:
 
 public:
     RenderScene(
-        Scene &scene):
-        m_scene(scene)
+        Scene &scene,
+        const std::string &vertex_shader,
+        const std::string &fragment_shader):
+        m_scene(scene),
+        m_vertex_shader(vertex_shader),
+        m_fragment_shader(fragment_shader)
     {
     }
+
+    const std::string &vertex_shader() const { return m_vertex_shader; }
+    const std::string &fragment_shader() const { return m_fragment_shader; }
 
     virtual void load(
         const Device &device,

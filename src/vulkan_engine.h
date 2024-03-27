@@ -13,7 +13,6 @@ class VulkanEngine: NoCopyOrMove
 {
 private:
     std::unique_ptr<VulkanContext> m_context;
-    std::unique_ptr<RenderScene> m_render_scene;
 
     uint32_t m_current_frame = 0;
 

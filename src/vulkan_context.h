@@ -20,6 +20,7 @@
 #include "vulkan/vertex.h"
 
 #include "model/scene.h"
+#include "scenes/render_scene.h"
 
 #include "gui/gui.h"
 
@@ -37,6 +38,7 @@ private:
     std::unique_ptr<Sampler> m_sampler;
     std::unique_ptr<TextureFactory> m_texture_factory;
     std::unique_ptr<Scene> m_scene;
+    std::unique_ptr<RenderScene> m_render_scene;
     std::unique_ptr<Swapchain> m_swapchain;
     std::unique_ptr<DepthBuffer> m_depth_buffer;
     std::unique_ptr<RenderPass> m_render_pass;
@@ -66,6 +68,9 @@ public:
 
     const Scene &scene() const { return *m_scene; }
     Scene &scene() { return *m_scene; }
+
+    const RenderScene &render_scene() const { return *m_render_scene; }
+    RenderScene &render_scene() { return *m_render_scene; }
 
     TextureFactory &texture_factory() { return *m_texture_factory; }
 

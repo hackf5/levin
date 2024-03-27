@@ -12,11 +12,13 @@ GraphicsPipeline::GraphicsPipeline(
     const Device &device,
     DescriptorSetLayout &descriptor_set_layout,
     const Swapchain &swapchain,
-    const RenderPass &render_pass):
+    const RenderPass &render_pass,
+    const std::string &vertex_shader,
+    const std::string &fragment_shader):
     m_device(device),
     m_descriptor_set_layout(descriptor_set_layout),
     m_pipeline_layout(create_pipeline_layout(descriptor_set_layout)),
-    m_pipeline(create_pipeline(swapchain, render_pass)),
+    m_pipeline(create_pipeline(swapchain, render_pass, vertex_shader, fragment_shader)),
     vkCmdPushDescriptorSetKHR(fetch_vkCmdPushDescriptorSetKHR())
 {
 }
@@ -52,15 +54,17 @@ VkPipelineLayout GraphicsPipeline::create_pipeline_layout(
 
 VkPipeline GraphicsPipeline::create_pipeline(
     const Swapchain &swapchain,
-    const RenderPass &render_pass)
+    const RenderPass &render_pass,
+    const std::string &vertex_shader,
+    const std::string &fragment_shader)
 {
     spdlog::info("Creating Graphics Pipeline");
 
     auto vertex_input_state = VertexInputState(0, Vertex::ALL_COMPONENTS);
 
-    auto vertex_shader = ShaderModule(m_device, "vert");
-    auto fragment_shader = ShaderModule(m_device, "frag");
-    auto shader_stages = create_shader_stages(vertex_shader, fragment_shader);
+    auto vertex_shader_module = ShaderModule(m_device, vertex_shader);
+    auto fragment_shader_module = ShaderModule(m_device, fragment_shader);
+    auto shader_stages = create_shader_stages(vertex_shader_module, fragment_shader_module);
 
     auto input_assembly_state = create_input_assembly_state();
     auto viewport_state = create_viewport_state(swapchain);

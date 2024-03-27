@@ -21,8 +21,7 @@ void VulkanEngine::run()
 {
     spdlog::info("Vulkan Engine is running");
 
-    m_render_scene = std::make_unique<George>(m_context->scene());
-    m_render_scene->load(
+    m_context->render_scene().load(
         m_context->device(),
         m_context->texture_factory(),
         m_context->graphics_buffers());
@@ -68,7 +67,9 @@ void VulkanEngine::draw_frame()
         return;
     }
 
-    m_render_scene->update(m_current_frame, m_context->swapchain().aspect_ratio());
+    m_context->render_scene().update(
+        m_current_frame,
+        m_context->swapchain().aspect_ratio());
 
     render(framebuffer);
 
@@ -90,7 +91,7 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
     m_context->swapchain().clip(command_buffer);
     m_context->graphics_buffers().bind(command_buffer);
 
-    m_render_scene->render(command_buffer, m_current_frame, m_context->graphics_pipeline());
+    m_context->render_scene().render(command_buffer, m_current_frame, m_context->graphics_pipeline());
     m_context->gui().render(command_buffer);
 
     m_context->render_pass().end(command_buffer);
