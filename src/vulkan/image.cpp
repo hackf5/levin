@@ -13,7 +13,7 @@ Image::Image(
     VkImageTiling tiling,
     VkSampleCountFlagBits samples):
     m_device(device),
-    m_image_info({width, height, format, usage, tiling, samples}),
+    m_image_info({ width, height, format, usage, tiling, samples }),
     m_allocation_info(create_allocation_info())
 {
 }

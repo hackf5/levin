@@ -11,41 +11,41 @@
 
 namespace levin
 {
-    class UniformBuffer: NoCopyOrMove
+class UniformBuffer: NoCopyOrMove
+{
+private:
+    typedef std::array<std::unique_ptr<BufferHost>, Device::max_frames_in_flight> buffers_t;
+
+    buffers_t m_buffers;
+
+    buffers_t create_buffers(const Device &device, VkDeviceSize size)
     {
-    private:
-        typedef std::array<std::unique_ptr<BufferHost>, Device::max_frames_in_flight> buffers_t;
-
-        buffers_t m_buffers;
-
-        buffers_t create_buffers(const Device &device, VkDeviceSize size)
+        buffers_t buffers;
+        for (auto &buffer : buffers)
         {
-            buffers_t buffers;
-            for (auto &buffer : buffers)
-            {
-                buffer = std::make_unique<BufferHost>(
-                    device,
-                    size,
-                    VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-            }
-
-            return buffers;
+            buffer = std::make_unique<BufferHost>(
+                device,
+                size,
+                VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
         }
 
-    public:
-        UniformBuffer(const Device &device, VkDeviceSize size)
-            : m_buffers(create_buffers(device, size))
-        {
-        }
+        return buffers;
+    }
 
-        BufferHost &operator[](size_t index)
-        {
-            return *m_buffers[index];
-        }
+public:
+    UniformBuffer(const Device &device, VkDeviceSize size)
+        : m_buffers(create_buffers(device, size))
+    {
+    }
 
-        const BufferHost &operator[](size_t index) const
-        {
-            return *m_buffers[index];
-        }
-    };
+    BufferHost &operator[](size_t index)
+    {
+        return *m_buffers[index];
+    }
+
+    const BufferHost &operator[](size_t index) const
+    {
+        return *m_buffers[index];
+    }
+};
 }

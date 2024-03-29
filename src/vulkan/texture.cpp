@@ -1,8 +1,9 @@
 #include "texture.h"
 
 #include "stb_image.h"
-
 #include "spdlog/spdlog.h"
+
+#include "buffer/staging_buffer.h"
 
 using namespace levin;
 
@@ -19,7 +20,7 @@ Texture::Texture(
 {
 }
 
-std::unique_ptr<BufferHost> Texture::create_staging_buffer(
+std::unique_ptr<Buffer> Texture::create_staging_buffer(
     const std::string &name,
     int &width,
     int &height)
@@ -35,13 +36,11 @@ std::unique_ptr<BufferHost> Texture::create_staging_buffer(
         throw std::runtime_error("Failed to load image " + file_name + ": " + stbi_failure_reason());
     }
 
-    VkDeviceSize image_size = width * height * 4;
-    auto staging_buffer = std::make_unique<BufferHost>(
+    auto staging_buffer = std::make_unique<StagingBuffer>(
         m_device,
-        image_size,
-        VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+        pixels,
+        pixels + (width * height * channels));
 
-    staging_buffer->copy_from(pixels, image_size);
     stbi_image_free(pixels);
 
     return staging_buffer;

@@ -11,28 +11,28 @@
 
 namespace levin
 {
-    class Framebuffers : NoCopyOrMove
-    {
-    private:
-        const Device &m_device;
-        const Multisampler m_multisampler;
+class Framebuffers: NoCopyOrMove
+{
+private:
+    const Device &m_device;
+    const Multisampler m_multisampler;
 
-        const std::vector<VkFramebuffer> m_framebuffers;
+    const std::vector<VkFramebuffer> m_framebuffers;
 
-        std::vector<VkFramebuffer> create_framebuffers(
-            const Swapchain &swapchain,
-            const RenderPass &render_pass,
-            const DepthBuffer &depth_buffer);
+    std::vector<VkFramebuffer> create_framebuffers(
+        const Swapchain &swapchain,
+        const RenderPass &render_pass,
+        const DepthBuffer &depth_buffer);
 
-    public:
-        Framebuffers(
-            const Device &device,
-            const Swapchain &swapchain,
-            const RenderPass &render_pass,
-            const DepthBuffer &depth_buffer);
-        Framebuffers(const Framebuffers &) = delete;
-        ~Framebuffers();
+public:
+    Framebuffers(
+        const Device &device,
+        const Swapchain &swapchain,
+        const RenderPass &render_pass,
+        const DepthBuffer &depth_buffer);
+    Framebuffers(const Framebuffers &) = delete;
+    ~Framebuffers();
 
-        VkFramebuffer get(uint32_t image_index) const { return m_framebuffers[image_index]; }
-    };
+    VkFramebuffer get(uint32_t image_index) const { return m_framebuffers[image_index]; }
+};
 }

@@ -7,10 +7,10 @@
 
 namespace levin
 {
-    struct DescriptorSetLayoutInfo
-    {
-        const VkDescriptorType descriptor_type;
-        const VkShaderStageFlags stage_flags;
-        const uint32_t binding;
-    };
+struct DescriptorSetLayoutInfo
+{
+    const VkDescriptorType descriptor_type;
+    const VkShaderStageFlags stage_flags;
+    const uint32_t binding;
+};
 }

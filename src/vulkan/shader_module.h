@@ -7,27 +7,27 @@
 
 namespace levin
 {
-    class ShaderModule : NoCopyOrMove
-    {
-    private:
-        const Device &m_device;
+class ShaderModule: NoCopyOrMove
+{
+private:
+    const Device &m_device;
 
-        const std::string m_name;
+    const std::string m_name;
 
-        VkShaderModule m_shader_module;
+    VkShaderModule m_shader_module;
 
-        static std::vector<char> read_file(const std::string &name);
+    static std::vector<char> read_file(const std::string &name);
 
-        VkShaderModule create_shader_module();
+    VkShaderModule create_shader_module();
 
-    public:
-        ShaderModule(
-            const Device &device,
-            const std::string &name);
-        ~ShaderModule();
+public:
+    ShaderModule(
+        const Device &device,
+        const std::string &name);
+    ~ShaderModule();
 
-        const std::string &name() const { return m_name; }
+    const std::string &name() const { return m_name; }
 
-        operator VkShaderModule() const { return m_shader_module; }
-    };
+    operator VkShaderModule() const { return m_shader_module; }
+};
 }

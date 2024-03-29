@@ -6,6 +6,8 @@
 
 #include "vulkan_context_builder.h"
 #include "vulkan_engine.h"
+#include "scenes/george.h"
+#include "scenes/cubes_one.h"
 
 using namespace levin;
 
@@ -30,15 +32,18 @@ int main()
                 .add_combined_image_sampler(); // texture
         };
 
+        auto scene_factory = [](const Device &device) { return std::make_unique<CubesOne>(device); };
+
         auto context = VulkanContextBuilder()
             .add_window(800, 600, "Levin")
             .add_device(enableValidationLayers)
             .add_graphics_queue()
             .add_adhoc_queues()
-            .add_sampler()
             .add_graphics_buffers()
             .add_descriptor_set_layout(layout_builder)
-            .add_scene()
+            .add_sampler()
+            .add_texture_factory()
+            .add_scene(scene_factory)
             .add_swapchain()
             .add_depth_buffer()
             .add_render_pass()

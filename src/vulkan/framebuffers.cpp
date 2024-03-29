@@ -38,9 +38,9 @@ std::vector<VkFramebuffer> Framebuffers::create_framebuffers(
     {
         auto attachments = std::array<VkImageView, 3>
         {
-                m_multisampler.image_view(),
+            m_multisampler.image_view(),
                 depth_buffer.image_view(),
-            swapchain.image_view(i),
+                swapchain.image_view(i),
         };
 
         VkFramebufferCreateInfo framebuffer_info = {};

@@ -9,42 +9,42 @@
 
 namespace levin
 {
-    enum class VertexComponent { Position, UV, Color };
+enum class VertexComponent { Position, UV, Color };
 
-    struct Vertex
-    {
-        typedef uint32_t index_t;
+struct Vertex
+{
+    typedef uint32_t index_t;
 
-        static const VkIndexType vk_index_type = VK_INDEX_TYPE_UINT32;
+    static const VkIndexType vk_index_type = VK_INDEX_TYPE_UINT32;
 
-        static const std::vector<VertexComponent> ALL_COMPONENTS;
+    static const std::vector<VertexComponent> ALL_COMPONENTS;
 
-        glm::vec3 pos;
-        glm::vec2 uv;
-        glm::vec4 color;
-    };
+    glm::vec3 pos;
+    glm::vec2 uv;
+    glm::vec4 color;
+};
 
 
-    struct VertexInputState
-    {
-        VkVertexInputBindingDescription binding;
-        std::vector<VkVertexInputAttributeDescription> attributes;
-        VkPipelineVertexInputStateCreateInfo pipeline;
+struct VertexInputState
+{
+    VkVertexInputBindingDescription binding;
+    std::vector<VkVertexInputAttributeDescription> attributes;
+    VkPipelineVertexInputStateCreateInfo pipeline;
 
-        VertexInputState(
-            uint32_t binding,
-            const std::vector<VertexComponent> components);
+    VertexInputState(
+        uint32_t binding,
+        const std::vector<VertexComponent> components);
 
-    private:
-        VkVertexInputBindingDescription create_binding(uint32_t binding);
+private:
+    VkVertexInputBindingDescription create_binding(uint32_t binding);
 
-        VkVertexInputAttributeDescription create_attribute(
-            uint32_t location,
-            VertexComponent component);
+    VkVertexInputAttributeDescription create_attribute(
+        uint32_t location,
+        VertexComponent component);
 
-        std::vector<VkVertexInputAttributeDescription> create_attributes(
-            const std::vector<VertexComponent> components);
+    std::vector<VkVertexInputAttributeDescription> create_attributes(
+        const std::vector<VertexComponent> components);
 
-        VkPipelineVertexInputStateCreateInfo create_pipeline();
-    };
+    VkPipelineVertexInputStateCreateInfo create_pipeline();
+};
 }

@@ -117,7 +117,7 @@ std::vector<VkFence> GraphicsQueue::create_fences()
 
 VkFramebuffer GraphicsQueue::prepare_framebuffer(
     uint32_t current_frame,
-    const Swapchain& swapchain,
+    const Swapchain &swapchain,
     const Framebuffers &framebuffers)
 {
     assert(m_swapchain == VK_NULL_HANDLE);

@@ -3,41 +3,13 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "vulkan_context_builder.h"
-#include "vulkan_engine.h"
-
 #include "spdlog/spdlog.h"
 
-#include "vulkan/texture.h"
+#include "vulkan_context_builder.h"
+#include "vulkan_engine.h"
+#include "scenes/george.h"
 
 using namespace levin;
-
-const std::vector<levin::Vertex> vertexes = {
-    {
-        .pos = {-0.5f, -0.5f, 0.0f},
-        .uv = {1.0f, 0.0f},
-        .color = {1.0f, 0.0f, 0.0f, 1.0f},
-    },
-    {
-        {0.5f, -0.5f, 0.0f},
-        {0.0f, 0.0f},
-        {0.0f, 1.0f, 0.0f, 1.0f},
-    },
-    {
-        {0.5f, 0.5f, 0.0f},
-        {0.0f, 1.0f},
-        {0.0f, 0.0f, 1.0f, 1.0f},
-    },
-    {
-        {-0.5f, 0.5f, 0.0f},
-        {1.0f, 1.0f},
-        {1.0f, 1.0f, 1.0f, 1.0f},
-    },
-};
-
-const std::vector<levin::Vertex::index_t> indexes = {
-    0, 1, 2, 2, 3, 0,
-};
 
 VulkanEngine::VulkanEngine(
     std::unique_ptr<VulkanContext> context)
@@ -49,7 +21,10 @@ void VulkanEngine::run()
 {
     spdlog::info("Vulkan Engine is running");
 
-    load_scene();
+    m_context->render_scene().load(
+        m_context->device(),
+        m_context->texture_factory(),
+        m_context->graphics_buffers());
 
     while (!m_context->window().should_close())
     {
@@ -60,44 +35,6 @@ void VulkanEngine::run()
     m_context->device().wait_idle();
 }
 
-void VulkanEngine::load_scene()
-{
-    m_context->graphics_buffers().load_vertexes(vertexes);
-    m_context->graphics_buffers().load_indexes(indexes);
-
-    m_texture_image = std::make_unique<Texture>(
-        m_context->device(),
-        m_context->sampler(),
-        m_context->adhoc_queues(),
-        "george.png");
-
-    auto &camera = m_context->scene().camera();
-    camera.position() = glm::vec3(2.0f, 2.0f, 2.0f);
-    camera.target() = glm::vec3(0.0f, 0.0f, 0.0f);
-    camera.clip_far() = 10.0f;
-    camera.clip_near() = 0.1f;
-    camera.fov() = 45.0f;
-    camera.aspect_ratio() = m_context->swapchain().aspect_ratio();
-
-    std::vector<Primitive> primitives = {
-        {0, static_cast<uint32_t>(indexes.size())}
-    };
-
-    auto &root_node = m_context->scene().model().root_node();
-    auto mesh1 = std::make_unique<Mesh>(
-        m_context->device(),
-        primitives,
-        m_texture_image.get());
-    auto &child1 = root_node.add_child(std::move(mesh1));
-    child1.translation() = glm::vec3(0.0f, 0.0f, 0.0f);
-
-    auto mesh2 = std::make_unique<Mesh>(
-        m_context->device(),
-        primitives,
-        m_texture_image.get());
-    auto &child2 = root_node.add_child(std::move(mesh2));
-    child2.translation() = glm::vec3(0.0f, -1.0f, -1.0f);
-}
 
 void VulkanEngine::recreate_swapchain()
 {
@@ -113,9 +50,6 @@ void VulkanEngine::recreate_swapchain()
         .add_gui()
         .build();
     m_context = std::move(context);
-
-    auto &camera = m_context->scene().camera();
-    camera.aspect_ratio() = m_context->swapchain().aspect_ratio();
 }
 
 void VulkanEngine::draw_frame()
@@ -133,7 +67,10 @@ void VulkanEngine::draw_frame()
         return;
     }
 
-    update_uniform_buffer();
+    m_context->render_scene().update(
+        m_current_frame,
+        m_context->swapchain().aspect_ratio());
+
     render(framebuffer);
 
     if (!m_context->graphics_queue().present_framebuffer())
@@ -153,31 +90,11 @@ void VulkanEngine::render(VkFramebuffer framebuffer)
     m_context->graphics_pipeline().bind(command_buffer);
     m_context->swapchain().clip(command_buffer);
     m_context->graphics_buffers().bind(command_buffer);
-    m_context->scene().render(command_buffer, m_current_frame, m_context->graphics_pipeline());
+
+    m_context->render_scene().render(command_buffer, m_current_frame, m_context->graphics_pipeline());
     m_context->gui().render(command_buffer);
 
     m_context->render_pass().end(command_buffer);
 
     m_context->graphics_queue().submit_command();
-}
-
-void VulkanEngine::update_uniform_buffer()
-{
-    static auto start_time = std::chrono::high_resolution_clock::now();
-
-    auto current_time = std::chrono::high_resolution_clock::now();
-    auto time = std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
-
-    auto rotation = glm::quat_cast(
-        glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-
-    auto &node = m_context->scene().model().root_node();
-
-    node.rotation() = rotation;
-    for (auto &child : node.children())
-    {
-        child->rotation() = rotation;
-    }
-
-    m_context->scene().flush(m_current_frame);
 }
