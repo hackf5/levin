@@ -45,4 +45,5 @@ target_link_libraries(
     glfw
     imgui
     stb
+    tiny_object_loader
     ${CMAKE_DL_LIBS})
