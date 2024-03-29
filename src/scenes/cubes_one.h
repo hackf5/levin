@@ -17,11 +17,23 @@ namespace levin
 class CubesOne: public RenderScene
 {
     private:
-    std::array<Vertex, 8> m_vertexes;
-    std::array<Vertex::index_t, 36> m_indexes;
+    static const uint32_t FACES_COUNT = 6;
+    static const uint32_t VERTEXES_PER_FACE = 4;
+    static const uint32_t INDEXES_PER_FACE = 6;
+    static const uint32_t VERTEXES_COUNT = FACES_COUNT * VERTEXES_PER_FACE;
+    static const uint32_t INDEXES_COUNT = FACES_COUNT * INDEXES_PER_FACE;
 
-    std::array<Vertex, 8> create_vertexes();
-    std::array<Vertex::index_t, 36> create_indexes();
+    typedef std::array<Vertex, VERTEXES_PER_FACE> face_t;
+    typedef std::array<Vertex, VERTEXES_COUNT> vertexes_t;
+    typedef std::array<Vertex::index_t, INDEXES_COUNT> indexes_t;
+
+    const indexes_t m_indexes;
+    const vertexes_t m_vertexes;
+
+    indexes_t create_indexes();
+    vertexes_t create_vertexes();
+
+    face_t create_face(uint32_t face);
 
 protected:
     void update(
@@ -32,9 +44,9 @@ protected:
 
 public:
     CubesOne(const Device &device):
-        RenderScene(device, "cubes.vert", "cubes.frag"),
-        m_vertexes(create_vertexes()),
-        m_indexes(create_indexes())
+        RenderScene(device, "cubes_one.vert", "cubes_one.frag"),
+        m_indexes(create_indexes()),
+        m_vertexes(create_vertexes())
     {
     }
 

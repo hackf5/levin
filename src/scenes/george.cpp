@@ -39,7 +39,6 @@ void George::load(
     GraphicsBuffers &graphics_buffers)
 {
     texture_factory.clear();
-
     texture_factory.load_texture("george", "george.png");
 
     graphics_buffers.load_vertexes(vertexes);
@@ -65,7 +64,6 @@ void George::load(
     child2.translation() = glm::vec3(0.0f, -1.0f, -1.0f);
 
     auto &camera = m_scene.camera();
-
     camera.target() = glm::vec3(0.0f, 0.0f, 0.0f);
     camera.clip_far() = 10.0f;
     camera.clip_near() = 0.1f;

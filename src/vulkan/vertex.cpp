@@ -43,7 +43,7 @@ VkVertexInputAttributeDescription VertexInputState::create_attribute(
     switch (component)
     {
     case VertexComponent::Position:
-        description.format = VK_FORMAT_R32G32_SFLOAT;
+        description.format = VK_FORMAT_R32G32B32_SFLOAT;
         description.offset = offsetof(Vertex, pos);
         break;
     case VertexComponent::UV:
@@ -51,7 +51,7 @@ VkVertexInputAttributeDescription VertexInputState::create_attribute(
         description.offset = offsetof(Vertex, uv);
         break;
     case VertexComponent::Color:
-        description.format = VK_FORMAT_R32G32B32_SFLOAT;
+        description.format = VK_FORMAT_R32G32B32A32_SFLOAT;
         description.offset = offsetof(Vertex, color);
         break;
     default:

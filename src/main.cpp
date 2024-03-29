@@ -7,6 +7,7 @@
 #include "vulkan_context_builder.h"
 #include "vulkan_engine.h"
 #include "scenes/george.h"
+#include "scenes/cubes_one.h"
 
 using namespace levin;
 
@@ -31,7 +32,7 @@ int main()
                 .add_combined_image_sampler(); // texture
         };
 
-        auto scene_factory = [](const Device &device) { return std::make_unique<George>(device); };
+        auto scene_factory = [](const Device &device) { return std::make_unique<CubesOne>(device); };
 
         auto context = VulkanContextBuilder()
             .add_window(800, 600, "Levin")
