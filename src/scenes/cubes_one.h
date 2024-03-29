@@ -16,12 +16,12 @@ namespace levin
 {
 class CubesOne: public RenderScene
 {
-    private:
-    static const uint32_t FACES_COUNT = 6;
-    static const uint32_t VERTEXES_PER_FACE = 4;
-    static const uint32_t INDEXES_PER_FACE = 6;
-    static const uint32_t VERTEXES_COUNT = FACES_COUNT * VERTEXES_PER_FACE;
-    static const uint32_t INDEXES_COUNT = FACES_COUNT * INDEXES_PER_FACE;
+private:
+    constexpr static const uint32_t FACES_COUNT = 6;
+    constexpr static const uint32_t VERTEXES_PER_FACE = 4;
+    constexpr static const uint32_t INDEXES_PER_FACE = 6;
+    constexpr static const uint32_t VERTEXES_COUNT = FACES_COUNT * VERTEXES_PER_FACE;
+    constexpr static const uint32_t INDEXES_COUNT = FACES_COUNT * INDEXES_PER_FACE;
 
     typedef std::array<Vertex, VERTEXES_PER_FACE> face_t;
     typedef std::array<Vertex, VERTEXES_COUNT> vertexes_t;
