@@ -91,17 +91,14 @@ void CubesOne::load(
     graphics_buffers.load_indexes(m_indexes);
 
     std::vector<Primitive> primitives = {
-        {0, static_cast<uint32_t>(m_indexes.size())}
+        {0, static_cast<uint32_t>(m_indexes.size()), texture_factory["george"]}
     };
 
     std::vector<Primitive> empty = {};
 
     auto &root_node = m_scene.model().root_node();
     auto &child1 = root_node.add_child();
-    auto &child2 = child1.add_child(std::make_unique<Mesh>(
-        device,
-        primitives,
-        texture_factory["george"]));
+    auto &child2 = child1.add_child(std::make_unique<Mesh>(device, primitives));
 
     auto &camera = m_scene.camera();
     camera.target() = glm::vec3(0.0f, 0.0f, 0.0f);

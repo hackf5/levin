@@ -24,6 +24,9 @@
     "subresource",
     "SWAPCHAIN",
     "Swapchains",
+    "texcoord",
+    "texcoords",
+    "tinyobj",
     "Viewports",
     "VKAPI"
   ],

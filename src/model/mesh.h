@@ -27,24 +27,19 @@ private:
     UniformBlock m_uniform_block;
     UniformBuffer m_uniform_buffers;
     std::vector<Primitive> m_primitives;
-    Texture *m_texture;
 
 public:
     Mesh(
         const Device &device,
-        const std::vector<Primitive> &primitives,
-        Texture *texture = nullptr):
+        const std::vector<Primitive> &primitives):
         m_uniform_block {},
         m_uniform_buffers(device, sizeof(UniformBlock)),
-        m_primitives(primitives),
-        m_texture(texture)
+        m_primitives(primitives)
     {
     }
 
     const glm::mat4 &model() const { return m_uniform_block.model; }
     glm::mat4 &model() { return m_uniform_block.model; }
-
-    void set_texture(Texture *texture) { m_texture = texture; }
 
     void flush(uint32_t frame_index)
     {
@@ -60,18 +55,9 @@ public:
             .descriptor_set_layout()
             .write_uniform_buffer(m_uniform_buffers[frame_index].descriptor(), 1);
 
-        if (m_texture)
-        {
-            pipeline
-                .descriptor_set_layout()
-                .write_combined_image_sampler(m_texture->descriptor(), 2);
-        }
-
-        pipeline.push_descriptor_set(command_buffer);
-
         for (auto &primitive : m_primitives)
         {
-            primitive.render(command_buffer);
+            primitive.render(command_buffer, pipeline);
         }
     }
 };

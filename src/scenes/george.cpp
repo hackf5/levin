@@ -45,21 +45,15 @@ void George::load(
     graphics_buffers.load_indexes(indexes);
 
     std::vector<Primitive> primitives = {
-        {0, static_cast<uint32_t>(indexes.size())}
+        {0, static_cast<uint32_t>(indexes.size()), texture_factory["george"]}
     };
 
     auto &root_node = m_scene.model().root_node();
-    auto mesh1 = std::make_unique<Mesh>(
-        device,
-        primitives,
-        texture_factory["george"]);
+    auto mesh1 = std::make_unique<Mesh>(device, primitives);
     auto &child1 = root_node.add_child(std::move(mesh1));
     child1.translation() = glm::vec3(0.0f, 0.0f, 0.0f);
 
-    auto mesh2 = std::make_unique<Mesh>(
-        device,
-        primitives,
-        texture_factory["george"]);
+    auto mesh2 = std::make_unique<Mesh>(device, primitives);
     auto &child2 = root_node.add_child(std::move(mesh2));
     child2.translation() = glm::vec3(0.0f, -1.0f, -1.0f);
 
