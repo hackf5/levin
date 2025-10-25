@@ -1,4 +1,13 @@
-set(GLSL_VALIDATOR "$ENV{VULKAN_SDK}/Bin/glslangValidator.exe")
+find_program(GLSL_VALIDATOR
+    NAMES glslangValidator glslang
+    HINTS
+        "$ENV{VULKAN_SDK}/Bin"
+        "$ENV{VULKAN_SDK}/bin"
+)
+
+if(NOT GLSL_VALIDATOR)
+    message(FATAL_ERROR "glslangValidator not found! Please install mingw-w64-x86_64-glslang or set VULKAN_SDK")
+endif()
 
 file(GLOB_RECURSE GLSL_SOURCE_FILES
     "*.frag"
